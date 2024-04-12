@@ -9,7 +9,7 @@ namespace EventCartographer.Server.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
         [BsonElement("userId")]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         [BsonElement("title")]
         public string Title { get; set; }

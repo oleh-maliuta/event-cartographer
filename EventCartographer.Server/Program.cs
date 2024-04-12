@@ -1,3 +1,5 @@
+using EventCartographer.Server.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EventCartographer.Server
 {
@@ -10,6 +12,15 @@ namespace EventCartographer.Server
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login";
+                });
+
+            builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("MongoDb"));
+            builder.Services.AddSingleton<MongoDbService>();
 
             var app = builder.Build();
 
@@ -24,6 +35,7 @@ namespace EventCartographer.Server
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
