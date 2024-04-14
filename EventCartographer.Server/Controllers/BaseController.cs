@@ -14,7 +14,7 @@ namespace EventCartographer.Server.Controllers
             get
             {
                 string? id = HttpContext.User.Claims
-                    .FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier)?.Value;
+                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
                 return id ?? throw new InvalidOperationException(
                     "This property accessible only for authorized users.");
@@ -24,7 +24,7 @@ namespace EventCartographer.Server.Controllers
         {
             get
             {
-                User? user = DB.Users.Find(p => p.Id == AuthorizedUserId).FirstOrDefault();
+                User? user = DB.Users.Find(x => x.Id == AuthorizedUserId).FirstOrDefault();
 
                 return user ?? throw new InvalidOperationException(
                     "This property accessible only for authorized users.");

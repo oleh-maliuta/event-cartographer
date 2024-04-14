@@ -9,23 +9,17 @@ namespace EventCartographer.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllersWithViews();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/login";
-                });
+                .AddCookie();
 
             builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("MongoDb"));
             builder.Services.AddSingleton<MongoDbService>();
 
             var app = builder.Build();
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
 
             if (app.Environment.IsDevelopment())
             {
@@ -34,11 +28,16 @@ namespace EventCartographer.Server
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseDefaultFiles();
+            app.UseRouting();
+
             app.UseAuthorization();
             app.UseAuthentication();
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
+            app.MapDefaultControllerRoute();
 
             app.Run();
         }

@@ -16,16 +16,10 @@ namespace EventCartographer.Server.Controllers
     {
         public UserController(MongoDbService service) : base(service) { }
 
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-            return Ok(DB.Users.Find(x => true).ToList());
-        }
-
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(SignUpRequest request)
         {
-            if (DB.Users.Find(x => x.Name == request.Name).Any())
+            if (await DB.Users.Find(x => x.Name == request.Name).AnyAsync())
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
             }
@@ -54,7 +48,7 @@ namespace EventCartographer.Server.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Name).SingleOrDefaultAsync();
+            User? user = await DB.Users.Find(x => x.Name == request.Name).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -70,7 +64,7 @@ namespace EventCartographer.Server.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(new ClaimsIdentity(
             [
-                new(ClaimTypes.NameIdentifier, user.Id!.ToString()),
+                new(ClaimTypes.NameIdentifier, user.Id!),
                 new(ClaimTypes.Name, user.Name)
             ], CookieAuthenticationDefaults.AuthenticationScheme)));
 
@@ -80,7 +74,7 @@ namespace EventCartographer.Server.Controllers
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
@@ -92,6 +86,81 @@ namespace EventCartographer.Server.Controllers
                 return Ok(new BaseResponse.SuccessResponse(null));
             }
             return Unauthorized(new BaseResponse.ErrorResponse(null));
+        }
+
+        [HttpGet]
+        public IActionResult SelfInfo()
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
+            }
+
+            return Ok(new UserResponse(AuthorizedUser));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
+            }
+
+            User user = AuthorizedUser;
+
+            if (await DB.Users.Find(x => x.Name == request.Name).AnyAsync())
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
+            }
+
+            user.Name = request.Name;
+
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            return Ok(new UserResponse(user));
+        }
+
+        [HttpPut("password")]
+        public async Task<IActionResult> UpdateUserPassword([FromBody] string[] request)
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
+            }
+
+            User? user = AuthorizedUser;
+
+            if (request[0].Length < 6)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
+            }
+
+            if (request[0] != request[1])
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
+            }
+
+            user.Password = request[0];
+
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            return Ok(new UserResponse(user));
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser()
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
+            }
+
+            User? user = AuthorizedUser;
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await DB.Markers.DeleteManyAsync(x => x.UserId == user.Id);
+            await DB.Users.DeleteOneAsync(x => x.Id == user.Id);
+
+            return Ok(new BaseResponse.SuccessResponse(null));
         }
     }
 }

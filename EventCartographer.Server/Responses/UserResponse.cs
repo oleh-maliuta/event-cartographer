@@ -10,9 +10,9 @@ namespace EventCartographer.Server.Responses
             Data = new View(data);
         }
 
-        public UserResponse(ICollection<User> user) : base(true, null, null)
+        public UserResponse(ICollection<User> data) : base(true, null, null)
         {
-            Data = user.Select(p => new View(p));
+            Data = data.Select(x => new View(x));
         }
 
         public class View
