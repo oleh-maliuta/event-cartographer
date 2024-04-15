@@ -1,5 +1,5 @@
 ﻿using EventCartographer.Server.Models;
-using EventCartographer.Server.Services;
+using EventCartographer.Server.Services.MongoDB;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.Security.Claims;

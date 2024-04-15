@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Server
+﻿namespace EventCartographer.Server.Services.MongoDB
 {
     public class DbSettings
     {
