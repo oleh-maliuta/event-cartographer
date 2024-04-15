@@ -5,6 +5,10 @@ namespace EventCartographer.Server.Requests
     public class UpdateMarkerRequest
     {
         [Required]
+        public decimal Latitude { get; set; }
+        [Required]
+        public decimal Longitude { get; set; }
+        [Required]
         public string Importance { get; set; }
         [Required]
         [StringLength(480, MinimumLength = 1)]

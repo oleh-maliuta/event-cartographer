@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace EventCartographer.Server.Services
+namespace EventCartographer.Server.Services.MongoDB
 {
     public class MongoDbService
     {

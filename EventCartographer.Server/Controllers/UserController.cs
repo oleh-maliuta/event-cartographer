@@ -1,12 +1,12 @@
 ﻿using EventCartographer.Server.Models;
 using EventCartographer.Server.Requests;
 using EventCartographer.Server.Responses;
-using EventCartographer.Server.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.Security.Claims;
+using EventCartographer.Server.Services.MongoDB;
 
 namespace EventCartographer.Server.Controllers
 {
