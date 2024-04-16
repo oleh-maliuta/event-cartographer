@@ -1,0 +1,244 @@
+.main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: whitesmoke;
+    overflow-y: auto;
+}
+
+.main::-webkit-scrollbar {
+    display: none;
+}
+
+.panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    background-color: white;
+    border-radius: 20px;
+    -webkit-box-shadow: 0px 0px 29px -8px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 29px -8px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 29px -8px rgba(0, 0, 0, 0.75);
+    padding-inline: 35px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+@media (width < 425px) {
+    .panel {
+        width: 90vw;
+        padding-inline: 5vw;
+    }
+}
+
+.panel.fixed {
+    top: 0;
+    transform: translate(-50%, 0);
+}
+
+.panel_header {
+    width: 100%;
+}
+
+.panel_header_text {
+    font-size: 40px;
+    text-align: center;
+}
+
+.panel_header_line {
+    width: 120px;
+    height: 7px;
+    border-radius: 50px;
+    background: rgb(0, 140, 73);
+    background: linear-gradient(90deg, rgba(0, 140, 73, 1) 0%, rgba(0, 224, 15, 1) 100%);
+    margin-top: 10px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
+.username {
+    margin-top: 35px;
+}
+
+.username_header {
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-left: 7px;
+}
+
+.username_input {
+    width: calc(100% - 14px);
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    margin-top: 7px;
+    padding-block: 10px;
+    padding-left: 10px;
+}
+
+.password {
+    margin-top: 20px;
+}
+
+.password_header {
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-left: 7px;
+}
+
+.password_input {
+    width: calc(100% - 14px);
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    margin-top: 7px;
+    padding-block: 10px;
+    padding-left: 10px;
+}
+
+.remember_me {
+    position: relative;
+    display: flex;
+    margin-top: 25px;
+}
+
+.remember_me_checkbox {
+    cursor: pointer;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border: 2px solid gray;
+    border-radius: 5px;
+}
+
+.remember_me_checkbox.checked {
+    border: 2px solid rgb(0, 158, 0);
+    background-color: rgb(0, 158, 0);
+}
+
+.remember_me_checkbox.checked > img {
+    opacity: 1;
+}
+
+.remember_me_checkbox_img {
+    position: absolute;
+    content: url(../../assets/check.png);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    opacity: 0;
+}
+
+.remember_me_label {
+    position: relative;
+    width: 100%;
+}
+
+.remember_me_text {
+    position: absolute;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.submit_button {
+    cursor: pointer;
+    width: 100%;
+    margin-top: 25px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    background: rgb(0, 140, 73);
+    background: linear-gradient(90deg, rgba(0, 140, 73, 1) 0%, rgba(0, 224, 15, 1) 100%);
+    border: none;
+    border-radius: 50px;
+    font-size: 25px;
+    letter-spacing: 1px;
+    color: white;
+    padding-block: 10px;
+}
+
+.options {
+    position: relative;
+    display: grid;
+    grid-template-columns: 25% auto;
+    margin-top: 30px;
+}
+
+@media (width < 260px) {
+    .options {
+        display: block;
+    }
+}
+
+.options_sign_up {
+    position: relative;
+    height: 15px;
+    width: 100%;
+}
+
+.options_sign_up_link {
+    position: absolute;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-align: center;
+    text-wrap: nowrap;
+}
+
+@media (width < 260px) {
+    .options_sign_up_link {
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.options_sign_up_link:hover {
+    text-decoration: underline;
+}
+
+.options_forgot_password {
+    position: relative;
+    height: 15px;
+    width: 100%;
+}
+
+@media (width < 260px) {
+    .options_forgot_password {
+        margin-top: 20px;
+    }
+}
+
+.options_forgot_password_link {
+    position: absolute;
+    right: 0;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-wrap: nowrap;
+}
+
+@media (width < 260px) {
+    .options_forgot_password_link {
+        right: inherit;
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.options_forgot_password_link:hover {
+    text-decoration: underline;
+}
