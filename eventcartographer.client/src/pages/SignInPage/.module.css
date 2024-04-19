@@ -104,55 +104,6 @@
     padding-left: 10px;
 }
 
-.remember_me {
-    position: relative;
-    display: flex;
-    margin-top: 25px;
-}
-
-.remember_me_checkbox {
-    cursor: pointer;
-    position: relative;
-    width: 20px;
-    height: 20px;
-    border: 2px solid gray;
-    border-radius: 5px;
-}
-
-.remember_me_checkbox.checked {
-    border: 2px solid rgb(0, 158, 0);
-    background-color: rgb(0, 158, 0);
-}
-
-.remember_me_checkbox.checked > img {
-    opacity: 1;
-}
-
-.remember_me_checkbox_img {
-    position: absolute;
-    content: url(../../assets/check.png);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 15px;
-    opacity: 0;
-}
-
-.remember_me_label {
-    position: relative;
-    width: 100%;
-}
-
-.remember_me_text {
-    position: absolute;
-    font-size: 15px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    left: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
 .submit_button {
     cursor: pointer;
     width: 100%;
