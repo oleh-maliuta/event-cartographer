@@ -1,15 +1,49 @@
 import React from "react";
 import cl from "./.module.css";
 import useRefDimensions from '../../hooks/useRefDimensions';
+import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 
 export default function SignUpPage() {
     const signUpPanelRef = React.useRef(null);
+    const usernameInputRef = React.useRef(null);
+    const passwordInputRef = React.useRef(null);
+    const confirmPasswordInputRef = React.useRef(null);
 
     const signUpPanelDimensions = useRefDimensions(signUpPanelRef);
 
+    async function signUpRequest() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: usernameInputRef.current.value,
+                password: passwordInputRef.current.value,
+                confirmPassword: confirmPasswordInputRef.current.value
+            })
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            alert("Account is created.");
+            window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                alert("Invalid input.");
+            }
+        } else if (response.status === 500) {
+            alert("Server error.");
+        }
+    }
+
     return (
         <div className={cl.main}>
-            <form className={`${cl.panel} ${signUpPanelDimensions.height > window.innerHeight ? cl.fixed : ''}`} ref={signUpPanelRef}>
+            <div className={`${cl.panel} ${signUpPanelDimensions.height > window.innerHeight ? cl.fixed : ''}`} ref={signUpPanelRef}>
                 <div className={cl.panel_header}>
                     <h1 className={cl.panel_header_text}>Sign up</h1>
                     <div className={cl.panel_header_line} />
@@ -18,25 +52,25 @@ export default function SignUpPage() {
                     <p className={cl.username_header}>
                         Username
                     </p>
-                    <input className={cl.username_input} type='text' placeholder='Username' />
+                    <input className={cl.username_input} type='text' placeholder='Username' ref={usernameInputRef} />
                 </div>
                 <div className={cl.password}>
                     <p className={cl.password_header}>
                         Password
                     </p>
-                    <input className={cl.password_input} type='password' placeholder='Password' />
+                    <input className={cl.password_input} type='password' placeholder='Password' ref={passwordInputRef} />
                 </div>
                 <div className={cl.confirm_password}>
                     <p className={cl.confirm_password_header}>
                         Confirm the password
                     </p>
-                    <input className={cl.confirm_password_input} type='password' placeholder='Confirm the password' />
+                    <input className={cl.confirm_password_input} type='password' placeholder='Confirm the password' ref={confirmPasswordInputRef} />
                 </div>
-                <button className={cl.create_account_button} type='submit'>Create account</button>
+                <button className={cl.create_account_button} onClick={signUpRequest}>Create account</button>
                 <div className={cl.sign_in_link_cont}>
                     <a className={cl.sign_in_link} href='/sign-in'>Sign in</a>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
