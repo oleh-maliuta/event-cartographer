@@ -136,6 +136,7 @@
 
 .marker_list_sort_label {
     font-size: 20px;
+    padding-top: 2px;
 }
 
 .marker_list_sort_input {
@@ -152,8 +153,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 27px;
-    height: 27px;
+    width: 29px;
+    height: 29px;
     background-color: white;
     border: 2px solid black;
     border-radius: 5px;
@@ -165,15 +166,14 @@
     height: 80%;
 }
 
-
 .marker_list_filter_button {
     cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 27px;
-    height: 27px;
+    width: 29px;
+    height: 29px;
     background-color: white;
     border: 2px solid black;
     border-radius: 5px;
@@ -184,6 +184,19 @@
     content: url(../../assets/filter.png);
     width: 80%;
     height: 80%;
+}
+
+.marker_list_apply_button {
+    cursor: pointer;
+    width: 70px;
+    height: 29px;
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    border-radius: 5px;
+    margin-left: 5px;
+
 }
 
 .marker_list_filter_panel_cont {
@@ -275,6 +288,14 @@
     width: calc(100% - 10px);
     grid-template-columns: 1fr 1fr;
     grid-gap: 8px;
+    margin-top: 15px;
+}
+
+.marker_list_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 10px);
     margin-top: 15px;
 }
 
@@ -430,17 +451,17 @@
     margin-top: 10px;
 }
 
-.editing_marker_filed_label {
+.editing_marker_field_label {
     font-size: 20px;
 }
 
-.editing_marker_filed_input {
+.editing_marker_field_input {
     font-size: 20px;
     border: 2px solid black;
     border-radius: 5px;
 }
 
-.editing_marker_filed_value {
+.editing_marker_field_value {
     font-size: 20px;
 }
 
@@ -537,84 +558,6 @@
 
 .editing_marker_add_button:hover {
     background-color: rgb(0, 140, 51);
-}
-
-.editing_marker_filed_label {
-    font-size: 20px;
-}
-
-.editing_marker_filed_input {
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-}
-
-.editing_marker_filed_value {
-    font-size: 20px;
-}
-
-.editing_marker_coordinates {
-    margin-top: 15px;
-}
-
-.editing_marker_coordinate {
-    display: flex;
-}
-
-.editing_marker_longitude {
-    margin-top: 10px;
-}
-
-.editing_marker_latitude_label {
-    width: 100px;
-}
-
-.editing_marker_latitude_input {
-    width: calc(100% - 120px);
-}
-
-.editing_marker_longitude_label {
-    width: 100px;
-}
-
-.editing_marker_longitude_input {
-    width: calc(100% - 120px);
-}
-
-.editing_marker_time_and_importance {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-top: 15px;
-}
-
-.editing_marker_starts_at_input {
-    width: calc(100% - 20px);
-}
-
-.editing_marker_importance_input {
-    width: calc(100% - 20px);
-}
-
-.editing_marker_title {
-    margin-top: 15px;
-}
-
-.editing_marker_title_input {
-    width: calc(100% - 20px);
-}
-
-.editing_marker_description {
-    margin-top: 15px;
-}
-
-.editing_marker_description_input {
-    width: calc(100% - 20px);
-    height: 100px;
-    resize: none;
-}
-
-.editing_marker_buttons {
-    margin-top: 15px;
 }
 
 .editing_marker_go_back_button {

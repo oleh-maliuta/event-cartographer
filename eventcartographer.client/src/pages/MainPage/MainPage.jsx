@@ -20,6 +20,8 @@ export default function MainPage() {
     const [isMarkerPanelVisible, setMarkerPanelVisibility] = React.useState(false);
     const [isMarkerListFilterVisible, setMarkerListFilterVisibility] = React.useState(false);
 
+    const [markersForListLoading, setMarkersForListLoading] = React.useState(false);
+
     const [markerListSearch, setMarkerListSearch] = React.useState('');
     const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: true });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
@@ -85,7 +87,21 @@ export default function MainPage() {
     }
 
     async function loadMarkersForList() {
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers/search`, {
+        setMarkersForListLoading(true);
+
+        let queryPar =
+            `?q=${markerListSearch}` +
+            `&sort_type=${markerListSort.type}` +
+            `&sort_by_asc=${markerListSort.asc}` +
+            `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}` +
+            `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
+
+        markerListImportanceFilter.forEach(el => {
+            queryPar += `&imp=${el}`
+        });
+
+        const response = await fetch(
+            `${HOST}:${API_PORT}/api/markers/search${queryPar}`, {
             method: "GET",
             mode: "cors",
             credentials: "include"
@@ -93,6 +109,7 @@ export default function MainPage() {
         const json = await response.json();
 
         setMarkersForList(json.data || []);
+        setMarkersForListLoading(false);
     }
 
     function renderMarkersOnMap() {
@@ -164,42 +181,9 @@ export default function MainPage() {
 
     function renderMarkerList() {
         const displayMarkerList = () => {
-            const processedMarkerList = markersForList
-                ?.filter(p => {
-                    const currentDateTime = new Date(p.startsAt);
-                    const minDateTime = markerListDateOfStartFilter.min ? new Date(markerListDateOfStartFilter.min) : -Infinity;
-                    const maxDateTime = markerListDateOfStartFilter.max ? new Date(markerListDateOfStartFilter.max) : Infinity;
-
-                    return p.title.includes(markerListSearch) &&
-                        (markerListImportanceFilter.includes(p.importance) || markerListImportanceFilter.length === 0) &&
-                        currentDateTime > minDateTime && currentDateTime < maxDateTime;
-                })
-                .sort((a, b) => {
-                    switch (markerListSort.type) {
-                        case 'importance':
-                            const importanceLevels = { low: 1, medium: 2, high: 3 };
-                            return markerListSort.asc ?
-                                importanceLevels[a.importance] - importanceLevels[b.importance] :
-                                importanceLevels[b.importance] - importanceLevels[a.importance];
-                        case 'title':
-                            if (a.title < b.title) {
-                                return markerListSort.asc ? -1 : 1;
-                            } else if (a.title > b.title) {
-                                return markerListSort.asc ? 1 : -1;
-                            }
-                            return 0;
-                        case 'startsAt':
-                            return markerListSort.asc ?
-                                new Date(a.startsAt) - new Date(b.startsAt) :
-                                new Date(b.startsAt) - new Date(a.startsAt);
-                        default:
-                            return;
-                    }
-                });
-
             const result = [];
 
-            processedMarkerList?.forEach((el, idx) => {
+            markersForList?.forEach((el, idx) => {
                 result.push(
                     <div className={`${cl.marker_list_element}`} key={idx}>
                         <div className={`${cl.marker_list_element_importance} ${cl[el.importance]}`} />
@@ -295,6 +279,10 @@ export default function MainPage() {
                             onClick={() => { setMarkerListFilterVisibility(p => !p) }}>
                             <img className={`${cl.marker_list_filter_button_img}`} alt='filter' />
                         </button>
+                        <button className={`${cl.marker_list_apply_button}`}
+                            onClick={loadMarkersForList}>
+                            Apply
+                        </button>
                     </div>
                     <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterVisible ? 'fit-content' : '0px' }}>
                         <div className={`${cl.marker_list_filter_panel}`}>
@@ -305,7 +293,7 @@ export default function MainPage() {
                                         <input
                                             className={`${cl.marker_list_filter_panel_importance_checkbox_low} ${cl.marker_list_filter_panel_importance_checkbox}`}
                                             type='checkbox'
-                                            value={markerListImportanceFilter.includes('low')}
+                                            checked={markerListImportanceFilter.includes('low')}
                                             onChange={() => {
                                                 setMarkerListImportanceFilter(p => {
                                                     const impValue = 'low';
@@ -328,7 +316,7 @@ export default function MainPage() {
                                         <input
                                             className={`${cl.marker_list_filter_panel_importance_checkbox_medium} ${cl.marker_list_filter_panel_importance_checkbox}`}
                                             type='checkbox'
-                                            value={markerListImportanceFilter.includes('medium')}
+                                            checked={markerListImportanceFilter.includes('medium')}
                                             onChange={() => {
                                                 setMarkerListImportanceFilter(p => {
                                                     const impValue = 'medium';
@@ -351,7 +339,7 @@ export default function MainPage() {
                                         <input
                                             className={`${cl.marker_list_filter_panel_importance_checkbox_high} ${cl.marker_list_filter_panel_importance_checkbox}`}
                                             type='checkbox'
-                                            value={markerListImportanceFilter.includes('high')}
+                                            checked={markerListImportanceFilter.includes('high')}
                                             onChange={() => {
                                                 setMarkerListImportanceFilter(p => {
                                                     const impValue = 'high';
@@ -410,9 +398,16 @@ export default function MainPage() {
                         </div>
                     </div>
                 </div>
-                <div className={`${cl.marker_list}`}>
-                    {displayMarkerList()}
-                </div>
+                {
+                    markersForListLoading ?
+                        <div className={`${cl.marker_list_loading}`}>
+                            <LoadingAnimation size="50px" curveWidth="10px" />
+                        </div>
+                        :
+                        <div className={`${cl.marker_list}`}>
+                            {displayMarkerList()}
+                        </div>
+                }
             </>
         );
     }
@@ -424,9 +419,9 @@ export default function MainPage() {
             <>
                 <div className={cl.editing_marker_coordinates}>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_latitude}`}>
-                        <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_latitude_label}`}>Latitude:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>Latitude:</p>
                         <input
-                            className={`${cl.editing_marker_filed_input} ${cl.editing_marker_latitude_input}`}
+                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
                             value={isForAdding ? newMarker.latitude : editingMarker.latitude}
                             type='number'
                             ref={latitudeInputRef}
@@ -448,9 +443,9 @@ export default function MainPage() {
                         />
                     </div>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_longitude}`}>
-                        <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_longitude_label}`}>Longitude:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>Longitude:</p>
                         <input
-                            className={`${cl.editing_marker_filed_input} ${cl.editing_marker_longitude_input}`}
+                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
                             value={isForAdding ? newMarker.longitude : editingMarker.longitude}
                             type='number'
                             ref={longitudeInputRef}
@@ -474,17 +469,17 @@ export default function MainPage() {
                 </div>
                 <div className={cl.editing_marker_time_and_importance}>
                     <div className={`${cl.editing_marker_starts_at}`}>
-                        <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_starts_at_label}}`}>Starts at:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}}`}>Starts at:</p>
                         <input
-                            className={`${cl.editing_marker_filed_input} ${cl.editing_marker_starts_at_input}`}
+                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
                             defaultValue={isForAdding ? undefined : getDateTimeLocalFormat(editingMarker.startsAt)}
                             ref={startsAtInputRef} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
-                        <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_importance_label}`}>Importance:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>Importance:</p>
                         <select
-                            className={`${cl.editing_marker_filed_input} ${cl.editing_marker_importance_input}`}
+                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
                             defaultValue={isForAdding ? undefined : editingMarker.importance}
                             ref={importanceInputRef}>
                             <option value='low'>Low</option>
@@ -494,18 +489,18 @@ export default function MainPage() {
                     </div>
                 </div>
                 <div className={`${cl.editing_marker_title}`}>
-                    <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_title_label}}`}>Title:</p>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}}`}>Title:</p>
                     <input
-                        className={`${cl.editing_marker_filed_input} ${cl.editing_marker_title_input}`}
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
                         type='text'
                         maxLength='100'
                         defaultValue={isForAdding ? undefined : editingMarker.title}
                         ref={titleInputRef} />
                 </div>
                 <div className={`${cl.editing_marker_description}`}>
-                    <p className={`${cl.editing_marker_filed_label} ${cl.editing_marker_description_label}}`}>Description:</p>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}}`}>Description:</p>
                     <textarea
-                        className={`${cl.editing_marker_filed_input} ${cl.editing_marker_description_input}`}
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
                         maxLength='5000'
                         defaultValue={isForAdding ? undefined : editingMarker.description}
                         ref={descriptionInputRef}></textarea>
