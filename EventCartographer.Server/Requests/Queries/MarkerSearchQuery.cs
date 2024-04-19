@@ -2,8 +2,10 @@
 
 namespace EventCartographer.Server.Requests.Queries
 {
-    public class ModelSearchQuery
+    public class MarkerSearchQuery
     {
+        [FromQuery(Name = "format")]
+        public string? Format { get; set; }
         [FromQuery(Name = "q")]
         public string? Search { get; set; }
         [FromQuery(Name = "sort_type")]

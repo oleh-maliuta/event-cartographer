@@ -134,7 +134,7 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpGet("search")]
-        public IActionResult GetMarkersByAuthUser([FromQuery] ModelSearchQuery query)
+        public IActionResult GetMarkersByAuthUser([FromQuery] MarkerSearchQuery query)
         {
             if (User?.Identity?.IsAuthenticated != true)
             {
@@ -178,7 +178,13 @@ namespace EventCartographer.Server.Controllers
                     : [.. markers.OrderByDescending(x => ImportanceOrder.GetValueOrDefault(x.Importance))],
             };
 
-            return Ok(new MarkerResponse(markers));
+            return query.Format switch
+            {
+                "default" => Ok(new MarkerResponse(markers)),
+                "short" => Ok(new ListResponse<MarkerResponse.ShortView>(
+                    markers.Select(x => new MarkerResponse.ShortView(x)).ToList())),
+                _ => Ok(new MarkerResponse(markers)),
+            };
         }
     }
 }

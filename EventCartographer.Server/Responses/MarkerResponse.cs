@@ -43,5 +43,25 @@ namespace EventCartographer.Server.Responses
                 StartsAt = marker.StartsAt;
             }
         }
+
+        public class ShortView
+        {
+            [JsonPropertyName("id")]
+            public string? Id { get; set; }
+            [JsonPropertyName("latitude")]
+            public decimal Latitude { get; set; }
+            [JsonPropertyName("longitude")]
+            public decimal Longitude { get; set; }
+            [JsonPropertyName("importance")]
+            public string Importance { get; set; }
+
+            public ShortView(Marker marker)
+            {
+                Id = marker.Id;
+                Latitude = marker.Latitude;
+                Longitude = marker.Longitude;
+                Importance = marker.Importance;
+            }
+        }
     }
 }

@@ -14,12 +14,12 @@ namespace EventCartographer.Server.Controllers
     [Route("api/users")]
     public class UserController : BaseController
     {
-        public UserController(MongoDbService service) : base(service) { }
+        public UserController(MongoDbService db) : base(db) {}
 
         [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp(SignUpRequest request)
+        public async Task<IActionResult> SignUp([FromBody] SignUpRequest request)
         {
-            if (await DB.Users.Find(x => x.Name == request.Name).AnyAsync())
+            if (await DB.Users.Find(x => x.Name == request.Username).AnyAsync())
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
             }
@@ -36,7 +36,7 @@ namespace EventCartographer.Server.Controllers
 
             User user = new()
             {
-                Name = request.Name,
+                Name = request.Username,
                 Password = request.Password
             };
 
@@ -48,7 +48,7 @@ namespace EventCartographer.Server.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Name).FirstOrDefaultAsync();
+            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -63,10 +63,10 @@ namespace EventCartographer.Server.Controllers
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(new ClaimsIdentity(
-            [
-                new(ClaimTypes.NameIdentifier, user.Id!),
-                new(ClaimTypes.Name, user.Name)
-            ], CookieAuthenticationDefaults.AuthenticationScheme)));
+                [
+                    new(ClaimTypes.NameIdentifier, user.Id!),
+                    new(ClaimTypes.Name, user.Name)
+                ], CookieAuthenticationDefaults.AuthenticationScheme)));
 
             return Ok(new UserResponse(user));
         }

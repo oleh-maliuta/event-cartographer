@@ -12,6 +12,7 @@ namespace EventCartographer.Server
             builder.Services.AddControllersWithViews();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
@@ -31,9 +32,10 @@ namespace EventCartographer.Server
             app.UseStaticFiles();
             app.UseDefaultFiles();
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseAuthentication();
+            app.UseCors(builder => 
+                builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:5173"));
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
