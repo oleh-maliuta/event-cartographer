@@ -31,20 +31,75 @@
     word-break: break-all;
 }
 
-.menu_img {
-    cursor: pointer;
+.right_side_menu {
     position: absolute;
     top: 20px;
     right: calc(390px + 5vw + 20px);
-    width: 40px;
-    height: 40px;
-    content: url(../../assets/menu.png);
-    border-radius: 100%;
     transition: ease 0.4s;
 }
 
-.menu_img.hided {
+
+.right_side_menu.hided {
     right: 10px;
+}
+
+.right_side_menu__user_name__cont {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0px;
+    right: 60px;
+    height: 40px;
+    background-color: rgb(48, 48, 48);
+    border-radius: 8px;
+    padding-inline: 7px;
+}
+
+.right_side_menu__user_name {
+    color: white;
+    font-size: 21px;
+    letter-spacing: 1px;
+}
+
+.right_side_menu__marker_menu_button {
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color: purple;
+    border: none;
+}
+
+.right_side_menu__marker_menu_button__img {
+    position: absolute;
+    content: url(../../assets/menu.png);
+    width: 60%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+}
+
+.right_side_menu__log_out_button {
+    cursor: pointer;
+    position: absolute;
+    top: 60px;
+    right: 0px;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color: rgb(48, 48, 48);
+    border: none;
+}
+
+.right_side_menu__log_out_button__img {
+    position: absolute;
+    content: url(../../assets/log-out.png);
+    width: 60%;
+    height: 60%;
+    transform: translate(-40%, -45%);
 }
 
 .marker_panel {

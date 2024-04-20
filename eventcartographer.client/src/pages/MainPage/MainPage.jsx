@@ -14,6 +14,7 @@ export default function MainPage() {
     const [editingMarker, setEditingMarker] = React.useState(null);
     const [reviewingMarker, setReviewingMarker] = React.useState(null);
 
+    const [userInfo, setUserInfo] = React.useState(null);
     const [markersForMap, setMarkersForMap] = React.useState(null);
     const [markersForList, setMarkersForList] = React.useState(null);
     const [currentMarkerMenu, setMarkerMenu] = React.useState(null);
@@ -73,6 +74,29 @@ export default function MainPage() {
         const processedDateTime = new Date(dateTime);
         processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
         return processedDateTime.toISOString().slice(0, 16);
+    }
+
+    async function logOutRequest() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/logout`, {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        });
+
+        if (response.status === 200) {
+            window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`;
+        }
+    }
+
+    async function loadUserInfo() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        });
+        const json = await response.json();
+
+        setUserInfo(json.data || undefined);
     }
 
     async function loadMarkersForMap() {
@@ -588,6 +612,10 @@ export default function MainPage() {
     }
 
     React.useEffect(() => {
+        if (userInfo === null) {
+            loadUserInfo();
+        }
+
         if (markersForMap === null) {
             loadMarkersForMap();
         }
@@ -640,12 +668,26 @@ export default function MainPage() {
                 {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
                 {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
             </div>
-            <img className={`${cl.menu_img} ${isMarkerPanelVisible ? '' : cl.hided}`} onClick={() => {
-                if (!isMarkerPanelVisible && currentMarkerMenu === null) {
-                    setMarkerMenu('list');
-                }
-                setMarkerPanelVisibility(p => !p);
-            }} alt='menu' />
+            <div className={`${cl.right_side_menu} ${isMarkerPanelVisible ? '' : cl.hided}`}>
+                <div className={`${cl.right_side_menu__user_name__cont}`}>
+                    <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
+                </div>
+                <button
+                    className={`${cl.right_side_menu__marker_menu_button}`}
+                    onClick={() => {
+                        if (!isMarkerPanelVisible && currentMarkerMenu === null) {
+                            setMarkerMenu('list');
+                        }
+                        setMarkerPanelVisibility(p => !p);
+                    }}>
+                    <img className={`${cl.right_side_menu__marker_menu_button__img}`} alt='marker menu' />
+                </button>
+                <button className={`${cl.right_side_menu__log_out_button}`} onClick={logOutRequest}>
+                    <img
+                        className={`${cl.right_side_menu__log_out_button__img}`}
+                        alt='log out' />
+                </button>
+            </div>
         </div>
     );
 }

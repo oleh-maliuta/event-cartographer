@@ -88,7 +88,7 @@ namespace EventCartographer.Server.Controllers
             return Unauthorized(new BaseResponse.ErrorResponse(null));
         }
 
-        [HttpGet]
+        [HttpGet("self")]
         public IActionResult SelfInfo()
         {
             if (User?.Identity?.IsAuthenticated != true)
