@@ -682,6 +682,12 @@ export default function MainPage() {
                     }}>
                     <img className={`${cl.right_side_menu__marker_menu_button__img}`} alt='marker menu' />
                 </button>
+                <button className={`${cl.right_side_menu__settings_button}`}
+                    onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}/settings`}>
+                    <img
+                        className={`${cl.right_side_menu__settings_button__img}`}
+                        alt='log out' />
+                </button>
                 <button className={`${cl.right_side_menu__log_out_button}`} onClick={logOutRequest}>
                     <img
                         className={`${cl.right_side_menu__log_out_button__img}`}

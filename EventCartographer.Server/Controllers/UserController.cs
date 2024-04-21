@@ -99,7 +99,7 @@ namespace EventCartographer.Server.Controllers
             return Ok(new UserResponse(AuthorizedUser));
         }
 
-        [HttpPut]
+        [HttpPut("info")]
         public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
         {
             if (User?.Identity?.IsAuthenticated != true)
@@ -109,19 +109,19 @@ namespace EventCartographer.Server.Controllers
 
             User user = AuthorizedUser;
 
-            if (await DB.Users.Find(x => x.Name == request.Name).AnyAsync())
+            if (await DB.Users.Find(x => x.Name == request.Username).AnyAsync())
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
             }
 
-            user.Name = request.Name;
+            user.Name = request.Username;
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             return Ok(new UserResponse(user));
         }
 
         [HttpPut("password")]
-        public async Task<IActionResult> UpdateUserPassword([FromBody] string[] request)
+        public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordRequest request)
         {
             if (User?.Identity?.IsAuthenticated != true)
             {
@@ -130,17 +130,22 @@ namespace EventCartographer.Server.Controllers
 
             User? user = AuthorizedUser;
 
-            if (request[0].Length < 6)
+            if (request.OldPassword != user.Password)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid old password!"));
             }
 
-            if (request[0] != request[1])
+            if (request.NewPassword.Length < 6)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("New password is too short!"));
+            }
+
+            if (request.NewPassword != request.ConfirmPassword)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
             }
 
-            user.Password = request[0];
+            user.Password = request.NewPassword;
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             return Ok(new UserResponse(user));
