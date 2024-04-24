@@ -558,7 +558,14 @@ export default function MainPage() {
                                     const json = await response.json();
 
                                     if (response.status === 200) {
-                                        setMarkersForMap([...markersForList, json.data]);
+                                        const newMapMarker = {
+                                            id: json.data.id,
+                                            importance: json.data.importance,
+                                            latitude: json.data.latitude,
+                                            longitude: json.data.longitude
+                                        };
+
+                                        setMarkersForMap([...markersForMap, newMapMarker]);
                                         setMarkersForList([...markersForList, json.data]);
                                         setMarkerMenu('list');
                                     }
