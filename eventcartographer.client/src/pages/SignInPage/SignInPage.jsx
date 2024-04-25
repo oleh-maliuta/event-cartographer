@@ -4,9 +4,12 @@ import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 
 export default function SignInPage() {
+    const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
+
     const signInPanelRef = React.useRef(null);
     const usernameInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
+    const resetPasswordInputRef = React.useRef(null);
 
     const signInPanelDimensions = useRefDimensions(signInPanelRef);
 
@@ -38,6 +41,68 @@ export default function SignInPage() {
         }
     }
 
+    async function resetPasswordPermissionRequest() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password-permission`, {
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(resetPasswordInputRef.current.value)
+        });
+        const json = await response.json();
+
+        if (response.status === 200) {
+            alert("Email is sent.");
+            setModalWindowVisibility(false);
+        } else if (response.status === 500) {
+            alert("Server error.");
+        } else if (response.status < 500 && response.status >= 400 && json.message) {
+            alert(json.message);
+        } else {
+            alert("Input format error.");
+        }
+    }
+
+    function renderModalWindow() {
+        return (
+            <div className={`${cl.modal_window__background}`}
+                onClick={() => { setModalWindowVisibility(false); }}>
+                <div className={`${cl.modal_window}`}
+                    onClick={(e) => { e.stopPropagation(); }}>
+                    <div className={`${cl.modal_window__content}`}>
+                        <h1 className={`${cl.modal_window__header}`}>Reset password</h1>
+                        <p className={`${cl.modal_window__reset_password__description}`}>
+                            Input username of your account to send an email 
+                            to give you a permission to reset the password.
+                        </p>
+                        <div className={`${cl.modal_window__reset_password__cont}`}>
+                            <label className={`${cl.modal_window__reset_password__label}`}>Username</label>
+                            <input className={`${cl.modal_window__reset_password__input}`}
+                                type="text"
+                                placeholder="..."
+                                maxLength="480"
+                                ref={resetPasswordInputRef} />
+                        </div>
+                    </div>
+                    <div className={`${cl.modal_window__control}`}>
+                        <div className={`${cl.modal_window__control__buttons}`}>
+                            <button className={`${cl.modal_window__control__buttons__cancel}`}
+                                onClick={() => { setModalWindowVisibility(false); }}>
+                                Cancel
+                            </button>
+                            <button className={`${cl.modal_window__control__buttons__apply}`}
+                                onClick={resetPasswordPermissionRequest}>
+                                Send mail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={cl.main}>
             <div className={`${cl.panel} ${signInPanelDimensions.height > window.innerHeight ? cl.fixed : ''}`} ref={signInPanelRef}>
@@ -63,10 +128,14 @@ export default function SignInPage() {
                         <a className={cl.options_sign_up_link} href='/sign-up'>Sign up</a>
                     </div>
                     <div className={cl.options_forgot_password}>
-                        <a className={cl.options_forgot_password_link}>Forgot password?</a>
+                        <a className={cl.options_forgot_password_link}
+                            onClick={() => setModalWindowVisibility(true)}>
+                            Forgot password?
+                        </a>
                     </div>
                 </div>
             </div>
+            {isModalWindowVisible ? renderModalWindow() : <></>}
         </div>
     );
 }

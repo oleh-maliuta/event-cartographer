@@ -173,6 +173,7 @@
 }
 
 .options_forgot_password_link {
+    cursor: pointer;
     position: absolute;
     right: 0;
     font-size: 15px;
@@ -192,4 +193,97 @@
 
 .options_forgot_password_link:hover {
     text-decoration: underline;
+}
+
+.modal_window__background {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
+.modal_window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 500px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.modal_window__content {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.modal_window__header {
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.modal_window__reset_password__description {
+    text-align: justify;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.modal_window__reset_password__cont {
+    margin-top: 10px;
+}
+
+.modal_window__reset_password__label {
+    font-size: 20px;
+}
+
+.modal_window__reset_password__input {
+    display: block;
+    width: calc(100% - 4px);
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding-block: 1px;
+    margin-top: 3px;
+}
+
+.modal_window__control {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.modal_window__control__buttons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.modal_window__control__buttons__cancel {
+    cursor: pointer;
+    width: 100px;
+    background-color: rgb(255, 59, 59);
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+}
+
+.modal_window__control__buttons__cancel:hover {
+    background-color: rgb(163, 37, 37);
+}
+
+.modal_window__control__buttons__apply {
+    cursor: pointer;
+    width: 100px;
+    background-color: rgb(62, 200, 44);
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+}
+
+.modal_window__control__buttons__apply:hover {
+    background-color: rgb(40, 131, 28);
 }

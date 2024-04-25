@@ -10,6 +10,7 @@ using EventCartographer.Server.Services.MongoDB;
 using EventCartographer.Server.Tools;
 using EventCartographer.Server.Services.Email;
 using System.Net;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -275,6 +276,92 @@ namespace EventCartographer.Server.Controllers
             await DB.Users.DeleteOneAsync(x => x.Id == user.Id);
 
             return Ok(new BaseResponse.SuccessResponse(null));
+        }
+
+        [HttpPost("reset-password-permission")]
+        public async Task<IActionResult> SendResetPasswordPermission([FromBody][Required] string username)
+        {
+            User? user = await DB.Users.Find(x => x.Name == username).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("User not found!"));
+            }
+
+            string token = StringTool.RandomString(256);
+
+            try
+            {
+                await emailService.SendEmailUseTemplateAsync(
+                    email: user.Email,
+                    templateName: "reset_password_permission.html",
+                    parameters: new Dictionary<string, string>
+                    {
+                        { "login", user.Name },
+                        { "link", $"https://localhost:5173/reset-password?id={user.Id}&token={token}" }
+                    });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
+            }
+
+            DateTime resTime = DateTime.Now;
+
+            ActivationCode activationCode = new()
+            {
+                UserId = user.Id!,
+                Code = token,
+                Action = "reset-password-permission",
+                CreatedAt = resTime,
+                ExpiresAt = resTime.AddHours(12)
+            };
+
+            await DB.ActivationCodes.InsertOneAsync(activationCode);
+
+            return Ok(new BaseResponse.SuccessResponse("Email is sent."));
+        }
+
+        [HttpPut("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (request.NewPassword.Length < 6)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
+            }
+
+            User? user = await DB.Users.Find(x => x.Id == request.UserId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("User not found!"));
+            }
+
+            ActivationCode? activationCode = await DB.ActivationCodes
+                    .Find(x => user.Id == x.UserId && x.Code == request.Token)
+                    .FirstOrDefaultAsync();
+
+            if (activationCode == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            if (DateTime.Now > activationCode.ExpiresAt)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
+            }
+
+            user.PasswordHash = PasswordTool.Hash(request.NewPassword);
+
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+
+            return Ok(new BaseResponse.SuccessResponse("The password is changed!"));
         }
 
         [HttpGet("confirm-email/{email}")]
