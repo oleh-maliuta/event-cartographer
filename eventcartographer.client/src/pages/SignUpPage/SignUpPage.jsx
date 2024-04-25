@@ -6,6 +6,7 @@ import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 export default function SignUpPage() {
     const signUpPanelRef = React.useRef(null);
     const usernameInputRef = React.useRef(null);
+    const emailInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
@@ -21,6 +22,7 @@ export default function SignUpPage() {
             },
             body: JSON.stringify({
                 username: usernameInputRef.current.value,
+                email: emailInputRef.current.value,
                 password: passwordInputRef.current.value,
                 confirmPassword: confirmPasswordInputRef.current.value
             })
@@ -28,7 +30,7 @@ export default function SignUpPage() {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Account is created.");
+            alert("Email is sent to confirm your email address.");
             window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`
         } else if (!response.ok) {
             if (json.message) {
@@ -53,6 +55,12 @@ export default function SignUpPage() {
                         Username
                     </p>
                     <input className={cl.username_input} type='text' placeholder='Username' ref={usernameInputRef} />
+                </div>
+                <div className={cl.email}>
+                    <p className={cl.email_header}>
+                        Email address
+                    </p>
+                    <input className={cl.email_input} type='email' placeholder='Email address' ref={emailInputRef} />
                 </div>
                 <div className={cl.password}>
                     <p className={cl.password_header}>

@@ -90,6 +90,14 @@
     margin-top: 10px;
 }
 
+.change_email__button {
+    background-color: orange;
+}
+
+.change_email__button:hover {
+    background-color: rgb(162, 105, 0);
+}
+
 .change_password__button {
     background-color: orange;
 }
@@ -133,6 +141,44 @@
 .modal_window__header {
     text-align: center;
     text-transform: uppercase;
+}
+
+.modal_window__password__cont {
+    margin-top: 10px;
+}
+
+.modal_window__password__label {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.modal_window__password__input {
+    display: block;
+    width: calc(100% - 4px);
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding-block: 1px;
+    margin-top: 3px;
+}
+
+.modal_window__new_email__cont {
+    margin-top: 10px;
+}
+
+.modal_window__new_email__label {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.modal_window__new_email__input {
+    display: block;
+    width: calc(100% - 4px);
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding-block: 1px;
+    margin-top: 3px;
 }
 
 .modal_window__old_password__cont {
@@ -193,6 +239,12 @@
 
 .modal_window__confirm_deletion__cont {
     margin-top: 10px;
+}
+
+.modal_window__change_email__description {
+    text-align: justify;
+    font-size: 18px;
+    margin-top: 20px;
 }
 
 .modal_window__confirm_deletion__description {

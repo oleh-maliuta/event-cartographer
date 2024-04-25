@@ -19,10 +19,16 @@ namespace EventCartographer.Server.Responses
         {
             [JsonPropertyName("name")]
             public string Name { get; set; }
+            [JsonPropertyName("email")]
+            public string Email { get; set; }
+            [JsonPropertyName("isActivated")]
+            public bool IsActivated { get; set; }
 
             public View(User user)
             {
                 Name = user.Name;
+                Email = user.Email;
+                IsActivated = user.IsActivated;
             }
         }
     }

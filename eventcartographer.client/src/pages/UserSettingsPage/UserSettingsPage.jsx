@@ -8,10 +8,14 @@ export default function UserSettingsPage() {
     const [modalWindowMode, setModalWindowMode] = React.useState(null);
 
     const usernameInputRef = React.useRef(null);
+
     const oldPasswordInputRef = React.useRef(null);
     const newPasswordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
     const confirmAccountDeletionInputRef = React.useRef(null);
+
+    const passwordInputRef = React.useRef(null);
+    const newEmailInputRef = React.useRef(null);
 
     async function updateUserInfoRequest() {
         const response = await fetch(`${HOST}:${API_PORT}/api/users/info`, {
@@ -30,6 +34,32 @@ export default function UserSettingsPage() {
             alert("Changes are saved.");
         } else if (response.status === 500) {
             alert("Server error.");
+        }
+    }
+
+    async function updateUserEmailRequest() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/email`, {
+            method: "PUT",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                password: passwordInputRef.current.value,
+                email: newEmailInputRef.current.value
+            })
+        });
+        const json = await response.json();
+
+        if (response.status === 200) {
+            alert("Email is sent.");
+        } else if (response.status === 500) {
+            alert("Server error.");
+        } else if (response.status < 500 && response.status >= 400 && json.message) {
+            alert(json.message);
+        } else {
+            alert("Input format error.");
         }
     }
 
@@ -90,6 +120,51 @@ export default function UserSettingsPage() {
 
     function renderModalWindow() {
         switch (modalWindowMode) {
+            case 'change-email':
+                return (
+                    <div className={`${cl.modal_window__background}`}
+                        onClick={() => { setModalWindowMode(null); }}>
+                        <div className={`${cl.modal_window}`}
+                            onClick={(e) => { e.stopPropagation(); }}>
+                            <div className={`${cl.modal_window__content}`}>
+                                <h1 className={`${cl.modal_window__header}`}>Change email</h1>
+                                <p className={`${cl.modal_window__change_email__description}`}>
+                                    Input your password and a new email.
+                                    After that you will receive a mail in your new
+                                    email address to confirm it.
+                                </p>
+                                <div className={`${cl.modal_window__password__cont}`}>
+                                    <label className={`${cl.modal_window__password__label}`}>Password</label>
+                                    <input className={`${cl.modal_window__password__input}`}
+                                        type="password"
+                                        placeholder="..."
+                                        maxLength="480"
+                                        ref={passwordInputRef} />
+                                </div>
+                                <div className={`${cl.modal_window__new_email__cont}`}>
+                                    <label className={`${cl.modal_window__new_email__label}`}>New email address</label>
+                                    <input className={`${cl.modal_window__new_email__input}`}
+                                        type="email"
+                                        placeholder="..."
+                                        maxLength="480"
+                                        ref={newEmailInputRef} />
+                                </div>
+                            </div>
+                            <div className={`${cl.modal_window__control}`}>
+                                <div className={`${cl.modal_window__control__buttons}`}>
+                                    <button className={`${cl.modal_window__control__buttons__cancel}`}
+                                        onClick={() => { setModalWindowMode(null); }}>
+                                        Cancel
+                                    </button>
+                                    <button className={`${cl.modal_window__control__buttons__apply}`}
+                                        onClick={updateUserEmailRequest}>
+                                        Send mail
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
             case 'change-password':
                 return (
                     <div className={`${cl.modal_window__background}`}
@@ -209,9 +284,11 @@ export default function UserSettingsPage() {
                                 onClick={updateUserInfoRequest}>
                                 Save changes
                             </button>
-                        </div><div className={`${cl.page_header__sep_line__cont}`}>
+                        </div>
+                        <div className={`${cl.page_header__sep_line__cont}`}>
                             <div className={`${cl.page_header__sep_line}`} />
-                        </div><div className={`${cl.basic_info}`}>
+                        </div>
+                        <div className={`${cl.basic_info}`}>
                             <div className={`${cl.basic_info__header__cont}`}>
                                 <h2 className={`${cl.basic_info__header}`}>Basic info</h2>
                             </div>
@@ -224,13 +301,19 @@ export default function UserSettingsPage() {
                                     defaultValue={userInfo.name}
                                     ref={usernameInputRef} />
                             </div>
-                        </div><div className={`${cl.normal_sep_line__cont}`}>
+                        </div>
+                        <div className={`${cl.normal_sep_line__cont}`}>
                             <div className={`${cl.normal_sep_line}`} />
-                        </div><div className={`${cl.important_settings}`}>
+                        </div>
+                        <div className={`${cl.important_settings}`}>
                             <div className={`${cl.important_settings__header__cont}`}>
                                 <h2 className={`${cl.important_settings__header}`}>Important</h2>
                             </div>
                             <div className={`${cl.important_settings__buttons}`}>
+                                <button className={`${cl.change_email__button} ${cl.important_settings__button}`}
+                                    onClick={() => { setModalWindowMode('change-email'); }}>
+                                    Change email
+                                </button>
                                 <button className={`${cl.change_password__button} ${cl.important_settings__button}`}
                                     onClick={() => { setModalWindowMode('change-password'); }}>
                                     Change password

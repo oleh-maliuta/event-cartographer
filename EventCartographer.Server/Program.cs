@@ -1,3 +1,4 @@
+using EventCartographer.Server.Services.Email;
 using EventCartographer.Server.Services.MongoDB;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -17,8 +18,18 @@ namespace EventCartographer.Server
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
 
-            builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("MongoDb"));
+            builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
             builder.Services.AddSingleton<MongoDbService>();
+
+            builder.Services.AddEmailService(e =>
+            {
+                e.Email = builder.Configuration["Email:EmailAddress"];
+                e.SenderName = builder.Configuration["Email:SenderName"];
+                e.Password = builder.Configuration["Email:Password"];
+                e.Host = builder.Configuration["Email:Host"];
+                e.Port = int.Parse(builder.Configuration["Email:Port"]);
+                e.EmailTemplatesFolder = builder.Configuration["Email:EmailTemplatesFolder"];
+            });
 
             var app = builder.Build();
 
