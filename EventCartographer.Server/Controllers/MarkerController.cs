@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using EventCartographer.Server.Requests.Queries;
 using EventCartographer.Server.Services.MongoDB;
+using EventCartographer.Server.Attributes;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -14,14 +15,10 @@ namespace EventCartographer.Server.Controllers
     {
         public MarkerController(MongoDbService service) : base(service) { }
 
+        [Authorized]
         [HttpPost]
         public async Task<IActionResult> AddMarker(AddMarkerRequest request)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             string[] importanceArray = ["low", "medium", "high"];
 
             if (!importanceArray.Contains(request.Importance))
@@ -47,14 +44,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new MarkerResponse(marker));
         }
 
+        [Authorized]
         [HttpPut("{markerId}")]
         public async Task<IActionResult> UpdateMarker(string markerId, UpdateMarkerRequest request)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             string[] importanceArray = ["low", "medium", "high"];
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
 
@@ -85,14 +78,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new MarkerResponse(marker));
         }
 
+        [Authorized]
         [HttpDelete("{markerId}")]
         public async Task<IActionResult> DeleteMarker(string markerId)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
 
             if (marker == null)
@@ -110,14 +99,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new MarkerResponse(marker));
         }
 
+        [Authorized]
         [HttpGet("{markerId}")]
         public async Task<IActionResult> GetMarker(string markerId)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
 
             if (marker == null)
@@ -133,14 +118,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new MarkerResponse(marker));
         }
 
+        [Authorized]
         [HttpGet("search")]
         public IActionResult GetMarkersByAuthUser([FromQuery] MarkerSearchQuery query)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             string userId = AuthorizedUserId;
 
             List<Marker> markers = [.. DB.Markers

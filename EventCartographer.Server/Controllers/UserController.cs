@@ -11,6 +11,7 @@ using EventCartographer.Server.Tools;
 using EventCartographer.Server.Services.Email;
 using System.Net;
 using System.ComponentModel.DataAnnotations;
+using EventCartographer.Server.Attributes;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -140,25 +141,17 @@ namespace EventCartographer.Server.Controllers
             return Unauthorized(new BaseResponse.ErrorResponse(null));
         }
 
+        [Authorized]
         [HttpGet("self")]
         public IActionResult SelfInfo()
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             return Ok(new UserResponse(AuthorizedUser));
         }
 
+        [Authorized]
         [HttpPut("info")]
         public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             User user = AuthorizedUser;
 
             if (await DB.Users.Find(x => x.Name == request.Username).AnyAsync())
@@ -172,14 +165,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new UserResponse(user));
         }
 
+        [Authorized]
         [HttpPut("password")]
         public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordRequest request)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             User? user = AuthorizedUser;
 
             if (request.OldPassword != user.PasswordHash)
@@ -203,14 +192,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new UserResponse(user));
         }
 
+        [Authorized]
         [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail([FromBody] UpdateUserEmailRequest request)
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             User user = AuthorizedUser;
 
             if (user.Email == request.Email)
@@ -261,14 +246,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new BaseResponse.SuccessResponse("Email is sent."));
         }
 
+        [Authorized]
         [HttpDelete]
         public async Task<IActionResult> DeleteUser()
         {
-            if (User?.Identity?.IsAuthenticated != true)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("Unauthorized!"));
-            }
-
             User? user = AuthorizedUser;
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
