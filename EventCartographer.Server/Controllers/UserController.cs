@@ -39,11 +39,6 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
             }
 
-            if (request.Password.Length < 6)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
-            }
-
             if (request.Password != request.ConfirmPassword)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
@@ -54,11 +49,11 @@ namespace EventCartographer.Server.Controllers
             try
             {
                 await emailService.SendEmailUseTemplateAsync(
-                    email: request.Email,
+                    email: request.Email!,
                     templateName: "registration_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
-                        { "login", request.Username },
+                        { "login", request.Username! },
                         { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" }
                     });
             }
@@ -69,9 +64,9 @@ namespace EventCartographer.Server.Controllers
 
             User user = new()
             {
-                Name = request.Username,
-                Email = request.Email,
-                PasswordHash = PasswordTool.Hash(request.Password),
+                Name = request.Username!,
+                Email = request.Email!,
+                PasswordHash = PasswordTool.Hash(request.Password!),
                 IsActivated = false
             };
 
@@ -171,7 +166,7 @@ namespace EventCartographer.Server.Controllers
         {
             User? user = AuthorizedUser;
 
-            if (request.OldPassword != user.PasswordHash)
+            if (!PasswordTool.Validate(request.OldPassword, user.PasswordHash))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid old password!"));
             }
@@ -186,7 +181,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
             }
 
-            user.PasswordHash = request.NewPassword;
+            user.PasswordHash = PasswordTool.Hash(request.NewPassword);
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             return Ok(new UserResponse(user));

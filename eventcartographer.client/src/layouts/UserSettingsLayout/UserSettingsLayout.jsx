@@ -3,7 +3,7 @@ import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
-export default function UserSettingsPage() {
+export default function UserSettingsLayout() {
     const [userInfo, setUserInfo] = React.useState(null);
     const [modalWindowMode, setModalWindowMode] = React.useState(null);
 

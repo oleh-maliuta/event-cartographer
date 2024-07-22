@@ -4,7 +4,7 @@ import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 import { useLocation } from 'react-router-dom';
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordLayout() {
     const searchParameters = new URLSearchParams(useLocation().search);
 
     const resetPasswordPanelRef = React.useRef(null);

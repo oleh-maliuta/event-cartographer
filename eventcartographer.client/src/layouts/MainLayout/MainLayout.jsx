@@ -7,7 +7,7 @@ import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
 
-export default function MainPage() {
+export default function MainLayout() {
     const startPosition = [50.4, 30.5];
 
     const [newMarker, setNewMarker] = React.useState(null);

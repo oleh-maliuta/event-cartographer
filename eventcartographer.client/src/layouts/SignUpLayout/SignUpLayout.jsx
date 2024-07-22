@@ -3,7 +3,7 @@ import cl from "./.module.css";
 import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 
-export default function SignUpPage() {
+export default function SignUpLayout() {
     const signUpPanelRef = React.useRef(null);
     const usernameInputRef = React.useRef(null);
     const emailInputRef = React.useRef(null);
@@ -21,10 +21,10 @@ export default function SignUpPage() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: usernameInputRef.current.value,
-                email: emailInputRef.current.value,
-                password: passwordInputRef.current.value,
-                confirmPassword: confirmPasswordInputRef.current.value
+                username: usernameInputRef.current.value || null,
+                email: emailInputRef.current.value || null,
+                password: passwordInputRef.current.value || null,
+                confirmPassword: confirmPasswordInputRef.current.value || null
             })
         });
         const json = await response.json();
@@ -36,9 +36,16 @@ export default function SignUpPage() {
             if (json.message) {
                 alert(json.message);
             } else {
-                alert("Invalid input.");
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
             }
-        } else if (response.status === 500) {
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
         }
     }

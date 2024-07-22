@@ -3,7 +3,7 @@ import cl from './.module.css';
 import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 
-export default function SignInPage() {
+export default function SignInLayout() {
     const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
 
     const signInPanelRef = React.useRef(null);
