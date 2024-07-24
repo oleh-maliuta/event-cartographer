@@ -95,7 +95,7 @@ namespace EventCartographer.Server.Controllers
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("Invalid username!"));
+                return NotFound(new BaseResponse.ErrorResponse("Invalid username or password!"));
             }
 
             if (!user.IsActivated)
@@ -105,7 +105,7 @@ namespace EventCartographer.Server.Controllers
 
             if (!PasswordTool.Validate(request.Password, user.PasswordHash))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid username or password!"));
             }
 
             await HttpContext.SignInAsync(

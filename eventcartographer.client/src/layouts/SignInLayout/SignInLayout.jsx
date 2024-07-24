@@ -2,8 +2,10 @@ import React from 'react';
 import cl from './.module.css';
 import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
+import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 
 export default function SignInLayout() {
+    const [signingIn, setSigningIn] = React.useState(false);
     const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
 
     const signInPanelRef = React.useRef(null);
@@ -14,6 +16,8 @@ export default function SignInLayout() {
     const signInPanelDimensions = useRefDimensions(signInPanelRef);
 
     async function signInRequest() {
+        setSigningIn(true);
+
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
             method: "POST",
             mode: "cors",
@@ -34,11 +38,20 @@ export default function SignInLayout() {
             if (json.message) {
                 alert(json.message);
             } else {
-                alert("Invalid input.");
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
             }
-        } else if (response.status === 500) {
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
         }
+
+        setSigningIn(false);
     }
 
     async function resetPasswordPermissionRequest() {
@@ -74,7 +87,7 @@ export default function SignInLayout() {
                     <div className={`${cl.modal_window__content}`}>
                         <h1 className={`${cl.modal_window__header}`}>Reset password</h1>
                         <p className={`${cl.modal_window__reset_password__description}`}>
-                            Input username of your account to send an email 
+                            Input username of your account to send an email
                             to give you a permission to reset the password.
                         </p>
                         <div className={`${cl.modal_window__reset_password__cont}`}>
@@ -122,7 +135,22 @@ export default function SignInLayout() {
                     </p>
                     <input className={cl.password_input} type='password' placeholder='Password' ref={passwordInputRef} />
                 </div>
-                <button className={cl.submit_button} onClick={signInRequest}>Submit</button>
+                <button className={cl.submit_button} onClick={() => {
+                    if (!signingIn) {
+                        signInRequest();
+                    }
+                }}>
+                {
+                        signingIn ?
+                            <LoadingAnimation
+                                curveColor1="#FFFFFF"
+                                curveColor2="#00000000"
+                                size="20px"
+                                curveWidth="3px" />
+                            :
+                            <span>Submit</span>
+                    }
+                </button>
                 <div className={cl.options}>
                     <div className={cl.options_sign_up}>
                         <a className={cl.options_sign_up_link} href='/sign-up'>Sign up</a>

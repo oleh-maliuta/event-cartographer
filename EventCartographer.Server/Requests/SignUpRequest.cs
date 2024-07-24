@@ -19,7 +19,6 @@ namespace EventCartographer.Server.Requests
         public string? Password { get; set; }
         [Required(ErrorMessage = "A password confirmation is required.")]
         [MaxLength(200, ErrorMessage = "Too long password confirmation string.")]
-        [MinLength(6, ErrorMessage = "Too short password confirmation string.")]
         public string? ConfirmPassword { get; set; }
     }
 }

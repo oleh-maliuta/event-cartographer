@@ -2,8 +2,11 @@ import React from "react";
 import cl from "./.module.css";
 import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 export default function SignUpLayout() {
+    const [signingUp, setSigningUp] = React.useState(false);
+
     const signUpPanelRef = React.useRef(null);
     const usernameInputRef = React.useRef(null);
     const emailInputRef = React.useRef(null);
@@ -13,6 +16,8 @@ export default function SignUpLayout() {
     const signUpPanelDimensions = useRefDimensions(signUpPanelRef);
 
     async function signUpRequest() {
+        setSigningUp(true);
+
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
             method: "POST",
             mode: "cors",
@@ -48,6 +53,8 @@ export default function SignUpLayout() {
         } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
         }
+
+        setSigningUp(false);
     }
 
     return (
@@ -61,27 +68,58 @@ export default function SignUpLayout() {
                     <p className={cl.username_header}>
                         Username
                     </p>
-                    <input className={cl.username_input} type='text' placeholder='Username' ref={usernameInputRef} />
+                    <input className={cl.username_input}
+                        type='text'
+                        placeholder='Username'
+                        maxLength='100'
+                        ref={usernameInputRef} />
                 </div>
                 <div className={cl.email}>
                     <p className={cl.email_header}>
                         Email address
                     </p>
-                    <input className={cl.email_input} type='email' placeholder='Email address' ref={emailInputRef} />
+                    <input className={cl.email_input}
+                        type='email'
+                        placeholder='Email address'
+                        maxLength='320'
+                        ref={emailInputRef} />
                 </div>
                 <div className={cl.password}>
                     <p className={cl.password_header}>
                         Password
                     </p>
-                    <input className={cl.password_input} type='password' placeholder='Password' ref={passwordInputRef} />
+                    <input className={cl.password_input}
+                        type='password'
+                        placeholder='Password'
+                        maxLength='200'
+                        ref={passwordInputRef} />
                 </div>
                 <div className={cl.confirm_password}>
                     <p className={cl.confirm_password_header}>
                         Confirm the password
                     </p>
-                    <input className={cl.confirm_password_input} type='password' placeholder='Confirm the password' ref={confirmPasswordInputRef} />
+                    <input className={cl.confirm_password_input}
+                        type='password'
+                        placeholder='Confirm the password'
+                        maxLength='200'
+                        ref={confirmPasswordInputRef} />
                 </div>
-                <button className={cl.create_account_button} onClick={signUpRequest}>Create account</button>
+                <button className={cl.create_account_button} onClick={() => {
+                    if (!signingUp) {
+                        signUpRequest();
+                    }
+                }}>
+                    {
+                        signingUp ?
+                            <LoadingAnimation
+                                curveColor1="#FFFFFF"
+                                curveColor2="#00000000"
+                                size="20px"
+                                curveWidth="3px" />
+                            :
+                            <span>Create account</span>
+                    }
+                </button>
                 <div className={cl.sign_in_link_cont}>
                     <a className={cl.sign_in_link} href='/sign-in'>Sign in</a>
                 </div>
