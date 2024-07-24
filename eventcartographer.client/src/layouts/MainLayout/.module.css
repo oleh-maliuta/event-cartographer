@@ -50,6 +50,7 @@
     justify-content: center;
     top: 0px;
     right: 60px;
+    width: fit-content;
     height: 40px;
     background-color: rgb(48, 48, 48);
     border-radius: 8px;
@@ -58,6 +59,9 @@
 
 .right_side_menu__user_name {
     color: white;
+    word-wrap: none;
+    word-break: keep-all;
+    white-space: nowrap;
     font-size: 21px;
     letter-spacing: 1px;
 }

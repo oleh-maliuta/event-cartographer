@@ -31,12 +31,12 @@ namespace EventCartographer.Server.Controllers
             Marker marker = new()
             {
                 UserId = userId,
-                Latitude = request.Latitude,
-                Longitude = request.Longitude,
-                Title = request.Title,
+                Latitude = request.Latitude!.Value,
+                Longitude = request.Longitude!.Value,
+                Title = request.Title!,
                 Description = request.Description,
-                Importance = request.Importance,
-                StartsAt = request.StartsAt
+                Importance = request.Importance!,
+                StartsAt = request.StartsAt!.Value
             };
 
             await DB.Markers.InsertOneAsync(marker);
@@ -46,7 +46,9 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPut("{markerId}")]
-        public async Task<IActionResult> UpdateMarker(string markerId, UpdateMarkerRequest request)
+        public async Task<IActionResult> UpdateMarker(
+            string markerId,
+            UpdateMarkerRequest request)
         {
             string[] importanceArray = ["low", "medium", "high"];
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
@@ -66,12 +68,12 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid importance value!"));
             }
 
-            marker.Latitude = request.Latitude;
-            marker.Longitude = request.Longitude;
-            marker.Title = request.Title;
+            marker.Latitude = request.Latitude!.Value;
+            marker.Longitude = request.Longitude!.Value;
+            marker.Title = request.Title!;
             marker.Description = request.Description;
-            marker.Importance = request.Importance;
-            marker.StartsAt = request.StartsAt;
+            marker.Importance = request.Importance!;
+            marker.StartsAt = request.StartsAt!.Value;
 
             await DB.Markers.ReplaceOneAsync(x => x.Id == markerId, marker);
 

@@ -154,7 +154,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
             }
 
-            user.Name = request.Username;
+            user.Name = request.Username!;
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             return Ok(new UserResponse(user));
@@ -166,14 +166,9 @@ namespace EventCartographer.Server.Controllers
         {
             User? user = AuthorizedUser;
 
-            if (!PasswordTool.Validate(request.OldPassword, user.PasswordHash))
+            if (!PasswordTool.Validate(request.OldPassword!, user.PasswordHash))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid old password!"));
-            }
-
-            if (request.NewPassword.Length < 6)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("New password is too short!"));
             }
 
             if (request.NewPassword != request.ConfirmPassword)
@@ -181,7 +176,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
             }
 
-            user.PasswordHash = PasswordTool.Hash(request.NewPassword);
+            user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             return Ok(new UserResponse(user));
@@ -203,7 +198,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same email!"));
             }
 
-            if (!PasswordTool.Validate(request.Password, user.PasswordHash))
+            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
             }
@@ -213,7 +208,7 @@ namespace EventCartographer.Server.Controllers
             try
             {
                 await emailService.SendEmailUseTemplateAsync(
-                    email: request.Email,
+                    email: request.Email!,
                     templateName: "change_email_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
@@ -255,9 +250,10 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPost("reset-password-permission")]
-        public async Task<IActionResult> SendResetPasswordPermission([FromBody][Required] string username)
+        public async Task<IActionResult> SendResetPasswordPermission(
+            [FromBody] SendResetPasswordPermissionRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == username).FirstOrDefaultAsync();
+            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -273,8 +269,9 @@ namespace EventCartographer.Server.Controllers
                     templateName: "reset_password_permission.html",
                     parameters: new Dictionary<string, string>
                     {
-                        { "login", user.Name },
-                        { "link", $"https://localhost:5173/reset-password?id={user.Id}&token={token}" }
+                        { "username", user.Name },
+                        { "token", token },
+                        { "link", $"https://{HttpContext.Request.Host.Host}:7176/api/users/accept-reset-password" }
                     });
             }
             catch (Exception ex)
@@ -298,20 +295,10 @@ namespace EventCartographer.Server.Controllers
             return Ok(new BaseResponse.SuccessResponse("Email is sent."));
         }
 
-        [HttpPut("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        [HttpPost("accept-reset-password")]
+        public async Task<IActionResult> AcceptPasswordReseting([FromForm] AcceptPasswordResetingRequest request)
         {
-            if (request.NewPassword.Length < 6)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("Too short password!"));
-            }
-
-            if (request.NewPassword != request.ConfirmNewPassword)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
-            }
-
-            User? user = await DB.Users.Find(x => x.Id == request.UserId).FirstOrDefaultAsync();
+            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -319,8 +306,8 @@ namespace EventCartographer.Server.Controllers
             }
 
             ActivationCode? activationCode = await DB.ActivationCodes
-                    .Find(x => user.Id == x.UserId && x.Code == request.Token)
-                    .FirstOrDefaultAsync();
+                .Find(x => user.Id == x.UserId && x.Code == request.Token)
+                .FirstOrDefaultAsync();
 
             if (activationCode == null)
             {
@@ -329,10 +316,74 @@ namespace EventCartographer.Server.Controllers
 
             if (DateTime.Now > activationCode.ExpiresAt)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
+                await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
             }
 
-            user.PasswordHash = PasswordTool.Hash(request.NewPassword);
+            string[] actionInfo = activationCode.Action.Split(',');
+
+            if (actionInfo[0] != "reset-password-permission")
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            if (actionInfo.Length < 2)
+            {
+                activationCode.Action += ",accepted";
+            }
+            else
+            {
+                return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
+            }
+
+            await DB.ActivationCodes.ReplaceOneAsync(x => x.Id == activationCode.Id, activationCode);
+
+            return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
+        }
+
+        [HttpPut("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The password is not confirmed!"));
+            }
+
+            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("User not found!"));
+            }
+
+            ActivationCode? activationCode = await DB.ActivationCodes
+                .Find(x => user.Id == x.UserId && x.Code == request.Token)
+                .FirstOrDefaultAsync();
+
+            if (activationCode == null)
+            {
+                return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            if (DateTime.Now > activationCode.ExpiresAt)
+            {
+                await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            string[] actionInfo = activationCode.Action.Split(',');
+
+            if (actionInfo[0] != "reset-password-permission")
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            if (actionInfo.Length < 2 || actionInfo[1] != "accepted")
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
+            }
+
+            user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
@@ -341,7 +392,10 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpGet("confirm-email/{email}")]
-        public async Task<IActionResult> ConfirmEmail(string email, [FromQuery] string? token)
+        public async Task<IActionResult> ConfirmEmail(
+            string email,
+            [FromQuery(Name = "token")]
+            string? token)
         {
             User? user = await DB.Users
                 .Find(x => x.Email == WebUtility.UrlDecode(email))

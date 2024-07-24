@@ -277,6 +277,9 @@
 
 .modal_window__control__buttons__apply {
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100px;
     background-color: rgb(62, 200, 44);
     color: white;

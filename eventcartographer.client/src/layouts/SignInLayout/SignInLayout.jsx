@@ -6,6 +6,7 @@ import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation
 
 export default function SignInLayout() {
     const [signingIn, setSigningIn] = React.useState(false);
+    const [sendingEmail, setSendingEmail] = React.useState(false);
     const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
 
     const signInPanelRef = React.useRef(null);
@@ -55,6 +56,8 @@ export default function SignInLayout() {
     }
 
     async function resetPasswordPermissionRequest() {
+        setSendingEmail(true);
+
         const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password-permission`, {
             method: "POST",
             mode: "cors",
@@ -62,20 +65,33 @@ export default function SignInLayout() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(resetPasswordInputRef.current.value)
+            body: JSON.stringify({
+                username: resetPasswordInputRef.current.value || null
+            })
         });
         const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
             alert("Email is sent.");
             setModalWindowVisibility(false);
-        } else if (response.status === 500) {
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
-        } else if (response.status < 500 && response.status >= 400 && json.message) {
-            alert(json.message);
-        } else {
-            alert("Input format error.");
         }
+
+        setSendingEmail(false);
     }
 
     function renderModalWindow() {
@@ -106,8 +122,21 @@ export default function SignInLayout() {
                                 Cancel
                             </button>
                             <button className={`${cl.modal_window__control__buttons__apply}`}
-                                onClick={resetPasswordPermissionRequest}>
-                                Send mail
+                                onClick={() => {
+                                    if (!sendingEmail) {
+                                        resetPasswordPermissionRequest();
+                                    }
+                                }}>
+                                {
+                                    sendingEmail ?
+                                        <LoadingAnimation
+                                            curveColor1="#FFFFFF"
+                                            curveColor2="#00000000"
+                                            size="15px"
+                                            curveWidth="3px" />
+                                        :
+                                        <span>Send mail</span>
+                                }
                             </button>
                         </div>
                     </div>
@@ -140,7 +169,7 @@ export default function SignInLayout() {
                         signInRequest();
                     }
                 }}>
-                {
+                    {
                         signingIn ?
                             <LoadingAnimation
                                 curveColor1="#FFFFFF"

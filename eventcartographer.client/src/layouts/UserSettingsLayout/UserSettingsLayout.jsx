@@ -4,11 +4,11 @@ import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 export default function UserSettingsLayout() {
+    const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
     const [modalWindowMode, setModalWindowMode] = React.useState(null);
 
     const usernameInputRef = React.useRef(null);
-
     const oldPasswordInputRef = React.useRef(null);
     const newPasswordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
@@ -18,6 +18,8 @@ export default function UserSettingsLayout() {
     const newEmailInputRef = React.useRef(null);
 
     async function updateUserInfoRequest() {
+        setSavingChangesForUserInfo(true);
+
         const response = await fetch(`${HOST}:${API_PORT}/api/users/info`, {
             method: "PUT",
             mode: "cors",
@@ -26,15 +28,31 @@ export default function UserSettingsLayout() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: usernameInputRef.current.value
+                username: usernameInputRef.current.value || null
             })
         });
+        const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
             alert("Changes are saved.");
-        } else if (response.status === 500) {
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
         }
+
+        setSavingChangesForUserInfo(false);
     }
 
     async function updateUserEmailRequest() {
@@ -281,8 +299,21 @@ export default function UserSettingsLayout() {
                                 Event Cartographer
                             </h1>
                             <button className={`${cl.page_header__save_changes_button}`}
-                                onClick={updateUserInfoRequest}>
-                                Save changes
+                                onClick={() => {
+                                    if (!savingChangesForUserInfo) {
+                                        updateUserInfoRequest();
+                                    }
+                                }}>
+                                {
+                                    savingChangesForUserInfo ?
+                                        <LoadingAnimation
+                                            curveColor1="#FFFFFF"
+                                            curveColor2="#00000000"
+                                            size="20px"
+                                            curveWidth="3px" />
+                                        :
+                                        <span>Save changes</span>
+                                }
                             </button>
                         </div>
                         <div className={`${cl.page_header__sep_line__cont}`}>
