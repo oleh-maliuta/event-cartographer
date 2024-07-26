@@ -64,20 +64,29 @@ export default function UserSettingsLayout() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                password: passwordInputRef.current.value,
-                email: newEmailInputRef.current.value
+                password: passwordInputRef.current.value || null,
+                email: newEmailInputRef.current.value || null
             })
         });
         const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
             alert("Email is sent.");
-        } else if (response.status === 500) {
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
-        } else if (response.status < 500 && response.status >= 400 && json.message) {
-            alert(json.message);
-        } else {
-            alert("Input format error.");
         }
     }
 
@@ -90,21 +99,30 @@ export default function UserSettingsLayout() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                oldPassword: oldPasswordInputRef.current.value,
-                newPassword: newPasswordInputRef.current.value,
-                confirmPassword: confirmPasswordInputRef.current.value
+                oldPassword: oldPasswordInputRef.current.value || null,
+                newPassword: newPasswordInputRef.current.value || null,
+                confirmPassword: confirmPasswordInputRef.current.value || null
             })
         });
         const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
             alert("Password is changed.");
-        } else if (response.status === 500) {
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
-        } else if (response.status < 500 && response.status >= 400 && json.message) {
-            alert(json.message);
-        } else {
-            alert("Input format error.");
         }
     }
 
@@ -116,12 +134,24 @@ export default function UserSettingsLayout() {
         });
         const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
+            alert("Account is deleted.");
             window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
-        } else if (response.status === 500) {
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
             alert("Server error.");
-        } else if (response.status < 500 && response.status >= 400 && json.message) {
-            alert(json.message);
         }
     }
 
@@ -294,10 +324,14 @@ export default function UserSettingsLayout() {
                     :
                     <div className={`${cl.main}`}>
                         <div className={`${cl.page_header__cont}`}>
-                            <h1 className={`${cl.page_header}`}
-                                onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}`}>
-                                Event Cartographer
+                            <h1 className={`${cl.page_header}`}>
+                                Settings
                             </h1>
+                            <button className={cl.page_header__map_button}
+                                onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}`}>
+                                <img className={cl.page_header__map_button__img}
+                                    alt="map" />
+                            </button>
                             <button className={`${cl.page_header__save_changes_button}`}
                                 onClick={() => {
                                     if (!savingChangesForUserInfo) {

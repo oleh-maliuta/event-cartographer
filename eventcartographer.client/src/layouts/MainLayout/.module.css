@@ -191,6 +191,10 @@
     content: url(../../assets/plus.png);
 }
 
+.marker_panel__top_menu__option.unavailable {
+    cursor: default;
+}
+
 .marker_panel__top_menu__option.unavailable>img {
     filter: invert(0.7);
 }
@@ -584,6 +588,21 @@
 
 .editing_marker_importance_input {
     width: calc(100% - 20px);
+}
+
+.editing_marker_importance_input__low_value {
+    background-color: green;
+    color: white;
+}
+
+.editing_marker_importance_input__medium_value {
+    background-color: rgb(197, 197, 0);
+    color: white;
+}
+
+.editing_marker_importance_input__high_value {
+    background-color: red;
+    color: white;
 }
 
 .editing_marker_title {

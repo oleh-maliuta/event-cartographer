@@ -82,9 +82,25 @@ export default function MainLayout() {
             mode: "cors",
             credentials: "include"
         });
+        const json = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok) {
             window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`;
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
+            alert("Server error.");
         }
     }
 
@@ -214,7 +230,7 @@ export default function MainLayout() {
                         <div className={`${cl.marker_list_element_buttons}`}>
                             <div className={`${cl.marker_list_element_navigate_button} ${cl.marker_list_element_button}`}
                                 onClick={() => {
-                                    mapRef.current.flyTo([el.latitude, el.longitude]);
+                                    mapRef.current.flyTo([el.latitude, el.longitude], 13);
                                 }}>
                                 <img className={`${cl.marker_list_element_navigate_button_img} ${cl.marker_list_element_button_img}`} alt="navigate" />
                             </div>
@@ -232,10 +248,26 @@ export default function MainLayout() {
                                         mode: "cors",
                                         credentials: "include"
                                     });
+                                    const json = await response.json();
 
-                                    if (response.status === 200) {
+                                    if (response.ok) {
                                         setMarkersForMap(markersForList.filter(x => x.id !== el.id));
                                         setMarkersForList(markersForList.filter(x => x.id !== el.id));
+                                    } else if (!response.ok) {
+                                        if (json.message) {
+                                            alert(json.message);
+                                        } else {
+                                            let errors = "";
+                                            for (const prop in json.errors) {
+                                                for (const err in json.errors[prop]) {
+                                                    errors += `${json.errors[prop][err]}\n`;
+                                                }
+                                            }
+                                            errors = errors.slice(0, -1);
+                                            alert(errors);
+                                        }
+                                    } else if (response.status >= 500 && response.status <= 599) {
+                                        alert("Server error.");
                                     }
                                 }}>
                                 <img className={`${cl.marker_list_element_delete_button_img} ${cl.marker_list_element_button_img}`} alt="delete" />
@@ -506,9 +538,9 @@ export default function MainLayout() {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
                             defaultValue={isForAdding ? undefined : editingMarker.importance}
                             ref={importanceInputRef}>
-                            <option value='low'>Low</option>
-                            <option value='medium'>Medium</option>
-                            <option value='high'>High</option>
+                            <option className={cl.editing_marker_importance_input__low_value} value='low'>Low</option>
+                            <option className={cl.editing_marker_importance_input__medium_value} value='medium'>Medium</option>
+                            <option className={cl.editing_marker_importance_input__high_value} value='high'>High</option>
                         </select>
                     </div>
                 </div>
@@ -547,17 +579,17 @@ export default function MainLayout() {
                                             "Content-Type": "application/json"
                                         },
                                         body: JSON.stringify({
-                                            latitude: Number(latitudeInputRef.current.value),
-                                            longitude: Number(longitudeInputRef.current.value),
-                                            startsAt: new Date(startsAtInputRef.current.value),
-                                            importance: importanceInputRef.current.value,
-                                            title: titleInputRef.current.value,
-                                            description: descriptionInputRef.current.value
+                                            latitude: Number(latitudeInputRef.current.value) || null,
+                                            longitude: Number(longitudeInputRef.current.value) || null,
+                                            startsAt: new Date(startsAtInputRef.current.value) || null,
+                                            importance: importanceInputRef.current.value || null,
+                                            title: titleInputRef.current.value || null,
+                                            description: descriptionInputRef.current.value || null
                                         })
                                     });
                                     const json = await response.json();
 
-                                    if (response.status === 200) {
+                                    if (response.ok) {
                                         const newMapMarker = {
                                             id: json.data.id,
                                             importance: json.data.importance,
@@ -568,6 +600,21 @@ export default function MainLayout() {
                                         setMarkersForMap([...markersForMap, newMapMarker]);
                                         setMarkersForList([...markersForList, json.data]);
                                         setMarkerMenu('list');
+                                    } else if (!response.ok) {
+                                        if (json.message) {
+                                            alert(json.message);
+                                        } else {
+                                            let errors = "";
+                                            for (const prop in json.errors) {
+                                                for (const err in json.errors[prop]) {
+                                                    errors += `${json.errors[prop][err]}\n`;
+                                                }
+                                            }
+                                            errors = errors.slice(0, -1);
+                                            alert(errors);
+                                        }
+                                    } else if (response.status >= 500 && response.status <= 599) {
+                                        alert("Server error.");
                                     }
                                 }}>Add</button>
                         </div>
@@ -588,17 +635,17 @@ export default function MainLayout() {
                                             "Content-Type": "application/json"
                                         },
                                         body: JSON.stringify({
-                                            latitude: Number(latitudeInputRef.current.value),
-                                            longitude: Number(longitudeInputRef.current.value),
-                                            startsAt: new Date(startsAtInputRef.current.value),
-                                            importance: importanceInputRef.current.value,
-                                            title: titleInputRef.current.value,
-                                            description: descriptionInputRef.current.value
+                                            latitude: Number(latitudeInputRef.current.value) || null,
+                                            longitude: Number(longitudeInputRef.current.value) || null,
+                                            startsAt: new Date(startsAtInputRef.current.value) || null,
+                                            importance: importanceInputRef.current.value || null,
+                                            title: titleInputRef.current.value || null,
+                                            description: descriptionInputRef.current.value || null
                                         })
                                     });
                                     const json = await response.json();
 
-                                    if (response.status === 200) {
+                                    if (response.ok) {
                                         const newList = markersForList.map((el) => {
                                             if (el.id === json.data.id) {
                                                 return json.data;
@@ -610,6 +657,21 @@ export default function MainLayout() {
                                         setMarkersForMap(newList);
                                         setMarkersForList(newList);
                                         setMarkerMenu('list');
+                                    } else if (!response.ok) {
+                                        if (json.message) {
+                                            alert(json.message);
+                                        } else {
+                                            let errors = "";
+                                            for (const prop in json.errors) {
+                                                for (const err in json.errors[prop]) {
+                                                    errors += `${json.errors[prop][err]}\n`;
+                                                }
+                                            }
+                                            errors = errors.slice(0, -1);
+                                            alert(errors);
+                                        }
+                                    } else if (response.status >= 500 && response.status <= 599) {
+                                        alert("Server error.");
                                     }
                                 }}>Edit</button>
                         </div>
@@ -627,11 +689,7 @@ export default function MainLayout() {
             loadMarkersForMap();
         }
 
-        if (
-            isMarkerPanelVisible &&
-            currentMarkerMenu === 'list' &&
-            markersForList === null
-        ) {
+        if (markersForList === null) {
             loadMarkersForList();
         }
     });
@@ -641,7 +699,6 @@ export default function MainLayout() {
             <MapContainer
                 center={startPosition}
                 zoom={12}
-                scrollWheelZoom={false}
                 style={{ position: 'fixed', width: '100%', height: '100%' }}
                 ref={mapRef}
             >
@@ -660,7 +717,9 @@ export default function MainLayout() {
                             ${newMarker === null ? cl.unavailable : ''} 
                             ${currentMarkerMenu === 'add' ? cl.current : ''}`}
                         onClick={() => {
-                            setMarkerMenu('add');
+                            if (newMarker) {
+                                setMarkerMenu('add');
+                            }
                         }}>
                         <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`} alt="add" />
                     </div>

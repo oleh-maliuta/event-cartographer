@@ -40,6 +40,7 @@
     cursor: pointer;
     width: fit-content;
     color: rgb(30, 30, 30);
+    font-size: 30px;
 }
 
 .page_header__save_changes_button {
@@ -56,6 +57,30 @@
 
 .page_header__save_changes_button:hover {
     background-color: rgb(0, 116, 0);
+}
+
+.page_header__map_button {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(30, 30, 30);
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.page_header__map_button:hover {
+    background-color: rgb(104, 104, 104);
+}
+
+.page_header__map_button__img {
+    content: url(../../assets/map.png);
+    width: 70%;
+    height: 70%;
 }
 
 .username__cont {
