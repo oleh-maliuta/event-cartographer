@@ -10,7 +10,6 @@ using EventCartographer.Server.Services.MongoDB;
 using EventCartographer.Server.Tools;
 using EventCartographer.Server.Services.Email;
 using System.Net;
-using System.ComponentModel.DataAnnotations;
 using EventCartographer.Server.Attributes;
 
 namespace EventCartographer.Server.Controllers
@@ -19,11 +18,11 @@ namespace EventCartographer.Server.Controllers
     [Route("api/users")]
     public class UserController : BaseController
     {
-        private readonly IEmailService emailService;
+        private readonly IEmailService _emailService;
 
         public UserController(MongoDbService db, IEmailService emailService) : base(db)
         {
-            this.emailService = emailService;
+            this._emailService = emailService;
         }
 
         [HttpPost("sign-up")]
@@ -48,7 +47,7 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
-                await emailService.SendEmailUseTemplateAsync(
+                await _emailService.SendEmailUseTemplateAsync(
                     email: request.Email!,
                     templateName: "registration_confirm.html",
                     parameters: new Dictionary<string, string>
@@ -72,7 +71,7 @@ namespace EventCartographer.Server.Controllers
 
             await DB.Users.InsertOneAsync(user);
 
-            DateTime regTime = DateTime.Now;
+            DateTime regTime = DateTime.UtcNow;
 
             ActivationCode activationCode = new()
             {
@@ -103,7 +102,7 @@ namespace EventCartographer.Server.Controllers
                 return Unauthorized(new BaseResponse.ErrorResponse("The user is not activated!"));
             }
 
-            if (!PasswordTool.Validate(request.Password, user.PasswordHash))
+            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid username or password!"));
             }
@@ -207,7 +206,7 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
-                await emailService.SendEmailUseTemplateAsync(
+                await _emailService.SendEmailUseTemplateAsync(
                     email: request.Email!,
                     templateName: "change_email_confirm.html",
                     parameters: new Dictionary<string, string>
@@ -221,7 +220,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
             }
 
-            DateTime activationTime = DateTime.Now;
+            DateTime activationTime = DateTime.UtcNow;
             ActivationCode activationCode = new()
             {
                 UserId = user.Id!,
@@ -243,6 +242,7 @@ namespace EventCartographer.Server.Controllers
             User? user = AuthorizedUser;
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await DB.ActivationCodes.DeleteManyAsync(x => x.UserId == user.Id);
             await DB.Markers.DeleteManyAsync(x => x.UserId == user.Id);
             await DB.Users.DeleteOneAsync(x => x.Id == user.Id);
 
@@ -253,18 +253,30 @@ namespace EventCartographer.Server.Controllers
         public async Task<IActionResult> SendResetPasswordPermission(
             [FromBody] SendResetPasswordPermissionRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
+            User? user = await DB.Users.Find(x => x.Name == request.Username)
+                .FirstOrDefaultAsync();
 
             if (user == null)
             {
                 return NotFound(new BaseResponse.ErrorResponse("User not found!"));
             }
 
+            IFindFluent<ActivationCode, ActivationCode> existingCodes = DB.ActivationCodes
+                .Find(x =>
+                    x.UserId == user.Id &&
+                    x.Action.StartsWith("reset-password-permission") &&
+                    x.ExpiresAt > DateTime.UtcNow);
+
+            if (existingCodes.Any())
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("You have got the permission already!"));
+            }
+
             string token = StringTool.RandomString(256);
 
             try
             {
-                await emailService.SendEmailUseTemplateAsync(
+                await _emailService.SendEmailUseTemplateAsync(
                     email: user.Email,
                     templateName: "reset_password_permission.html",
                     parameters: new Dictionary<string, string>
@@ -279,7 +291,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse(ex.Message));
             }
 
-            DateTime resTime = DateTime.Now;
+            DateTime resTime = DateTime.UtcNow;
 
             ActivationCode activationCode = new()
             {
@@ -314,7 +326,7 @@ namespace EventCartographer.Server.Controllers
                 return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
             }
 
-            if (DateTime.Now > activationCode.ExpiresAt)
+            if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
                 await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
                 return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
@@ -365,7 +377,7 @@ namespace EventCartographer.Server.Controllers
                 return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
             }
 
-            if (DateTime.Now > activationCode.ExpiresAt)
+            if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
                 await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
                 return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
@@ -415,7 +427,7 @@ namespace EventCartographer.Server.Controllers
                 return NotFound(new BaseResponse.ErrorResponse("The link is expired or unavailable!"));
             }
 
-            if (DateTime.Now > activationCode.ExpiresAt)
+            if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("The link is expired!"));
             }

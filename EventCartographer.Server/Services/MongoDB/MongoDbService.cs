@@ -26,15 +26,17 @@ namespace EventCartographer.Server.Services.MongoDB
             ActivationCodes = mongoDatabase.GetCollection<ActivationCode>(dbSettings.Value.ActivationCodeCollectionName);
         }
 
-        private static void CreateCollectionIfDoesntExist(IMongoDatabase database, string collectionName)
+        private static async void CreateCollectionIfDoesntExist(
+            IMongoDatabase database,
+            string collectionName)
         {
             BsonDocument filter = new("name", collectionName);
-            IAsyncCursor<BsonDocument> collections = database.ListCollections(
+            IAsyncCursor<BsonDocument> collections = await database.ListCollectionsAsync(
                 new ListCollectionsOptions { Filter = filter });
 
             if (!collections.Any())
             {
-                database.CreateCollection(collectionName);
+                await database.CreateCollectionAsync(collectionName);
             }
         }
     }

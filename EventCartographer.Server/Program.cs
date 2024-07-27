@@ -1,3 +1,4 @@
+using EventCartographer.Server.Services.Background;
 using EventCartographer.Server.Services.Email;
 using EventCartographer.Server.Services.MongoDB;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,7 +9,7 @@ namespace EventCartographer.Server
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddEndpointsApiExplorer();
@@ -21,17 +22,19 @@ namespace EventCartographer.Server
             builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
             builder.Services.AddSingleton<MongoDbService>();
 
+            builder.Services.AddHostedService<CleanupService>();
+
             builder.Services.AddEmailService(e =>
             {
-                e.Email = builder.Configuration["Email:EmailAddress"];
-                e.SenderName = builder.Configuration["Email:SenderName"];
-                e.Password = builder.Configuration["Email:Password"];
-                e.Host = builder.Configuration["Email:Host"];
-                e.Port = int.Parse(builder.Configuration["Email:Port"]);
-                e.EmailTemplatesFolder = builder.Configuration["Email:EmailTemplatesFolder"];
+                e.Email = builder.Configuration["Email:EmailAddress"]!;
+                e.SenderName = builder.Configuration["Email:SenderName"]!;
+                e.Password = builder.Configuration["Email:Password"]!;
+                e.Host = builder.Configuration["Email:Host"]!;
+                e.Port = int.Parse(builder.Configuration["Email:Port"]!);
+                e.EmailTemplatesFolder = builder.Configuration["Email:EmailTemplatesFolder"]!;
             });
 
-            var app = builder.Build();
+            WebApplication app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {

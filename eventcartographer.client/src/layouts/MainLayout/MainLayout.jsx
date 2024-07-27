@@ -73,7 +73,7 @@ export default function MainLayout() {
 
         const processedDateTime = new Date(dateTime);
         processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime.toISOString().slice(0, 16);
+        return processedDateTime.toISOString().slice(0, 19);
     }
 
     async function logOutRequest() {

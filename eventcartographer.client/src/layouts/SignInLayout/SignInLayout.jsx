@@ -106,14 +106,11 @@ export default function SignInLayout() {
                             Input username of your account to send an email
                             to give you a permission to reset the password.
                         </p>
-                        <div className={`${cl.modal_window__reset_password__cont}`}>
-                            <label className={`${cl.modal_window__reset_password__label}`}>Username</label>
-                            <input className={`${cl.modal_window__reset_password__input}`}
-                                type="text"
-                                placeholder="..."
-                                maxLength="480"
-                                ref={resetPasswordInputRef} />
-                        </div>
+                        <input className={`${cl.modal_window__reset_password__input}`}
+                            type="text"
+                            placeholder="Username"
+                            maxLength="480"
+                            ref={resetPasswordInputRef} />
                     </div>
                     <div className={`${cl.modal_window__control}`}>
                         <div className={`${cl.modal_window__control__buttons}`}>

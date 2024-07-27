@@ -232,14 +232,6 @@
     margin-top: 20px;
 }
 
-.modal_window__reset_password__cont {
-    margin-top: 10px;
-}
-
-.modal_window__reset_password__label {
-    font-size: 20px;
-}
-
 .modal_window__reset_password__input {
     display: block;
     width: calc(100% - 4px);
@@ -247,7 +239,7 @@
     border: 2px solid black;
     border-radius: 5px;
     padding-block: 1px;
-    margin-top: 3px;
+    margin-top: 10px;
 }
 
 .modal_window__control {
