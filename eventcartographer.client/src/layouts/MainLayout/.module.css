@@ -7,10 +7,10 @@
     border-radius: 5px;
     padding-block: 3px;
     padding-inline: 5px;
-}
 
-.marker_popup_cancel_button:hover {
-    background-color: rgb(165, 0, 0);
+    &:hover {
+        background-color: rgb(165, 0, 0);
+    }
 }
 
 .marker_popup_cont {
@@ -139,14 +139,14 @@
     padding-left: 10px;
     padding-bottom: 10px;
     transition: ease 0.4s;
-}
 
-.marker_panel::-webkit-scrollbar {
-    display: none;
-}
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
-.marker_panel.hided {
-    right: calc((410px + 5vw) * -1);
+    &.hided {
+        right: calc((410px + 5vw) * -1);
+    }
 }
 
 .marker_panel__top_menu {
@@ -163,15 +163,23 @@
     width: 50px;
     height: 50px;
     border-radius: 15px;
-}
 
-.marker_panel__top_menu__option.current {
-    background-color: rgb(225, 225, 225);
-    filter: invert(1);
-}
+    &.current {
+        background-color: rgb(225, 225, 225);
+        filter: invert(1);
+    }
 
-.marker_panel__top_menu__option:not(.marker_panel__top_menu__option.current, .marker_panel__top_menu__option.unavailable):hover {
-    background-color: rgb(196, 196, 196);
+    &.unavailable {
+        cursor: default;
+    }
+
+    &.unavailable>img {
+        filter: invert(0.7);
+    }
+
+    &:not(&.current, &.unavailable):hover {
+        background-color: rgb(196, 196, 196);
+    }
 }
 
 .marker_panel__top_menu__option_img {
@@ -189,14 +197,6 @@
 
 .new_marker_img {
     content: url(../../assets/plus.png);
-}
-
-.marker_panel__top_menu__option.unavailable {
-    cursor: default;
-}
-
-.marker_panel__top_menu__option.unavailable>img {
-    filter: invert(0.7);
 }
 
 .marker_list_panel {
@@ -393,18 +393,18 @@
 .marker_list_element_importance {
     height: 7px;
     border-radius: 50px;
-}
 
-.marker_list_element_importance.low {
-    background-color: green;
-}
+    &.low {
+        background-color: green;
+    }
 
-.marker_list_element_importance.medium {
-    background-color: rgb(230, 230, 0);
-}
+    &.medium {
+        background-color: rgb(230, 230, 0);
+    }
 
-.marker_list_element_importance.high {
-    background-color: rgb(212, 0, 0);
+    &.high {
+        background-color: rgb(212, 0, 0);
+    }
 }
 
 .marker_list_element_buttons {
@@ -425,30 +425,30 @@
 .marker_list_element_navigate_button {
     background-color: rgb(66, 167, 255);
     border-radius: 5px;
-}
 
-.marker_list_element_navigate_button:hover {
-    background-color: rgb(46, 115, 174);
+    &:hover {
+        background-color: rgb(46, 115, 174);
+    }
 }
 
 .marker_list_element_edit_button {
     background-color: rgb(255, 162, 0);
     border-radius: 5px;
     margin-left: 5px;
-}
 
-.marker_list_element_edit_button:hover {
-    background-color: rgb(191, 121, 0);
+    &:hover {
+        background-color: rgb(191, 121, 0);
+    }
 }
 
 .marker_list_element_delete_button {
     background-color: rgb(212, 0, 0);
     border-radius: 5px;
     margin-left: 5px;
-}
 
-.marker_list_element_delete_button:hover {
-    background-color: rgb(136, 0, 0);
+    &:hover {
+        background-color: rgb(136, 0, 0);
+    }
 }
 
 .marker_list_element_button_img {
@@ -624,6 +624,7 @@
 }
 
 .editing_marker_buttons {
+    display: flex;
     margin-top: 15px;
 }
 
@@ -636,10 +637,10 @@
     border-radius: 5px;
     padding-block: 8px;
     padding-inline: 10px;
-}
 
-.editing_marker_cancel_button:hover {
-    background-color: rgb(165, 0, 0);
+    &:hover {
+        background-color: rgb(165, 0, 0);
+    }
 }
 
 .editing_marker_add_button {
@@ -652,10 +653,10 @@
     padding-block: 8px;
     padding-inline: 10px;
     margin-left: 10px;
-}
 
-.editing_marker_add_button:hover {
-    background-color: rgb(0, 140, 51);
+    &:hover {
+        background-color: rgb(0, 140, 51);
+    }
 }
 
 .editing_marker_go_back_button {
@@ -667,10 +668,10 @@
     border-radius: 5px;
     padding-block: 8px;
     padding-inline: 10px;
-}
 
-.editing_marker_go_back_button:hover {
-    background-color: rgb(56, 56, 56);
+    &:hover {
+        background-color: rgb(56, 56, 56);
+    }
 }
 
 .editing_marker_edit_button {
@@ -683,8 +684,8 @@
     padding-block: 8px;
     padding-inline: 10px;
     margin-left: 10px;
-}
 
-.editing_marker_edit_button:hover {
-    background-color: rgb(136, 136, 0);
+    &:hover {
+        background-color: rgb(136, 136, 0);
+    }
 }

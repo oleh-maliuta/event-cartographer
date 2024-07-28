@@ -6,10 +6,10 @@
     bottom: 0;
     background-color: whitesmoke;
     overflow-y: auto;
-}
 
-.main::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .panel {
@@ -27,15 +27,15 @@
     padding-top: 30px;
     padding-bottom: 30px;
 
+    &.fixed {
+        top: 0;
+        transform: translate(-50%, 0);
+    }
+
     @media (width < 425px) {
         width: 90vw;
         padding-inline: 5vw;
     }
-}
-
-.panel.fixed {
-    top: 0;
-    transform: translate(-50%, 0);
 }
 
 .panel_header {
@@ -127,10 +127,8 @@
     display: grid;
     grid-template-columns: 25% auto;
     margin-top: 30px;
-}
 
-@media (width < 260px) {
-    .options {
+    @media (width < 260px) {
         display: block;
     }
 }
@@ -149,27 +147,23 @@
     text-decoration: none;
     text-align: center;
     text-wrap: nowrap;
-}
 
-@media (width < 260px) {
-    .options_sign_up_link {
+    &:hover {
+        text-decoration: underline;
+    }
+
+    @media (width < 260px) {
         margin-left: 50%;
         transform: translateX(-50%);
     }
-}
-
-.options_sign_up_link:hover {
-    text-decoration: underline;
 }
 
 .options_forgot_password {
     position: relative;
     height: 15px;
     width: 100%;
-}
 
-@media (width < 260px) {
-    .options_forgot_password {
+    @media (width < 260px) {
         margin-top: 20px;
     }
 }
@@ -183,18 +177,16 @@
     letter-spacing: 0.5px;
     text-align: center;
     text-wrap: nowrap;
-}
 
-@media (width < 260px) {
-    .options_forgot_password_link {
+    &:hover {
+        text-decoration: underline;
+    }
+
+    @media (width < 260px) {
         right: inherit;
         margin-left: 50%;
         transform: translateX(-50%);
     }
-}
-
-.options_forgot_password_link:hover {
-    text-decoration: underline;
 }
 
 .modal_window__background {
@@ -261,10 +253,10 @@
     border: none;
     border-radius: 8px;
     padding-block: 5px;
-}
 
-.modal_window__control__buttons__cancel:hover {
-    background-color: rgb(163, 37, 37);
+    &:hover {
+        background-color: rgb(163, 37, 37);
+    }
 }
 
 .modal_window__control__buttons__apply {
@@ -279,8 +271,8 @@
     border: none;
     border-radius: 8px;
     padding-block: 5px;
-}
 
-.modal_window__control__buttons__apply:hover {
-    background-color: rgb(40, 131, 28);
+    &:hover {
+        background-color: rgb(40, 131, 28);
+    }
 }
