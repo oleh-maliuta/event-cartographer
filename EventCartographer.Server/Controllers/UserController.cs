@@ -66,7 +66,8 @@ namespace EventCartographer.Server.Controllers
                 Name = request.Username!,
                 Email = request.Email!,
                 PasswordHash = PasswordTool.Hash(request.Password!),
-                IsActivated = false
+                IsActivated = false,
+                LastActivityAt = DateTime.UtcNow
             };
 
             await DB.Users.InsertOneAsync(user);
@@ -78,7 +79,6 @@ namespace EventCartographer.Server.Controllers
                 UserId = user.Id!,
                 Code = token,
                 Action = "confirm-registration",
-                CreatedAt = regTime,
                 ExpiresAt = regTime.AddHours(12)
             };
 
@@ -113,7 +113,11 @@ namespace EventCartographer.Server.Controllers
                 [
                     new(ClaimTypes.NameIdentifier, user.Id!),
                     new(ClaimTypes.Name, user.Name)
-                ], CookieAuthenticationDefaults.AuthenticationScheme)));
+                ], CookieAuthenticationDefaults.AuthenticationScheme))
+            );
+
+            user.LastActivityAt = DateTime.UtcNow;
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return Ok(new UserResponse(user));
         }
@@ -148,7 +152,7 @@ namespace EventCartographer.Server.Controllers
         {
             User user = AuthorizedUser;
 
-            if (await DB.Users.Find(x => x.Name == request.Username).AnyAsync())
+            if (await DB.Users.Find(x => x.Name == request.Username && x.Id != user.Id).AnyAsync())
             {
                 return BadRequest(new BaseResponse.ErrorResponse("There is a user with the same username!"));
             }
@@ -226,7 +230,6 @@ namespace EventCartographer.Server.Controllers
                 UserId = user.Id!,
                 Code = token,
                 Action = $"change-email,{request.Email}",
-                CreatedAt = activationTime,
                 ExpiresAt = activationTime.AddHours(12)
             };
 
@@ -236,10 +239,15 @@ namespace EventCartographer.Server.Controllers
         }
 
         [Authorized]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser()
+        [HttpPut("delete")]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
         {
             User? user = AuthorizedUser;
+
+            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("Invalid password!"));
+            }
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             await DB.ActivationCodes.DeleteManyAsync(x => x.UserId == user.Id);
@@ -298,7 +306,6 @@ namespace EventCartographer.Server.Controllers
                 UserId = user.Id!,
                 Code = token,
                 Action = "reset-password-permission",
-                CreatedAt = resTime,
                 ExpiresAt = resTime.AddHours(12)
             };
 
@@ -396,6 +403,7 @@ namespace EventCartographer.Server.Controllers
             }
 
             user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
+            user.LastActivityAt = DateTime.UtcNow;
 
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
             await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
@@ -438,17 +446,18 @@ namespace EventCartographer.Server.Controllers
             {
                 case "confirm-registration":
                     user.IsActivated = true;
-                    await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
                     await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
                     break;
                 case "change-email":
                     user.Email = actionInfo[1];
-                    await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
                     await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
                     break;
                 default:
                     return BadRequest(new BaseResponse.ErrorResponse("Unknown action"));
             }
+
+            user.LastActivityAt = DateTime.UtcNow;
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return Ok(new BaseResponse.SuccessResponse("Confirmed"));
         }

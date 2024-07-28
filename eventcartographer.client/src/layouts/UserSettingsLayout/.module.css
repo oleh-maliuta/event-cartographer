@@ -1,5 +1,7 @@
 .main {
     position: relative;
+    display: flex;
+    justify-content: center;
     padding: 5px;
 }
 
@@ -10,40 +12,58 @@
     margin-top: 10px;
 }
 
-.page_header__sep_line__cont {
+.panel {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+}
+
+.panel__page_header__sep_line__cont {
     display: flex;
     align-items: center;
     justify-content: center;
     padding-block: 20px;
 }
 
-.page_header__sep_line {
+.panel__page_header__sep_line {
     width: 100%;
     height: 2px;
     background-color: black;
 }
 
-.normal_sep_line__cont {
+.panel__normal_sep_line__cont {
     display: flex;
     align-items: center;
     justify-content: center;
     padding-block: 20px;
 }
 
-.normal_sep_line {
+.panel__normal_sep_line {
     width: 100%;
     height: 1px;
     background-color: gray;
 }
 
-.page_header {
-    cursor: pointer;
-    width: fit-content;
-    color: rgb(30, 30, 30);
-    font-size: 30px;
+.panel__page_header {
+    margin-top: 5px;
 }
 
-.page_header__save_changes_button {
+.panel__page_header__text {
+    cursor: pointer;
+    color: rgb(30, 30, 30);
+    font-size: 30px;
+    text-align: center;
+}
+
+.panel__page_header__control {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    height: 40px;
+    margin-top: 15px;
+}
+
+.panel__page_header__save_changes_button {
     cursor: pointer;
     background-color: rgb(0, 162, 0);
     color: white;
@@ -52,278 +72,118 @@
     border-radius: 5px;
     padding-block: 5px;
     padding-inline: 7px;
-    margin-top: 15px;
 }
 
-.page_header__save_changes_button:hover {
+.panel__page_header__save_changes_button:hover {
     background-color: rgb(0, 116, 0);
 }
 
-.page_header__map_button {
+.panel__page_header__map_button {
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;
-    height: 40px;
     background-color: rgb(30, 30, 30);
     border: none;
     border-radius: 5px;
-    margin-top: 15px;
+    margin-left: 10px;
 }
 
-.page_header__map_button:hover {
+.panel__page_header__map_button:hover {
     background-color: rgb(104, 104, 104);
 }
 
-.page_header__map_button__img {
+.panel__page_header__map_button__img {
     content: url(../../assets/map.png);
     width: 70%;
     height: 70%;
 }
 
-.username__cont {
-    margin-top: 5px;
+.panel__username__cont {
+    margin-top: 15px;
 }
 
-.username__label {
-    font-size: 20px;
+.panel__username__label {
+    font-size: 18px;
 }
 
-.username__input {
+.panel__username__input {
     display: block;
-    font-size: 20px;
-}
-
-.important_settings__buttons {
-    position: relative;
-    width: 200px;
-    margin-top: 5px;
-}
-
-.important_settings__button {
-    cursor: pointer;
-    display: block;
-    width: 100%;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    padding-block: 7px;
-    margin-top: 10px;
-}
-
-.change_email__button {
-    background-color: orange;
-}
-
-.change_email__button:hover {
-    background-color: rgb(162, 105, 0);
-}
-
-.change_password__button {
-    background-color: orange;
-}
-
-.change_password__button:hover {
-    background-color: rgb(162, 105, 0);
-}
-
-.delete_account__button {
-    background-color: rgb(255, 60, 60);
-}
-
-.delete_account__button:hover {
-    background-color: rgb(171, 40, 40);
-}
-
-.modal_window__background {
-    position: fixed;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    background-color: rgba(0, 0, 0, 0.65);
-}
-
-.modal_window {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 500px;
-    background-color: white;
+    width: calc(100% - 6px);
+    border: 2px solid gray;
     border-radius: 10px;
-}
-
-.modal_window__content {
-    padding-block: 10px;
-    padding-inline: 15px;
-}
-
-.modal_window__header {
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.modal_window__password__cont {
-    margin-top: 10px;
-}
-
-.modal_window__password__label {
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-.modal_window__password__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 3px;
-}
-
-.modal_window__new_email__cont {
-    margin-top: 10px;
-}
-
-.modal_window__new_email__label {
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-.modal_window__new_email__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 3px;
-}
-
-.modal_window__old_password__cont {
-    margin-top: 10px;
-}
-
-.modal_window__old_password__label {
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-.modal_window__old_password__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 3px;
-}
-
-.modal_window__new_password__cont {
-    margin-top: 10px;
-}
-
-.modal_window__new_password__label {
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-.modal_window__new_password__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 3px;
-}
-
-.modal_window__confirm_password__cont {
-    margin-top: 10px;
-}
-
-.modal_window__confirm_password__label {
-    font-size: 20px;
-}
-
-.modal_window__confirm_password__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 3px;
-}
-
-.modal_window__confirm_deletion__cont {
-    margin-top: 10px;
-}
-
-.modal_window__change_email__description {
-    text-align: justify;
     font-size: 18px;
-    margin-top: 20px;
+    padding-block: 3px;
+    padding-left: 3px;
+    margin-top: 5px;
 }
 
-.modal_window__confirm_deletion__description {
-    text-align: justify;
-    font-size: 18px;
-    margin-top: 20px;
+.panel__other_settings__element {
+    margin-top: 30px;
 }
 
-.modal_window__confirm_deletion__input {
+.panel__other_settings__element__header {
+    font-size: 20px;
+}
+
+.panel__other_settings__element__description {
+    color: gray;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+.panel__other_settings__element__input {
     display: block;
-    width: calc(100% - 4px);
-    font-size: 20px;
-    border: 2px solid black;
+    width: calc(100% - 6px);
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-size: 18px;
+    padding-block: 3px;
+    padding-left: 3px;
+    margin-top: 12px;
+}
+
+.panel__other_settings__element__input {
+    display: block;
+    width: calc(100% - 6px);
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-size: 18px;
+    padding-block: 3px;
+    padding-left: 3px;
+    margin-top: 12px;
+}
+
+.panel__other_settings__element__control__apply {
+    cursor: pointer;
+    height: 35px;
+    border: none;
     border-radius: 5px;
-    padding-block: 1px;
-    margin-top: 6px;
-}
-
-.modal_window__control {
-    padding-block: 10px;
-    padding-inline: 15px;
-}
-
-.modal_window__control__buttons {
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.modal_window__control__buttons__cancel {
-    cursor: pointer;
-    width: 100px;
-    background-color: rgb(255, 59, 59);
+    background-color: rgb(0, 162, 0);
     color: white;
-    font-size: 20px;
-    border: none;
-    border-radius: 8px;
-    padding-block: 5px;
+    font-size: 18px;
+    padding-inline: 10px;
+    margin-top: 15px;
 }
 
-.modal_window__control__buttons__cancel:hover {
-    background-color: rgb(163, 37, 37);
+.panel__other_settings__element__control__apply:hover {
+    background-color: rgb(0, 116, 0);
 }
 
-.modal_window__control__buttons__apply {
+.panel__other_settings__element__control__delete_account {
     cursor: pointer;
-    width: 100px;
-    background-color: rgb(62, 200, 44);
-    color: white;
-    font-size: 20px;
+    height: 35px;
     border: none;
-    border-radius: 8px;
-    padding-block: 5px;
+    border-radius: 5px;
+    background-color: rgb(255, 60, 60);
+    color: white;
+    font-size: 18px;
+    padding-inline: 10px;
+    margin-top: 15px;
 }
 
-.modal_window__control__buttons__apply:hover {
-    background-color: rgb(40, 131, 28);
+.panel__other_settings__element__control__delete_account:hover {
+    background-color: rgb(171, 40, 40);
 }

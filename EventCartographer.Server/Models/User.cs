@@ -16,5 +16,7 @@ namespace EventCartographer.Server.Models
         public string PasswordHash { get; set; }
         [BsonElement("isActivated")]
         public bool IsActivated { get; set; }
+        [BsonElement("lastActivityAt")]
+        public DateTime LastActivityAt { get; set; }
     }
 }

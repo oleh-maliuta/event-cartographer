@@ -14,8 +14,6 @@ namespace EventCartographer.Server.Models
         public string Code { get; set; }
         [BsonElement("action")]
         public string Action { get; set; }
-        [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; }
         [BsonElement("expiresAt")]
         public DateTime ExpiresAt { get; set; }
     }

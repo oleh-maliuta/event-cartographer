@@ -20,9 +20,12 @@ namespace EventCartographer.Server.Services.Background
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Database cleanup service running at: {time}", DateTimeOffset.UtcNow);
+                DateTime now = DateTime.UtcNow;
 
-                await _database.ActivationCodes.DeleteManyAsync(x => DateTime.UtcNow > x.ExpiresAt, stoppingToken);
+                _logger.LogInformation("Database cleanup service running at: {time}", now);
+
+                await _database.ActivationCodes.DeleteManyAsync(x => now > x.ExpiresAt, stoppingToken);
+                await _database.Users.DeleteManyAsync(x => now > x.LastActivityAt.AddYears(3), stoppingToken);
 
                 await Task.Delay(_cleanupInterval, stoppingToken);
             }

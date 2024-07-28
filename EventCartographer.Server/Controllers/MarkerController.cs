@@ -26,11 +26,11 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid importance value!"));
             }
 
-            string userId = AuthorizedUserId;
+            User user = AuthorizedUser;
 
             Marker marker = new()
             {
-                UserId = userId,
+                UserId = user.Id!,
                 Latitude = request.Latitude!.Value,
                 Longitude = request.Longitude!.Value,
                 Title = request.Title!,
@@ -39,7 +39,10 @@ namespace EventCartographer.Server.Controllers
                 StartsAt = request.StartsAt!.Value
             };
 
+            user.LastActivityAt = DateTime.UtcNow;
+
             await DB.Markers.InsertOneAsync(marker);
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return Ok(new MarkerResponse(marker));
         }
@@ -51,6 +54,7 @@ namespace EventCartographer.Server.Controllers
             UpdateMarkerRequest request)
         {
             string[] importanceArray = ["low", "medium", "high"];
+            User user = AuthorizedUser;
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
 
             if (marker == null)
@@ -75,7 +79,10 @@ namespace EventCartographer.Server.Controllers
             marker.Importance = request.Importance!;
             marker.StartsAt = request.StartsAt!.Value;
 
+            user.LastActivityAt = DateTime.UtcNow;
+
             await DB.Markers.ReplaceOneAsync(x => x.Id == markerId, marker);
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return Ok(new MarkerResponse(marker));
         }
@@ -84,6 +91,7 @@ namespace EventCartographer.Server.Controllers
         [HttpDelete("{markerId}")]
         public async Task<IActionResult> DeleteMarker(string markerId)
         {
+            User user = AuthorizedUser;
             Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
 
             if (marker == null)
@@ -96,7 +104,10 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("The user is not the owner of the marker"));
             }
 
+            user.LastActivityAt = DateTime.UtcNow;
+
             await DB.Markers.DeleteOneAsync(x => x.Id == markerId);
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return Ok(new MarkerResponse(marker));
         }
@@ -122,14 +133,14 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpGet("search")]
-        public IActionResult GetMarkersByAuthUser([FromQuery] MarkerSearchQuery query)
+        public async Task<IActionResult> GetMarkersByAuthUser([FromQuery] MarkerSearchQuery query)
         {
-            string userId = AuthorizedUserId;
+            User user = AuthorizedUser;
 
             List<Marker> markers = [.. DB.Markers
                 .AsQueryable()
                 .Where(x =>
-                    x.UserId == userId &&
+                    x.UserId == user.Id &&
                     (x.Title.Contains(query.Search ?? "") ||
                     (x.Description ?? "").Contains(query.Search ?? "")) &&
                     (query.Importance == null ||
@@ -160,6 +171,9 @@ namespace EventCartographer.Server.Controllers
                     ? [.. markers.OrderBy(x => ImportanceOrder.GetValueOrDefault(x.Importance))]
                     : [.. markers.OrderByDescending(x => ImportanceOrder.GetValueOrDefault(x.Importance))],
             };
+
+            user.LastActivityAt = DateTime.UtcNow;
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return query.Format switch
             {
