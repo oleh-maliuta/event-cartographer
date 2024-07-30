@@ -19,14 +19,21 @@ namespace EventCartographer.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMarker(AddMarkerRequest request)
         {
+            const int maxMarkerAmount = 500;
+            User user = AuthorizedUser;
+
+            if ((await DB.Markers.CountDocumentsAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse(
+                    $"This account has placed maximum amount of markers ({maxMarkerAmount}) on the map!"));
+            }
+
             string[] importanceArray = ["low", "medium", "high"];
 
             if (!importanceArray.Contains(request.Importance))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("Invalid importance value!"));
             }
-
-            User user = AuthorizedUser;
 
             Marker marker = new()
             {
@@ -132,8 +139,31 @@ namespace EventCartographer.Server.Controllers
         }
 
         [Authorized]
+        [HttpGet("map")]
+        public async Task<IActionResult> GetMarkersByBounds([FromQuery] MarkerBoundQuery query)
+        {
+            User user = AuthorizedUser;
+
+            Marker[] markers = [.. DB.Markers
+                .AsQueryable()
+                .Where(x =>
+                    x.UserId == user.Id &&
+                    x.Latitude <= (query.NorthEastLatitude ?? decimal.MinValue) &&
+                    x.Latitude >= (query.SouthWestLatitude ?? decimal.MaxValue) &&
+                    x.Longitude <= (query.NorthEastLongitude ?? decimal.MinValue) &&
+                    x.Longitude >= (query.SouthWestLongitude ?? decimal.MaxValue))];
+
+            user.LastActivityAt = DateTime.UtcNow;
+            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+
+            return Ok(new MarkerResponse(markers));
+        }
+
+        [Authorized]
         [HttpGet("search")]
-        public async Task<IActionResult> GetMarkersByAuthUser([FromQuery] MarkerSearchQuery query)
+        public async Task<IActionResult> GetMarkersByAuthUser(
+            [FromQuery] PageQuery pageQuery,
+            [FromQuery] MarkerSearchQuery query)
         {
             User user = AuthorizedUser;
 
@@ -149,7 +179,7 @@ namespace EventCartographer.Server.Controllers
                     x.StartsAt >= (query.MinTime ?? DateTime.MinValue) &&
                     x.StartsAt <= (query.MaxTime ?? DateTime.MaxValue))];
 
-            Dictionary<string, int> ImportanceOrder = new()
+            Dictionary<string, int> importanceOrder = new()
             {
                 {"low", 0},
                 {"medium", 1},
@@ -159,8 +189,8 @@ namespace EventCartographer.Server.Controllers
             markers = query.SortType switch
             {
                 "importance" => query.SortByAsc ?? true
-                    ? [.. markers.OrderBy(x => ImportanceOrder.GetValueOrDefault(x.Importance))]
-                    : [.. markers.OrderByDescending(x => ImportanceOrder.GetValueOrDefault(x.Importance))],
+                    ? [.. markers.OrderBy(x => importanceOrder.GetValueOrDefault(x.Importance))]
+                    : [.. markers.OrderByDescending(x => importanceOrder.GetValueOrDefault(x.Importance))],
                 "title" => query.SortByAsc ?? true
                     ? [.. markers.OrderBy(x => x.Title.ToLower())]
                     : [.. markers.OrderByDescending(x => x.Title.ToLower())],
@@ -168,20 +198,26 @@ namespace EventCartographer.Server.Controllers
                     ? [.. markers.OrderBy(x => x.StartsAt)]
                     : [.. markers.OrderByDescending(x => x.StartsAt)],
                 _ => query.SortByAsc ?? true
-                    ? [.. markers.OrderBy(x => ImportanceOrder.GetValueOrDefault(x.Importance))]
-                    : [.. markers.OrderByDescending(x => ImportanceOrder.GetValueOrDefault(x.Importance))],
+                    ? [.. markers.OrderBy(x => importanceOrder.GetValueOrDefault(x.Importance))]
+                    : [.. markers.OrderByDescending(x => importanceOrder.GetValueOrDefault(x.Importance))],
             };
+
+            int totalItemsCount = markers.Count;
+            int totalPagesCount = (int)Math.Ceiling((double)totalItemsCount / pageQuery.PageSize);
+            markers = [.. markers.Skip((pageQuery.Page - 1) * pageQuery.PageSize).Take(pageQuery.PageSize)];
+
+            MarkerResponse.View[] result = [.. markers.Select(p => new MarkerResponse.View(p))];
 
             user.LastActivityAt = DateTime.UtcNow;
             await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
-            return query.Format switch
-            {
-                "default" => Ok(new MarkerResponse(markers)),
-                "short" => Ok(new ListResponse<MarkerResponse.ShortView>(
-                    markers.Select(x => new MarkerResponse.ShortView(x)).ToList())),
-                _ => Ok(new MarkerResponse(markers)),
-            };
+            PageResponse<MarkerResponse.View> response = new(
+                result,
+                pageQuery.Page,
+                pageQuery.PageSize,
+                totalPagesCount);
+
+            return Ok(response);
         }
     }
 }

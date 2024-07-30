@@ -1,6 +1,6 @@
 import React from "react";
 
-const useRefDimensions = (ref) => {
+export default function useRefDimensions(ref) {
     const [dimensions, setDimensions] = React.useState({ width: 1, height: 2 });
 
     function WindowResizeEvent() {
@@ -25,5 +25,3 @@ const useRefDimensions = (ref) => {
 
     return dimensions;
 }
-
-export default useRefDimensions;

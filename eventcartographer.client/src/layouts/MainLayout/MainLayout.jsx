@@ -1,5 +1,5 @@
 import React from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
 import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon } from "../../map-icons";
@@ -12,7 +12,9 @@ export default function MainLayout() {
 
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
-    const [reviewingMarker, setReviewingMarker] = React.useState(null);
+    const [markerListPage, setMarkerListPage] = React.useState(1);
+    const [markerListPageCount, setMarkerListPageCount] = React.useState(0);
+    const [mapBounds, setMapBounds] = React.useState(null);
 
     const [userInfo, setUserInfo] = React.useState(null);
     const [markersForMap, setMarkersForMap] = React.useState(null);
@@ -25,7 +27,7 @@ export default function MainLayout() {
     const [updatingMarkerList, setUpdatingMarkerList] = React.useState(false);
 
     const [markerListSearch, setMarkerListSearch] = React.useState('');
-    const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: true });
+    const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
     const [markerListDateOfStartFilter, setMarkerListDateOfStartFilter] = React.useState({ min: undefined, max: undefined });
 
@@ -36,23 +38,6 @@ export default function MainLayout() {
     const importanceInputRef = React.useRef(null);
     const titleInputRef = React.useRef(null);
     const descriptionInputRef = React.useRef(null);
-
-    function MapEventHandler() {
-        const map = useMapEvents({
-            click(e) {
-                console.log()
-                setNewMarker({
-                    latitude: e.latlng.lat,
-                    longitude: e.latlng.lng
-                });
-
-                setMarkerMenu('add');
-                setMarkerPanelVisibility(true);
-            },
-        })
-
-        return null;
-    }
 
     function getImportanceIcon(importance) {
         switch (importance) {
@@ -77,6 +62,27 @@ export default function MainLayout() {
         return processedDateTime.toISOString().slice(0, 19);
     }
 
+    function mapClickEvent(e) {
+        setNewMarker({
+            latitude: e.latlng.lat,
+            longitude: e.latlng.lng
+        });
+
+        setMarkerMenu('add');
+        setMarkerPanelVisibility(true);
+    }
+
+    function mapMoveendEvent() {
+        const bounds = mapRef.current?.getBounds();
+
+        if (!bounds) {
+            return;
+        }
+
+        loadMarkersForMap(bounds);
+        setMapBounds(bounds);
+    }
+
     async function loadUserInfo() {
         const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
             method: "GET",
@@ -88,8 +94,14 @@ export default function MainLayout() {
         setUserInfo(json.data || undefined);
     }
 
-    async function loadMarkersForMap() {
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers/search?format=short`, {
+    async function loadMarkersForMap(bounds = mapBounds) {
+        let url = `${HOST}:${API_PORT}/api/markers/map`;
+        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
+        url += `&n_e_long=${bounds.getNorthEast().lng}`;
+        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
+        url += `&s_w_long=${bounds.getSouthWest().lng}`;
+
+        const response = await fetch(url, {
             method: "GET",
             mode: "cors",
             credentials: "include"
@@ -99,29 +111,32 @@ export default function MainLayout() {
         setMarkersForMap(json.data || []);
     }
 
-    async function loadMarkersForList() {
+    async function loadMarkersForList(page = markerListPage) {
         setMarkersForListLoading(true);
 
-        let queryPar =
-            `?q=${markerListSearch}` +
-            `&sort_type=${markerListSort.type}` +
-            `&sort_by_asc=${markerListSort.asc}` +
-            `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}` +
-            `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
+        let url = `${HOST}:${API_PORT}/api/markers/search`;
+        url += '?page_size=10';
+        url += `&page=${page || '1'}`;
+        url += `&q=${markerListSearch}`;
+        url += `&sort_type=${markerListSort.type}`;
+        url += `&sort_by_asc=${markerListSort.asc}`;
+        url += `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}`;
+        url += `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
 
         markerListImportanceFilter.forEach(el => {
             queryPar += `&imp=${el}`
         });
 
-        const response = await fetch(
-            `${HOST}:${API_PORT}/api/markers/search${queryPar}`, {
+        const response = await fetch(url, {
             method: "GET",
             mode: "cors",
             credentials: "include"
         });
         const json = await response.json();
 
-        setMarkersForList(json.data || []);
+        setMarkersForList(json.data.items || []);
+        setMarkerListPage(page || 1);
+        setMarkerListPageCount(json.data.pageCount || 0);
         setMarkersForListLoading(false);
     }
 
@@ -175,15 +190,8 @@ export default function MainLayout() {
         const json = await response.json();
 
         if (response.ok) {
-            const newMapMarker = {
-                id: json.data.id,
-                importance: json.data.importance,
-                latitude: json.data.latitude,
-                longitude: json.data.longitude
-            };
-
-            setMarkersForMap([...markersForMap, newMapMarker]);
-            setMarkersForList([...markersForList, json.data]);
+            loadMarkersForMap();
+            loadMarkersForList();
             setMarkerMenu('list');
             setNewMarker(null);
         } else if (!response.ok) {
@@ -228,16 +236,8 @@ export default function MainLayout() {
         const json = await response.json();
 
         if (response.ok) {
-            const newList = markersForList.map((el) => {
-                if (el.id === json.data.id) {
-                    return json.data;
-                }
-
-                return el;
-            });
-
-            setMarkersForMap(newList);
-            setMarkersForList(newList);
+            loadMarkersForMap();
+            loadMarkersForList();
             setMarkerMenu('list');
             setEditingMarker(null);
         } else if (!response.ok) {
@@ -286,39 +286,13 @@ export default function MainLayout() {
                 <Marker
                     key={el.id}
                     position={[el.latitude, el.longitude]}
-                    icon={getImportanceIcon(el.importance)}
-                    eventHandlers={{
-                        click: async () => {
-                            if (reviewingMarker?.id === el.id) {
-                                return;
-                            }
-
-                            if (markersForList?.map(x => x.id).includes(el.id)) {
-                                setReviewingMarker(markersForList.find(x => x.id === el.id));
-                                return;
-                            }
-
-                            const response = await fetch(`${HOST}:${API_PORT}/api/markers/${el.id}`, {
-                                method: "GET",
-                                mode: "cors",
-                                credentials: "include"
-                            });
-                            const json = await response.json();
-
-                            setReviewingMarker(json.data || null);
-                        }
-                    }}>
+                    icon={getImportanceIcon(el.importance)}>
                     <Popup>
-                        {
-                            reviewingMarker?.id !== el.id ?
-                                <LoadingAnimation size="30px" curveWidth="10px" />
-                                :
-                                <div className={cl.marker_popup_cont}>
-                                    <h2 className={cl.marker_popup_title}>{reviewingMarker.title}</h2>
-                                    <p className={cl.marker_popup_description}>{reviewingMarker.description}</p>
-                                    <p className={cl.marker_popup_starts_at}>{new Date(reviewingMarker.startsAt).toLocaleString()}</p>
-                                </div>
-                        }
+                        <div className={cl.marker_popup_cont}>
+                            <h2 className={cl.marker_popup_title}>{el.title}</h2>
+                            <p className={cl.marker_popup_description}>{el.description}</p>
+                            <p className={cl.marker_popup_starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
+                        </div>
                     </Popup>
                 </Marker>
             );
@@ -444,7 +418,11 @@ export default function MainLayout() {
                             <img className={`${cl.marker_list_filter_button_img}`} alt='filter' />
                         </button>
                         <button className={`${cl.marker_list_apply_button}`}
-                            onClick={loadMarkersForList}>
+                            onClick={() => {
+                                if (!markersForListLoading) {
+                                    loadMarkersForList(1);
+                                }
+                            }}>
                             Apply
                         </button>
                     </div>
@@ -568,9 +546,16 @@ export default function MainLayout() {
                             <LoadingAnimation size="50px" curveWidth="10px" />
                         </div>
                         :
-                        <div className={`${cl.marker_list}`}>
-                            {displayMarkerList()}
-                        </div>
+                        <>
+                            <div className={`${cl.marker_list}`}>
+                                {displayMarkerList()}
+                            </div>
+                            <div className={cl.page_navigator__cont}>
+                                <div className={cl.page_navigator}>
+                                    {renderPageNavigator()}
+                                </div>
+                            </div>
+                        </>
                 }
             </>
         );
@@ -725,18 +710,138 @@ export default function MainLayout() {
         );
     }
 
+    function renderPageNavigator() {
+        const currentPage = markerListPage;
+        const pageCount = markerListPageCount;
+
+        if (pageCount <= 1) {
+            return;
+        }
+
+        const loadPage = (specifiedPage) => {
+            if (specifiedPage !== currentPage) {
+                loadMarkersForList(specifiedPage);
+            }
+        };
+
+        let result = [];
+        let left = [];
+        let right = [];
+        let start, end;
+
+        if (currentPage > 1) {
+            left.push(
+                <span className={cl.page_navigator__obj} key="arrow-left"
+                    onClick={() => loadPage(currentPage - 1)}>&#60;</span>
+            );
+
+            if ((currentPage - 4) > 1) {
+                left.push(
+                    <span className={`${cl.page_navigator__obj}`} key="1" onClick={() => loadPage(1)}>1</span>
+                );
+
+                left.push(
+                    <span className={`${cl.page_navigator__obj}`} key="dots-left"
+                        onClick={() => {
+                            const idxLink = (currentPage - 10) > 1
+                                ? currentPage - 10
+                                : 2;
+
+                            loadPage(idxLink);
+                        }}>...</span>
+                );
+
+                start = currentPage - 2;
+            }
+            else {
+                start = 1;
+            }
+        }
+        else {
+            start = 1;
+        }
+
+        if (currentPage < pageCount) {
+            right.unshift(
+                <span className={cl.page_navigator__obj} key="arrow-right"
+                    onClick={() => loadPage(currentPage + 1)}>&#62;</span>
+            );
+
+            if ((currentPage + 4) < pageCount) {
+                right.unshift(
+                    <span className={`${cl.page_navigator__obj}`} key={pageCount}
+                        onClick={() => loadPage(pageCount)}>{pageCount}</span>
+                );
+
+                right.unshift(
+                    <span className={`${cl.page_navigator__obj}`} key="dots-right"
+                        onClick={() => {
+                            const idxLink = (currentPage + 10) < pageCount
+                                ? currentPage + 10
+                                : pageCount - 1;
+
+                            loadPage(idxLink);
+                        }}>...</span>
+                );
+
+                end = currentPage + 2;
+            }
+            else {
+                end = pageCount;
+            }
+        }
+        else {
+            end = pageCount;
+        }
+
+        if ((end - start) < 4) {
+            while ((end - start) < 4 && end < pageCount) {
+                end++;
+            }
+        }
+
+        if ((end - start) < 4) {
+            while ((end - start) < 4 && start > 1) {
+                start--;
+            }
+        }
+
+        for (let i = start; i <= end; i++) {
+            result.push(
+                <span
+                    className={`${cl.page_navigator__obj} ${currentPage === i ? cl.current_page_navigator__obj : ''}`}
+                    key={i}
+                    onClick={() => loadPage(i)}>{i}</span>
+            );
+        }
+
+        result.unshift(left);
+        result.push(right);
+
+        return result;
+    }
+
     React.useEffect(() => {
         if (userInfo === null) {
             loadUserInfo();
         }
 
-        if (markersForMap === null) {
-            loadMarkersForMap();
-        }
-
         if (markersForList === null) {
             loadMarkersForList();
         }
+
+        if (markersForMap === null && mapRef.current) {
+            loadMarkersForMap(mapRef.current.getBounds());
+            setMapBounds(mapRef.current.getBounds());
+        }
+
+        mapRef.current?.on('click', mapClickEvent);
+        mapRef.current?.on('moveend', mapMoveendEvent)
+
+        return () => {
+            mapRef.current?.off('click', mapClickEvent);
+            mapRef.current?.off('moveend', mapMoveendEvent);
+        };
     });
 
     return (
@@ -751,7 +856,6 @@ export default function MainLayout() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <MapEventHandler />
                 {renderMarkersOnMap()}
             </MapContainer>
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
