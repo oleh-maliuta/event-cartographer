@@ -1,22 +1,38 @@
 import React from "react";
 import cl from "./.module.css";
-import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import Panel from "../../components/Panel/Panel";
+import PanelInput from "../../components/PanelInput/PanelInput";
+import PanelButton from "../../components/PanelButton/PanelButton";
+import { Link } from "react-router-dom";
 
-export default function SignUpLayout() {
-    const [signingUp, setSigningUp] = React.useState(false);
+const SignUpLayout = () => {
+    const [submitting, setSubmitting] = React.useState(false);
 
-    const signUpPanelRef = React.useRef(null);
     const usernameInputRef = React.useRef(null);
     const emailInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
-    const signUpPanelDimensions = useRefDimensions(signUpPanelRef);
+    const usernameInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '35px' };
+    }, []);
+    const emailInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '15px' };
+    }, []);
+    const passwordInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '15px' };
+    }, []);
+    const confirmPasswordInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '15px' };
+    }, []);
+    const submitButtonStyle = React.useMemo(() => {
+        return { marginTop: '30px' };
+    }, []);
 
-    async function signUpRequest() {
-        setSigningUp(true);
+    const signUpRequest = React.useCallback(async () => {
+        setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
             method: "POST",
@@ -54,76 +70,50 @@ export default function SignUpLayout() {
             alert("Server error.");
         }
 
-        setSigningUp(false);
-    }
+        setSubmitting(false);
+    });
 
     return (
-        <div className={cl.main}>
-            <div className={`${cl.panel} ${signUpPanelDimensions.height > window.innerHeight ? cl.fixed : ''}`} ref={signUpPanelRef}>
-                <div className={cl.panel_header}>
-                    <h1 className={cl.panel_header_text}>Sign up</h1>
-                    <div className={cl.panel_header_line} />
-                </div>
-                <div className={cl.username}>
-                    <p className={cl.username_header}>
-                        Username
-                    </p>
-                    <input className={cl.username_input}
-                        type='text'
-                        placeholder='Username'
-                        maxLength='100'
-                        ref={usernameInputRef} />
-                </div>
-                <div className={cl.email}>
-                    <p className={cl.email_header}>
-                        Email address
-                    </p>
-                    <input className={cl.email_input}
-                        type='email'
-                        placeholder='Email address'
-                        maxLength='320'
-                        ref={emailInputRef} />
-                </div>
-                <div className={cl.password}>
-                    <p className={cl.password_header}>
-                        Password
-                    </p>
-                    <input className={cl.password_input}
-                        type='password'
-                        placeholder='Password'
-                        maxLength='200'
-                        ref={passwordInputRef} />
-                </div>
-                <div className={cl.confirm_password}>
-                    <p className={cl.confirm_password_header}>
-                        Confirm the password
-                    </p>
-                    <input className={cl.confirm_password_input}
-                        type='password'
-                        placeholder='Confirm the password'
-                        maxLength='200'
-                        ref={confirmPasswordInputRef} />
-                </div>
-                <button className={cl.create_account_button} onClick={() => {
-                    if (!signingUp) {
-                        signUpRequest();
-                    }
-                }}>
-                    {
-                        signingUp ?
-                            <LoadingAnimation
-                                curveColor1="#FFFFFF"
-                                curveColor2="#00000000"
-                                size="20px"
-                                curveWidth="3px" />
-                            :
-                            <span>Create account</span>
-                    }
-                </button>
-                <div className={cl.sign_in_link_cont}>
-                    <a className={cl.sign_in_link} href='/sign-in'>Sign in</a>
-                </div>
+        <Panel
+            title='Sign up'>
+            <PanelInput
+                containerStyle={usernameInfoInputStyle}
+                label='Username'
+                type='text'
+                placeholder='Username'
+                maxLength='100'
+                ref={usernameInputRef} />
+            <PanelInput
+                containerStyle={emailInfoInputStyle}
+                label='Email address'
+                type='email'
+                placeholder='Email address'
+                maxLength='320'
+                ref={emailInputRef} />
+            <PanelInput
+                containerStyle={passwordInfoInputStyle}
+                label='Password'
+                type='password'
+                placeholder='Password'
+                maxLength='200'
+                ref={passwordInputRef} />
+            <PanelInput
+                containerStyle={confirmPasswordInfoInputStyle}
+                label='Confirm password'
+                type='password'
+                placeholder='Confirm password'
+                maxLength='200'
+                ref={confirmPasswordInputRef} />
+            <PanelButton
+                style={submitButtonStyle}
+                text='Create account'
+                loading={submitting}
+                onClick={signUpRequest} />
+            <div className={cl.sign_in_link_cont}>
+                <Link className={cl.sign_in_link} to='/sign-in'>Sign in</Link>
             </div>
-        </div>
+        </Panel>
     );
 }
+
+export default SignUpLayout;

@@ -1,23 +1,30 @@
 import React from 'react';
-import cl from './.module.css';
-import useRefDimensions from '../../hooks/useRefDimensions';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
-import { useLocation } from 'react-router-dom';
-import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
+import { useSearchParams } from 'react-router-dom';
+import PanelInput from '../../components/PanelInput/PanelInput';
+import PanelButton from '../../components/PanelButton/PanelButton';
+import Panel from '../../components/Panel/Panel';
 
-export default function ResetPasswordLayout() {
-    const searchParameters = new URLSearchParams(useLocation().search);
+const ResetPasswordLayout = () => {
+    const [searchParams] = useSearchParams();
 
-    const [resetting, setResetting] = React.useState(false);
+    const [submitting, setSubmitting] = React.useState(false);
 
-    const resetPasswordPanelRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
-    const resetPasswordPanelDimensions = useRefDimensions(resetPasswordPanelRef);
+    const passwordInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '35px' };
+    }, []);
+    const confirmPasswordInfoInputStyle = React.useMemo(() => {
+        return { marginTop: '20px' };
+    }, []);
+    const submitButtonStyle = React.useMemo(() => {
+        return { marginTop: '35px' };
+    }, []);
 
-    async function resetPasswordRequest() {
-        setResetting(true);
+    const resetPasswordRequest = React.useCallback(async () => {
+        setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password`, {
             method: "PUT",
@@ -27,8 +34,8 @@ export default function ResetPasswordLayout() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: searchParameters.get('user') || null,
-                token: searchParameters.get('token') || null,
+                username: searchParams.get('user') || null,
+                token: searchParams.get('token') || null,
                 newPassword: passwordInputRef.current.value || null,
                 confirmNewPassword: confirmPasswordInputRef.current.value || null
             })
@@ -55,45 +62,33 @@ export default function ResetPasswordLayout() {
             alert("Server error.");
         }
 
-        setResetting(true);
-    }
+        setSubmitting(false);
+    });
 
     return (
-        <div className={cl.main}>
-            <div className={`${cl.panel} ${resetPasswordPanelDimensions.height > window.innerHeight ? cl.fixed : ''}`} ref={resetPasswordPanelRef}>
-                <div className={cl.panel_header}>
-                    <h1 className={cl.panel_header_text}>Reset password</h1>
-                    <div className={cl.panel_header_line} />
-                </div>
-                <div className={cl.password}>
-                    <p className={cl.password_header}>
-                        Password
-                    </p>
-                    <input className={cl.password_input} type='password' placeholder='Password' ref={passwordInputRef} />
-                </div>
-                <div className={cl.confirm_password}>
-                    <p className={cl.confirm_password_header}>
-                        Confirm password
-                    </p>
-                    <input className={cl.confirm_password_input} type='password' placeholder='Confirm password' ref={confirmPasswordInputRef} />
-                </div>
-                <button className={cl.submit_button} onClick={() => {
-                    if (!resetting) {
-                        resetPasswordRequest();
-                    }
-                }}>
-                    {
-                        resetting ?
-                            <LoadingAnimation
-                                curveColor1="#FFFFFF"
-                                curveColor2="#00000000"
-                                size="20px"
-                                curveWidth="3px" />
-                            :
-                            <span>Submit</span>
-                    }
-                </button>
-            </div>
-        </div>
+        <Panel
+            title='Reset password'>
+            <PanelInput
+                containerStyle={passwordInfoInputStyle}
+                label='Password'
+                type='password'
+                placeholder='Password'
+                maxLength='200'
+                ref={passwordInputRef} />
+            <PanelInput
+                containerStyle={confirmPasswordInfoInputStyle}
+                label='Confirm password'
+                type='password'
+                placeholder='Confirm password'
+                maxLength='200'
+                ref={confirmPasswordInputRef} />
+            <PanelButton
+                style={submitButtonStyle}
+                text='Submit'
+                loading={submitting}
+                onClick={resetPasswordRequest} />
+        </Panel>
     );
 }
+
+export default ResetPasswordLayout;

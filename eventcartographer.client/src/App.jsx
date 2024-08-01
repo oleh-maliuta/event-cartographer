@@ -7,33 +7,28 @@ import React from "react";
 import { HOST, API_PORT, CLIENT_PORT } from "./constants";
 import ResetPasswordLayout from "./layouts/ResetPasswordLayout/ResetPasswordLayout";
 
-function App() {
-    const [authCheck, setAuthCheck] = React.useState(false);
+const App = () => {
+    async function authCheck() {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/check`, {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            if (
+                window.location.pathname !== '/sign-in' &&
+                window.location.pathname !== '/sign-up' &&
+                window.location.pathname !== '/reset-password'
+            ) {
+                window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
+            }
+        }
+    }
 
     React.useEffect(() => {
-        if (!authCheck) {
-            fetch(`${HOST}:${API_PORT}/api/users/check`, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include"
-            }).then((res) => {
-                return res.json();
-            }).then((json) => {
-                if (
-                    !json.success &&
-                    window.location.pathname !== '/sign-in' &&
-                    window.location.pathname !== '/sign-up' &&
-                    window.location.pathname !== '/reset-password'
-                ) {
-                    window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
-                }
-            }).catch(() => {
-                window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
-            });
-
-            setAuthCheck(true);
-        }
-    });
+        authCheck();
+    }, [window.location]);
 
     return (
         <BrowserRouter>

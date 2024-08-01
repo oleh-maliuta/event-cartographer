@@ -1,15 +1,14 @@
 import React from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon } from "../../map-icons";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
+import Map from "../../components/Map/Map";
 
-export default function MainLayout() {
-    const startPosition = [50.4, 30.5];
-
+const MainLayout = () => {
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
     const [markerListPage, setMarkerListPage] = React.useState(1);
@@ -258,47 +257,6 @@ export default function MainLayout() {
         }
 
         setUpdatingMarkerList(false);
-    }
-
-    function renderMarkersOnMap() {
-        const result = [];
-
-        if (newMarker !== null) {
-            result.push(
-                <Marker
-                    key={'new'}
-                    position={[newMarker.latitude, newMarker.longitude]}
-                    icon={newMarkerIcon}>
-                    <Popup>
-                        <button className={`${cl.marker_popup_cancel_button}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setNewMarker(null);
-                                setMarkerMenu('list');
-                            }}>Cancel</button>
-                    </Popup>
-                </Marker>
-            );
-        }
-
-        markersForMap?.forEach(el => {
-            result.push(
-                <Marker
-                    key={el.id}
-                    position={[el.latitude, el.longitude]}
-                    icon={getImportanceIcon(el.importance)}>
-                    <Popup>
-                        <div className={cl.marker_popup_cont}>
-                            <h2 className={cl.marker_popup_title}>{el.title}</h2>
-                            <p className={cl.marker_popup_description}>{el.description}</p>
-                            <p className={cl.marker_popup_starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
-                        </div>
-                    </Popup>
-                </Marker>
-            );
-        });
-
-        return result;
     }
 
     function renderMarkerList() {
@@ -821,15 +779,53 @@ export default function MainLayout() {
         return result;
     }
 
+    const renderMarkersOnMap = React.useCallback(() => {
+        const result = [];
+
+        if (newMarker !== null) {
+            result.push(
+                <Marker
+                    key={'new'}
+                    position={[newMarker.latitude, newMarker.longitude]}
+                    icon={newMarkerIcon}>
+                    <Popup>
+                        <button className={`${cl.marker_popup_cancel_button}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setNewMarker(null);
+                                setMarkerMenu('list');
+                            }}>Cancel</button>
+                    </Popup>
+                </Marker>
+            );
+        }
+
+        markersForMap?.forEach(el => {
+            result.push(
+                <Marker
+                    key={el.id}
+                    position={[el.latitude, el.longitude]}
+                    icon={getImportanceIcon(el.importance)}>
+                    <Popup>
+                        <div className={cl.marker_popup_cont}>
+                            <h2 className={cl.marker_popup_title}>{el.title}</h2>
+                            <p className={cl.marker_popup_description}>{el.description}</p>
+                            <p className={cl.marker_popup_starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            );
+        });
+
+        return result;
+    }, [newMarker, markersForMap]);
+
     React.useEffect(() => {
-        if (userInfo === null) {
-            loadUserInfo();
-        }
+        loadUserInfo();
+        loadMarkersForList();
+    }, []);
 
-        if (markersForList === null) {
-            loadMarkersForList();
-        }
-
+    React.useEffect(() => {
         if (markersForMap === null && mapRef.current) {
             loadMarkersForMap(mapRef.current.getBounds());
             setMapBounds(mapRef.current.getBounds());
@@ -842,22 +838,13 @@ export default function MainLayout() {
             mapRef.current?.off('click', mapClickEvent);
             mapRef.current?.off('moveend', mapMoveendEvent);
         };
-    });
+    }, [mapRef.current, markersForMap]);
 
     return (
         <div className={cl.main}>
-            <MapContainer
-                center={startPosition}
-                zoom={12}
-                style={{ position: 'fixed', width: '100%', height: '100%' }}
-                ref={mapRef}
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {renderMarkersOnMap()}
-            </MapContainer>
+            <Map
+                renderMarkers={renderMarkersOnMap}
+                ref={mapRef} />
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
                 <div className={`${cl.marker_panel__top_menu}`}>
                     <div
@@ -911,4 +898,6 @@ export default function MainLayout() {
             </div>
         </div>
     );
-}
+};
+
+export default MainLayout;

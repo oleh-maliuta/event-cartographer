@@ -3,7 +3,7 @@ import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
-export default function UserSettingsLayout() {
+const UserSettingsLayout = () => {
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
@@ -429,3 +429,5 @@ export default function UserSettingsLayout() {
         </div>
     );
 }
+
+export default UserSettingsLayout;

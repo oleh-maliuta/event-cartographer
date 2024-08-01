@@ -1,6 +1,12 @@
+import React from 'react';
 import cl from './.module.css';
 
-export default function LoadingAnimation({ size = '120px', curveWidth = '16px', curveColor1 = '#00a193', curveColor2 = '#C99E22' }) {
+const LoadingAnimation = React.memo(({
+    size = '120px',
+    curveWidth = '16px',
+    curveColor1 = '#00a193',
+    curveColor2 = '#C99E22'
+}) => {
     return (
         <div className={cl.main}>
             <div className={cl.loader} style={{
@@ -12,4 +18,6 @@ export default function LoadingAnimation({ size = '120px', curveWidth = '16px', 
             }}></div>
         </div>
     );
-}
+});
+
+export default LoadingAnimation;
