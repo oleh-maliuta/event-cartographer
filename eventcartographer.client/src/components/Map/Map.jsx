@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { MapContainer, TileLayer } from "react-leaflet";
 
 const Map = React.memo(React.forwardRef(({
@@ -20,5 +21,9 @@ const Map = React.memo(React.forwardRef(({
         </MapContainer>
     );
 }));
+
+Map.propTypes = {
+    renderMarkers: PropTypes.func.isRequired
+};
 
 export default Map;

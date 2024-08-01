@@ -123,7 +123,7 @@ const MainLayout = () => {
         url += `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
 
         markerListImportanceFilter.forEach(el => {
-            queryPar += `&imp=${el}`
+            url += `&imp=${el}`
         });
 
         const response = await fetch(url, {

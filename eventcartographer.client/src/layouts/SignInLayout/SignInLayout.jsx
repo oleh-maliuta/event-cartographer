@@ -26,6 +26,45 @@ const SignInLayout = () => {
         return { marginTop: '25px' };
     }, []);
 
+    const signInRequest = React.useCallback(async () => {
+        setSubmitting(true);
+
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: usernameInputRef.current.value || null,
+                password: passwordInputRef.current.value || null
+            })
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            window.location.href = `${HOST}:${CLIENT_PORT}`;
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
+            alert("Server error.");
+        }
+
+        setSubmitting(false);
+    }, []);
+
     async function resetPasswordPermissionRequest() {
         setSendingEmail(true);
 
@@ -64,45 +103,6 @@ const SignInLayout = () => {
 
         setSendingEmail(false);
     }
-
-    const signInRequest = React.useCallback(async () => {
-        setSubmitting(true);
-
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
-            method: "POST",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: usernameInputRef.current.value,
-                password: passwordInputRef.current.value
-            })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            window.location.href = `${HOST}:${CLIENT_PORT}`;
-        } else if (!response.ok) {
-            if (json.message) {
-                alert(json.message);
-            } else {
-                let errors = "";
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors += `${json.errors[prop][err]}\n`;
-                    }
-                }
-                errors = errors.slice(0, -1);
-                alert(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
-        }
-
-        setSubmitting(false);
-    });
 
     function renderModalWindow() {
         return (

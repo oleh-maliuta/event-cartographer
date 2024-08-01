@@ -1,5 +1,6 @@
 import React from "react";
 import cl from './.module.css';
+import PropTypes from "prop-types";
 import useRefDimensions from "../../hooks/useRefDimensions";
 
 const Panel = React.memo(({
@@ -22,5 +23,15 @@ const Panel = React.memo(({
         </div>
     );
 });
+
+Panel.displayName = "Panel";
+
+Panel.propTypes = {
+    title: PropTypes.string.isRequired,
+    children: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
+    ]).isRequired
+};
 
 export default Panel;

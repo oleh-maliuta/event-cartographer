@@ -1,5 +1,6 @@
 import React from "react";
 import cl from './.module.css';
+import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 const PanelButton = React.memo(({
@@ -29,5 +30,14 @@ const PanelButton = React.memo(({
         </button>
     );
 });
+
+PanelButton.displayName = 'PanelButton';
+
+PanelButton.propTypes = {
+    style: PropTypes.object,
+    text: PropTypes.string,
+    loading: PropTypes.bool,
+    onClick: PropTypes.func
+};
 
 export default PanelButton;

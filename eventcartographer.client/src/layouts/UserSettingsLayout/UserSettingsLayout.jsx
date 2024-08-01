@@ -9,7 +9,6 @@ const UserSettingsLayout = () => {
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
     const [deletingAccount, setDeletingAccount] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
-    const [modalWindowMode, setModalWindowMode] = React.useState(null);
 
     const usernameInputRef = React.useRef(null);
     const oldPasswordInputRef = React.useRef(null);
@@ -187,59 +186,8 @@ const UserSettingsLayout = () => {
         setUserInfo(json.data || undefined);
     }
 
-    function renderModalWindow() {
-        switch (modalWindowMode) {
-            case 'delete-account':
-                return (
-                    <div className={`${cl.modal_window__background}`}
-                        onClick={() => { setModalWindowMode(null); }}>
-                        <div className={`${cl.modal_window}`}
-                            onClick={(e) => { e.stopPropagation(); }}>
-                            <div className={`${cl.modal_window__content}`}>
-                                <h1 className={`${cl.modal_window__header}`}>Delete account</h1>
-                                <div className={`${cl.modal_window__confirm_deletion__cont}`}>
-                                    <p className={`${cl.modal_window__confirm_deletion__description}`}>
-                                        Before deleting this account, you must
-                                        to input the username below so we make sure you
-                                        really want to do execute the operation.
-                                    </p>
-                                    <input className={`${cl.modal_window__confirm_deletion__input}`}
-                                        type="text"
-                                        placeholder="Username"
-                                        maxLength="480"
-                                        ref={confirmAccountDeletionInputRef} />
-                                </div>
-                            </div>
-                            <div className={`${cl.modal_window__control}`}>
-                                <div className={`${cl.modal_window__control__buttons}`}>
-                                    <button className={`${cl.modal_window__control__buttons__cancel}`}
-                                        onClick={() => { setModalWindowMode(null); }}>
-                                        Cancel
-                                    </button>
-                                    <button className={`${cl.modal_window__control__buttons__apply}`}
-                                        onClick={() => {
-                                            if (confirmAccountDeletionInputRef.current.value === userInfo.name) {
-                                                deleteAccountRequest();
-                                            } else {
-                                                alert("The operation is not confirmed.");
-                                            }
-                                        }}>
-                                        Apply
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            default:
-                return null;
-        }
-    }
-
     React.useEffect(() => {
-        if (userInfo === null) {
-            loadUserInfo();
-        }
+        loadUserInfo();
     });
 
     if (userInfo === null) {

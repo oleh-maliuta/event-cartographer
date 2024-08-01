@@ -1,5 +1,6 @@
 import React from "react";
 import cl from './.module.css';
+import PropTypes from "prop-types";
 
 const PanelInput = React.memo(React.forwardRef(({
     containerStyle,
@@ -26,5 +27,15 @@ const PanelInput = React.memo(React.forwardRef(({
         </div>
     );
 }));
+
+PanelInput.propTypes = {
+    containerStyle: PropTypes.object,
+    labelStyle: PropTypes.object,
+    inputStyle: PropTypes.object,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    type: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
 export default PanelInput;

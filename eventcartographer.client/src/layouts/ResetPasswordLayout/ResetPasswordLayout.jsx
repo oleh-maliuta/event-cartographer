@@ -63,7 +63,7 @@ const ResetPasswordLayout = () => {
         }
 
         setSubmitting(false);
-    });
+    }, [searchParams]);
 
     return (
         <Panel

@@ -28,7 +28,7 @@ const App = () => {
 
     React.useEffect(() => {
         authCheck();
-    }, [window.location]);
+    });
 
     return (
         <BrowserRouter>

@@ -1,7 +1,6 @@
 import React from "react";
 import cl from "./.module.css";
 import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
-import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
@@ -71,7 +70,7 @@ const SignUpLayout = () => {
         }
 
         setSubmitting(false);
-    });
+    }, []);
 
     return (
         <Panel
