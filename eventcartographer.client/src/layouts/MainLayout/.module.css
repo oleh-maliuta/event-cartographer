@@ -363,10 +363,12 @@
 .marker_list_filter_panel_starts_at {
     display: grid;
     grid-template-columns: 1fr 20px 1fr;
+    padding-inline: 3px;
     margin-top: 5px;
 }
 
 .marker_list_filter_panel_starts_at_input {
+    min-width: 0px;
     font-size: 18px;
     border: 2px solid black;
     border-radius: 5px;

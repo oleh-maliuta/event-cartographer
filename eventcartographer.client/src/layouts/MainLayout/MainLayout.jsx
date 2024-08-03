@@ -7,6 +7,7 @@ import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
 import Map from "../../components/Map/Map";
+import PageNavigator from "../../components/PageNavigator/PageNavigator";
 
 const MainLayout = () => {
     const [newMarker, setNewMarker] = React.useState(null);
@@ -27,7 +28,7 @@ const MainLayout = () => {
 
     const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
-    const [markerListDateOfStartFilter, setMarkerListDateOfStartFilter] = React.useState({ min: undefined, max: undefined });
+    const [markerListTimeOfStartFilter, setMarkerListTimeOfStartFilter] = React.useState({ min: undefined, max: undefined });
 
     const mapRef = React.useRef(null);
 
@@ -125,7 +126,7 @@ const MainLayout = () => {
 
         if (response.ok) {
             loadMarkersForMap(mapBounds);
-            loadMarkersForList();
+            loadMarkersForList(1);
             setMarkerMenu('list');
             setNewMarker(null);
         } else if (!response.ok) {
@@ -171,7 +172,7 @@ const MainLayout = () => {
 
         if (response.ok) {
             loadMarkersForMap(mapBounds);
-            loadMarkersForList();
+            loadMarkersForList(1);
             setMarkerMenu('list');
             setEditingMarker(null);
         } else if (!response.ok) {
@@ -400,35 +401,33 @@ const MainLayout = () => {
                                 <div className={`${cl.marker_list_filter_panel_sep_line}`} />
                             </div>
                             <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
-                                <h3 className={`${cl.marker_list_filter_panel_starts_at_header}`}>Date of start</h3>
+                                <h3 className={`${cl.marker_list_filter_panel_starts_at_header}`}>Time of the start</h3>
                                 <div className={`${cl.marker_list_filter_panel_starts_at}`}>
                                     <input
                                         className={`${cl.marker_list_filter_panel_starts_at_min} ${cl.marker_list_filter_panel_starts_at_input}`}
                                         type='datetime-local'
-                                        value={getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}
+                                        value={getDateTimeLocalFormat(markerListTimeOfStartFilter.min) ?? ''}
                                         onChange={(e) => {
-                                            setMarkerListDateOfStartFilter(p => {
+                                            setMarkerListTimeOfStartFilter(p => {
                                                 const newP = { ...p };
                                                 newP.min = e.target.value;
                                                 return newP;
                                             });
-                                        }}
-                                    />
+                                        }} />
                                     <div className={`${cl.marker_list_filter_panel_starts_at_sep_line_cont}`}>
                                         <div className={`${cl.marker_list_filter_panel_starts_at_sep_line}`} />
                                     </div>
                                     <input
                                         className={`${cl.marker_list_filter_panel_starts_at_max} ${cl.marker_list_filter_panel_starts_at_input}`}
                                         type='datetime-local'
-                                        value={getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}
+                                        value={getDateTimeLocalFormat(markerListTimeOfStartFilter.max) ?? ''}
                                         onChange={(e) => {
-                                            setMarkerListDateOfStartFilter(p => {
+                                            setMarkerListTimeOfStartFilter(p => {
                                                 const newP = { ...p };
                                                 newP.max = e.target.value;
                                                 return newP;
                                             });
-                                        }}
-                                    />
+                                        }} />
                                 </div>
                             </div>
                         </div>
@@ -444,11 +443,10 @@ const MainLayout = () => {
                             <div className={`${cl.marker_list}`}>
                                 {displayMarkerList()}
                             </div>
-                            <div className={cl.page_navigator__cont}>
-                                <div className={cl.page_navigator}>
-                                    {renderPageNavigator()}
-                                </div>
-                            </div>
+                            <PageNavigator
+                                currentPage={markerListPage}
+                                pageCount={markerListPageCount}
+                                loadData={loadMarkersForList} />
                         </>
                 }
             </>
@@ -604,118 +602,7 @@ const MainLayout = () => {
         );
     }
 
-    function renderPageNavigator() {
-        const currentPage = markerListPage;
-        const pageCount = markerListPageCount;
-
-        if (pageCount <= 1) {
-            return;
-        }
-
-        const loadPage = (specifiedPage) => {
-            if (specifiedPage !== currentPage) {
-                loadMarkersForList(specifiedPage);
-            }
-        };
-
-        let result = [];
-        let left = [];
-        let right = [];
-        let start, end;
-
-        if (currentPage > 1) {
-            left.push(
-                <span className={cl.page_navigator__obj} key="arrow-left"
-                    onClick={() => loadPage(currentPage - 1)}>&#60;</span>
-            );
-
-            if ((currentPage - 4) > 1) {
-                left.push(
-                    <span className={`${cl.page_navigator__obj}`} key="1" onClick={() => loadPage(1)}>1</span>
-                );
-
-                left.push(
-                    <span className={`${cl.page_navigator__obj}`} key="dots-left"
-                        onClick={() => {
-                            const idxLink = (currentPage - 10) > 1
-                                ? currentPage - 10
-                                : 2;
-
-                            loadPage(idxLink);
-                        }}>...</span>
-                );
-
-                start = currentPage - 2;
-            }
-            else {
-                start = 1;
-            }
-        }
-        else {
-            start = 1;
-        }
-
-        if (currentPage < pageCount) {
-            right.unshift(
-                <span className={cl.page_navigator__obj} key="arrow-right"
-                    onClick={() => loadPage(currentPage + 1)}>&#62;</span>
-            );
-
-            if ((currentPage + 4) < pageCount) {
-                right.unshift(
-                    <span className={`${cl.page_navigator__obj}`} key={pageCount}
-                        onClick={() => loadPage(pageCount)}>{pageCount}</span>
-                );
-
-                right.unshift(
-                    <span className={`${cl.page_navigator__obj}`} key="dots-right"
-                        onClick={() => {
-                            const idxLink = (currentPage + 10) < pageCount
-                                ? currentPage + 10
-                                : pageCount - 1;
-
-                            loadPage(idxLink);
-                        }}>...</span>
-                );
-
-                end = currentPage + 2;
-            }
-            else {
-                end = pageCount;
-            }
-        }
-        else {
-            end = pageCount;
-        }
-
-        if ((end - start) < 4) {
-            while ((end - start) < 4 && end < pageCount) {
-                end++;
-            }
-        }
-
-        if ((end - start) < 4) {
-            while ((end - start) < 4 && start > 1) {
-                start--;
-            }
-        }
-
-        for (let i = start; i <= end; i++) {
-            result.push(
-                <span
-                    className={`${cl.page_navigator__obj} ${currentPage === i ? cl.current_page_navigator__obj : ''}`}
-                    key={i}
-                    onClick={() => loadPage(i)}>{i}</span>
-            );
-        }
-
-        result.unshift(left);
-        result.push(right);
-
-        return result;
-    }
-
-    const loadMarkersForList = React.useCallback(async (page = markerListPage) => {
+    const loadMarkersForList = React.useCallback(async (page) => {
         setMarkersForListLoading(true);
 
         let url = `${HOST}:${API_PORT}/api/markers/search`;
@@ -724,8 +611,8 @@ const MainLayout = () => {
         url += `&q=${markerSearchInputRef.current?.value || ''}`;
         url += `&sort_type=${markerListSort.type}`;
         url += `&sort_by_asc=${markerListSort.asc}`;
-        url += `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}`;
-        url += `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
+        url += `&min_time=${getDateTimeLocalFormat(markerListTimeOfStartFilter.min) ?? ''}`;
+        url += `&max_time=${getDateTimeLocalFormat(markerListTimeOfStartFilter.max) ?? ''}`;
 
         markerListImportanceFilter.forEach(el => {
             url += `&imp=${el}`
@@ -742,7 +629,7 @@ const MainLayout = () => {
         setMarkerListPage(page || 1);
         setMarkerListPageCount(json.data.pageCount || 0);
         setMarkersForListLoading(false);
-    }, [markerListDateOfStartFilter.max, markerListDateOfStartFilter.min, markerListImportanceFilter, markerListPage, markerListSort.asc, markerListSort.type]);
+    }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type]);
 
     const loadMarkersForMap = React.useCallback(async (bounds) => {
         let url = `${HOST}:${API_PORT}/api/markers/map`;
@@ -833,7 +720,7 @@ const MainLayout = () => {
     }, []);
 
     React.useEffect(() => {
-        loadMarkersForList();
+        loadMarkersForList(1);
     }, [loadMarkersForList]);
 
     return (
@@ -846,9 +733,8 @@ const MainLayout = () => {
                 ref={mapRef} />
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
                 <div className={`${cl.marker_panel__top_menu}`}>
-                    <div
-                        className={
-                            `${cl.marker_panel__top_menu__option} 
+                    <div className={
+                        `${cl.marker_panel__top_menu__option} 
                             ${newMarker === null ? cl.unavailable : ''} 
                             ${currentMarkerMenu === 'add' ? cl.current : ''}`}
                         onClick={() => {
@@ -856,7 +742,8 @@ const MainLayout = () => {
                                 setMarkerMenu('add');
                             }
                         }}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`} alt="add" />
+                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
+                            alt="add" />
                     </div>
                     <div
                         className={
@@ -873,25 +760,24 @@ const MainLayout = () => {
                 <div className={`${cl.right_side_menu__user_name__cont}`}>
                     <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
                 </div>
-                <button
-                    className={`${cl.right_side_menu__marker_menu_button}`}
+                <button className={`${cl.right_side_menu__marker_menu_button}`}
                     onClick={() => {
                         if (!isMarkerPanelVisible && currentMarkerMenu === null) {
                             setMarkerMenu('list');
                         }
                         setMarkerPanelVisibility(p => !p);
                     }}>
-                    <img className={`${cl.right_side_menu__marker_menu_button__img}`} alt='marker menu' />
+                    <img className={`${cl.right_side_menu__marker_menu_button__img}`}
+                        alt='marker menu' />
                 </button>
                 <button className={`${cl.right_side_menu__settings_button}`}
                     onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}/settings`}>
-                    <img
-                        className={`${cl.right_side_menu__settings_button__img}`}
-                        alt='log out' />
+                    <img className={`${cl.right_side_menu__settings_button__img}`}
+                        alt='settings' />
                 </button>
-                <button className={`${cl.right_side_menu__log_out_button}`} onClick={logOutRequest}>
-                    <img
-                        className={`${cl.right_side_menu__log_out_button__img}`}
+                <button className={`${cl.right_side_menu__log_out_button}`}
+                    onClick={logOutRequest}>
+                    <img className={`${cl.right_side_menu__log_out_button__img}`}
                         alt='log out' />
                 </button>
             </div>
