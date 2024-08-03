@@ -1,0 +1,10 @@
+{
+    "sign-in": {
+        "panel-header": "Sign in",
+        "username-input": "Username",
+        "password-input": "Password",
+        "submit": "Submit",
+        "sign-up-link": "Sign up",
+        "forgot-password": "Forgot password?"
+    }
+}

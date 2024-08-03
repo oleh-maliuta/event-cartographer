@@ -65,6 +65,24 @@ const ResetPasswordLayout = () => {
         setSubmitting(false);
     }, [searchParams]);
 
+    const windowKeyPressEvent = React.useCallback((e) => {
+        switch (e.key) {
+            case "Enter":
+                resetPasswordRequest();
+                break;
+            default:
+                return;
+        }
+    }, [resetPasswordRequest]);
+
+    React.useEffect(() => {
+        window.addEventListener("keypress", windowKeyPressEvent);
+
+        return () => {
+            window.removeEventListener("keypress", windowKeyPressEvent);
+        };
+    }, [windowKeyPressEvent]);
+
     return (
         <Panel
             title='Reset password'>

@@ -4,7 +4,7 @@
     grid-template-columns: 25% auto;
     margin-top: 30px;
 
-    @media (width < 260px) {
+    @media (width < 310px) {
         display: block;
     }
 }
@@ -28,7 +28,7 @@
         text-decoration: underline;
     }
 
-    @media (width < 260px) {
+    @media (width < 310px) {
         margin-left: 50%;
         transform: translateX(-50%);
     }
@@ -39,7 +39,7 @@
     height: 15px;
     width: 100%;
 
-    @media (width < 260px) {
+    @media (width < 310px) {
         margin-top: 20px;
     }
 }
@@ -58,7 +58,7 @@
         text-decoration: underline;
     }
 
-    @media (width < 260px) {
+    @media (width < 310px) {
         right: inherit;
         margin-left: 50%;
         transform: translateX(-50%);

@@ -72,6 +72,24 @@ const SignUpLayout = () => {
         setSubmitting(false);
     }, []);
 
+    const windowKeyPressEvent = React.useCallback((e) => {
+        switch (e.key) {
+            case "Enter":
+                signUpRequest();
+                break;
+            default:
+                return;
+        }
+    }, [signUpRequest]);
+
+    React.useEffect(() => {
+        window.addEventListener("keypress", windowKeyPressEvent);
+
+        return () => {
+            window.removeEventListener("keypress", windowKeyPressEvent);
+        };
+    }, [windowKeyPressEvent]);
+
     return (
         <Panel
             title='Sign up'>

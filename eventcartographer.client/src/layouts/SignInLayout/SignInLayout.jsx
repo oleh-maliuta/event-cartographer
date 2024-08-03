@@ -6,8 +6,11 @@ import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const SignInLayout = () => {
+    const { t } = useTranslation();
+
     const [submitting, setSubmitting] = React.useState(false);
     const [sendingEmail, setSendingEmail] = React.useState(false);
     const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
@@ -152,38 +155,58 @@ const SignInLayout = () => {
         );
     }
 
+    const windowKeyPressEvent = React.useCallback((e) => {
+        switch (e.key) {
+            case "Enter":
+                signInRequest();
+                break;
+            default:
+                return;
+        }
+    }, [signInRequest]);
+
+    React.useEffect(() => {
+        window.addEventListener("keypress", windowKeyPressEvent);
+
+        return () => {
+            window.removeEventListener("keypress", windowKeyPressEvent);
+        };
+    }, [windowKeyPressEvent]);
+
     return (
         <>
             <Panel
-                title='Sign in'>
+                title={t('sign-in.panel-header')}>
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
-                    label='Username'
+                    label={t('sign-in.username-input')}
                     type='text'
-                    placeholder='Username'
+                    placeholder={t('sign-in.username-input')}
                     maxLength='100'
                     ref={usernameInputRef} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
-                    label='Password'
+                    label={t('sign-in.password-input')}
                     type='password'
-                    placeholder='Password'
+                    placeholder={t('sign-in.password-input')}
                     maxLength='200'
                     ref={passwordInputRef} />
                 <PanelButton
                     style={submitButtonStyle}
-                    text='Submit'
+                    text={t('sign-in.submit')}
                     loading={submitting}
                     onClick={signInRequest} />
                 <div className={cl.options}>
                     <div className={cl.options_sign_up}>
-                        <Link className={cl.options_sign_up_link} to='/sign-up'>Sign up</Link>
+                        <Link className={cl.options_sign_up_link} to='/sign-up'>
+                            {t('sign-in.sign-up-link')}
+                        </Link>
                     </div>
                     <div className={cl.options_forgot_password}>
-                        <a className={cl.options_forgot_password_link}
+                        <span className={cl.options_forgot_password_link}
                             onClick={() => setModalWindowVisibility(true)}>
-                            Forgot password?
-                        </a>
+                            {t('sign-in.forgot-password')}
+                        </span>
                     </div>
                 </div>
             </Panel>

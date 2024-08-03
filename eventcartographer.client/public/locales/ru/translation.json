@@ -1,0 +1,10 @@
+{
+    "sign-in": {
+        "panel-header": "Вход",
+        "username-input": "Имя пользователя",
+        "password-input": "Пароль",
+        "submit": "Отправить",
+        "sign-up-link": "Зарегистрироваться",
+        "forgot-password": "Забыли пароль?"
+    }
+}
