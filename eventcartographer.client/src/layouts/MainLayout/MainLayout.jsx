@@ -25,12 +25,14 @@ const MainLayout = () => {
     const [markersForListLoading, setMarkersForListLoading] = React.useState(false);
     const [updatingMarkerList, setUpdatingMarkerList] = React.useState(false);
 
-    const [markerListSearch, setMarkerListSearch] = React.useState('');
     const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
     const [markerListDateOfStartFilter, setMarkerListDateOfStartFilter] = React.useState({ min: undefined, max: undefined });
 
     const mapRef = React.useRef(null);
+
+    const markerSearchInputRef = React.useRef(null);
+
     const latitudeInputRef = React.useRef(null);
     const longitudeInputRef = React.useRef(null);
     const startsAtInputRef = React.useRef(null);
@@ -61,27 +63,6 @@ const MainLayout = () => {
         return processedDateTime.toISOString().slice(0, 19);
     }
 
-    function mapClickEvent(e) {
-        setNewMarker({
-            latitude: e.latlng.lat,
-            longitude: e.latlng.lng
-        });
-
-        setMarkerMenu('add');
-        setMarkerPanelVisibility(true);
-    }
-
-    function mapMoveendEvent() {
-        const bounds = mapRef.current?.getBounds();
-
-        if (!bounds) {
-            return;
-        }
-
-        loadMarkersForMap(bounds);
-        setMapBounds(bounds);
-    }
-
     async function loadUserInfo() {
         const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
             method: "GET",
@@ -91,52 +72,6 @@ const MainLayout = () => {
         const json = await response.json();
 
         setUserInfo(json.data || undefined);
-    }
-
-    async function loadMarkersForMap(bounds = mapBounds) {
-        let url = `${HOST}:${API_PORT}/api/markers/map`;
-        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
-        url += `&n_e_long=${bounds.getNorthEast().lng}`;
-        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
-        url += `&s_w_long=${bounds.getSouthWest().lng}`;
-
-        const response = await fetch(url, {
-            method: "GET",
-            mode: "cors",
-            credentials: "include"
-        });
-        const json = await response.json();
-
-        setMarkersForMap(json.data || []);
-    }
-
-    async function loadMarkersForList(page = markerListPage) {
-        setMarkersForListLoading(true);
-
-        let url = `${HOST}:${API_PORT}/api/markers/search`;
-        url += '?page_size=10';
-        url += `&page=${page || '1'}`;
-        url += `&q=${markerListSearch}`;
-        url += `&sort_type=${markerListSort.type}`;
-        url += `&sort_by_asc=${markerListSort.asc}`;
-        url += `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}`;
-        url += `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
-
-        markerListImportanceFilter.forEach(el => {
-            url += `&imp=${el}`
-        });
-
-        const response = await fetch(url, {
-            method: "GET",
-            mode: "cors",
-            credentials: "include"
-        });
-        const json = await response.json();
-
-        setMarkersForList(json.data.items || []);
-        setMarkerListPage(page || 1);
-        setMarkerListPageCount(json.data.pageCount || 0);
-        setMarkersForListLoading(false);
     }
 
     async function logOutRequest() {
@@ -189,7 +124,7 @@ const MainLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            loadMarkersForMap();
+            loadMarkersForMap(mapBounds);
             loadMarkersForList();
             setMarkerMenu('list');
             setNewMarker(null);
@@ -235,7 +170,7 @@ const MainLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            loadMarkersForMap();
+            loadMarkersForMap(mapBounds);
             loadMarkersForList();
             setMarkerMenu('list');
             setEditingMarker(null);
@@ -336,13 +271,22 @@ const MainLayout = () => {
         return (
             <>
                 <div className={`${cl.marker_list_panel}`}>
-                    <input
-                        className={`${cl.marker_list_search_input}`}
-                        type='text'
-                        placeholder='Search'
-                        value={markerListSearch}
-                        onChange={(e) => { setMarkerListSearch(e.target.value) }}
-                    />
+                    <div className={cl.marker_list_panel__search}>
+                        <input
+                            className={`${cl.marker_list_search_input}`}
+                            type='text'
+                            placeholder='Search'
+                            ref={markerSearchInputRef} />
+                        <button className={`${cl.marker_list_apply_button}`}
+                            onClick={() => {
+                                if (!markersForListLoading) {
+                                    loadMarkersForList(1);
+                                }
+                            }}>
+                            <img className={cl.marker_list_apply_button__img}
+                                alt="search" />
+                        </button>
+                    </div>
                     <div className={`${cl.marker_list_sort_and_filter_cont}`}>
                         <span className={`${cl.marker_list_sort_label}`}>Sort by:</span>
                         <select className={`${cl.marker_list_sort_input}`}
@@ -374,14 +318,6 @@ const MainLayout = () => {
                         <button className={`${cl.marker_list_filter_button}`}
                             onClick={() => { setMarkerListFilterVisibility(p => !p) }}>
                             <img className={`${cl.marker_list_filter_button_img}`} alt='filter' />
-                        </button>
-                        <button className={`${cl.marker_list_apply_button}`}
-                            onClick={() => {
-                                if (!markersForListLoading) {
-                                    loadMarkersForList(1);
-                                }
-                            }}>
-                            Apply
                         </button>
                     </div>
                     <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterVisible ? 'fit-content' : '0px' }}>
@@ -779,6 +715,78 @@ const MainLayout = () => {
         return result;
     }
 
+    const loadMarkersForList = React.useCallback(async (page = markerListPage) => {
+        setMarkersForListLoading(true);
+
+        let url = `${HOST}:${API_PORT}/api/markers/search`;
+        url += '?page_size=10';
+        url += `&page=${page || '1'}`;
+        url += `&q=${markerSearchInputRef.current?.value || ''}`;
+        url += `&sort_type=${markerListSort.type}`;
+        url += `&sort_by_asc=${markerListSort.asc}`;
+        url += `&min_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.min) ?? ''}`;
+        url += `&max_time=${getDateTimeLocalFormat(markerListDateOfStartFilter.max) ?? ''}`;
+
+        markerListImportanceFilter.forEach(el => {
+            url += `&imp=${el}`
+        });
+
+        const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        });
+        const json = await response.json();
+
+        setMarkersForList(json.data.items || []);
+        setMarkerListPage(page || 1);
+        setMarkerListPageCount(json.data.pageCount || 0);
+        setMarkersForListLoading(false);
+    }, [markerListDateOfStartFilter.max, markerListDateOfStartFilter.min, markerListImportanceFilter, markerListPage, markerListSort.asc, markerListSort.type]);
+
+    const loadMarkersForMap = React.useCallback(async (bounds) => {
+        let url = `${HOST}:${API_PORT}/api/markers/map`;
+        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
+        url += `&n_e_long=${bounds.getNorthEast().lng}`;
+        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
+        url += `&s_w_long=${bounds.getSouthWest().lng}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            credentials: "include"
+        });
+        const json = await response.json();
+
+        setMarkersForMap(json.data || []);
+    }, []);
+
+    const mapLoadEvent = React.useCallback((map) => {
+        loadMarkersForMap(map.getBounds());
+        setMapBounds(map.getBounds());
+    }, [loadMarkersForMap]);
+
+    const mapClickEvent = React.useCallback((e) => {
+        setNewMarker({
+            latitude: e.latlng.lat,
+            longitude: e.latlng.lng
+        });
+
+        setMarkerMenu('add');
+        setMarkerPanelVisibility(true);
+    }, []);
+
+    const mapMoveendEvent = React.useCallback(() => {
+        const bounds = mapRef.current?.getBounds();
+
+        if (!bounds) {
+            return;
+        }
+
+        loadMarkersForMap(bounds);
+        setMapBounds(bounds);
+    }, [loadMarkersForMap]);
+
     const renderMarkersOnMap = React.useCallback(() => {
         const result = [];
 
@@ -822,27 +830,18 @@ const MainLayout = () => {
 
     React.useEffect(() => {
         loadUserInfo();
-        loadMarkersForList();
     }, []);
 
     React.useEffect(() => {
-        if (markersForMap === null && mapRef.current) {
-            loadMarkersForMap(mapRef.current.getBounds());
-            setMapBounds(mapRef.current.getBounds());
-        }
-
-        mapRef.current?.on('click', mapClickEvent);
-        mapRef.current?.on('moveend', mapMoveendEvent)
-
-        return () => {
-            mapRef.current?.off('click', mapClickEvent);
-            mapRef.current?.off('moveend', mapMoveendEvent);
-        };
-    }, [mapRef.current, markersForMap]);
+        loadMarkersForList();
+    }, [loadMarkersForList]);
 
     return (
         <div className={cl.main}>
             <Map
+                load={mapLoadEvent}
+                click={mapClickEvent}
+                moveend={mapMoveendEvent}
                 renderMarkers={renderMarkersOnMap}
                 ref={mapRef} />
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>

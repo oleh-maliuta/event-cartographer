@@ -205,11 +205,43 @@
     margin-top: 15px;
 }
 
+.marker_list_panel__search {
+    display: grid;
+    grid-template-columns: 1fr 35px;
+    width: calc(100% + 5px);
+}
+
 .marker_list_search_input {
     width: 100%;
     font-size: 20px;
     border: 2px solid black;
     border-radius: 5px;
+}
+
+.marker_list_apply_button {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 29px;
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: gray;
+    }
+}
+
+.marker_list_apply_button__img {
+    width: 70%;
+    height: 70%;
+    content: url(../../assets/search.png);
 }
 
 .marker_list_sort_and_filter_cont {
@@ -267,19 +299,6 @@
     content: url(../../assets/filter.png);
     width: 80%;
     height: 80%;
-}
-
-.marker_list_apply_button {
-    cursor: pointer;
-    width: 70px;
-    height: 29px;
-    background-color: black;
-    color: white;
-    font-size: 18px;
-    letter-spacing: 0.5px;
-    border-radius: 5px;
-    margin-left: 5px;
-
 }
 
 .marker_list_filter_panel_cont {
