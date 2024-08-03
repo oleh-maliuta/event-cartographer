@@ -126,6 +126,16 @@
     transform: translate(-40%, -45%);
 }
 
+.map_markers_loading {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    top: 180px;
+    right: 0px;
+    width: 40px;
+    height: 40px;
+}
+
 .marker_panel {
     position: fixed;
     top: 0px;
@@ -403,158 +413,6 @@
     margin-top: 15px;
 }
 
-.marker_list_element {
-    position: relative;
-    padding-block: 10px;
-    padding-inline: 10px;
-    background-color: rgb(215, 215, 215);
-    border-radius: 8px;
-}
-
-.marker_list_element_importance {
-    height: 7px;
-    border-radius: 50px;
-
-    &.low {
-        background-color: green;
-    }
-
-    &.medium {
-        background-color: rgb(230, 230, 0);
-    }
-
-    &.high {
-        background-color: rgb(212, 0, 0);
-    }
-}
-
-.marker_list_element_buttons {
-    display: flex;
-    margin-top: 10px;
-}
-
-.marker_list_element_button {
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 25px;
-    height: 25px;
-}
-
-.marker_list_element_navigate_button {
-    background-color: rgb(66, 167, 255);
-    border-radius: 5px;
-
-    &:hover {
-        background-color: rgb(46, 115, 174);
-    }
-}
-
-.marker_list_element_edit_button {
-    background-color: rgb(255, 162, 0);
-    border-radius: 5px;
-    margin-left: 5px;
-
-    &:hover {
-        background-color: rgb(191, 121, 0);
-    }
-}
-
-.marker_list_element_delete_button {
-    background-color: rgb(212, 0, 0);
-    border-radius: 5px;
-    margin-left: 5px;
-
-    &:hover {
-        background-color: rgb(136, 0, 0);
-    }
-}
-
-.marker_list_element_button_img {
-    width: 70%;
-    height: 70%;
-}
-
-.marker_list_element_navigate_button_img {
-    content: url(../../assets/navigate.png);
-}
-
-.marker_list_element_edit_button_img {
-    content: url(../../assets/edit.png);
-}
-
-.marker_list_element_delete_button_img {
-    content: url(../../assets/delete.png);
-}
-
-.marker_list_element_title_cont {
-    position: relative;
-    margin-top: 10px;
-}
-
-.marker_list_element_title {
-    display: -webkit-box;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.marker_list_element_description_cont {
-    position: relative;
-    margin-top: 10px;
-}
-
-.marker_list_element_description {
-    display: -webkit-box;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-}
-
-.marker_list_element_coordinates_cont {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-}
-
-.marker_list_element_latitude {
-    display: -webkit-box;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-    font-family: "Lucida Console", "Courier New", monospace;
-}
-
-.marker_list_element_longitude {
-    display: -webkit-box;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-    font-family: "Lucida Console", "Courier New", monospace;
-}
-
-.marker_list_element_starts_at_cont {
-    margin-top: 10px;
-}
-
 .editing_marker_field_label {
     font-size: 20px;
 }
@@ -709,34 +567,4 @@
     &:hover {
         background-color: rgb(136, 136, 0);
     }
-}
-
-.page_navigator__cont {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.page_navigator {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-.page_navigator__obj {
-    cursor: pointer;
-    font-size: 22px;
-    padding-block: 2px;
-    padding-inline: 4px;
-    margin-inline: 6px;
-    border-radius: 5px;
-
-    &:hover {
-        color: rgb(255, 208, 0);
-    }
-}
-
-.current_page_navigator__obj {
-    background-color: #83aaff;
 }

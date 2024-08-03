@@ -8,6 +8,7 @@ import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
 import Map from "../../components/Map/Map";
 import PageNavigator from "../../components/PageNavigator/PageNavigator";
+import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
 
 const MainLayout = () => {
     const [newMarker, setNewMarker] = React.useState(null);
@@ -23,6 +24,7 @@ const MainLayout = () => {
     const [isMarkerPanelVisible, setMarkerPanelVisibility] = React.useState(false);
     const [isMarkerListFilterVisible, setMarkerListFilterVisibility] = React.useState(false);
 
+    const [markersForMapLoading, setMarkersForMapLoading] = React.useState(false);
     const [markersForListLoading, setMarkersForListLoading] = React.useState(false);
     const [updatingMarkerList, setUpdatingMarkerList] = React.useState(false);
 
@@ -201,68 +203,12 @@ const MainLayout = () => {
 
             markersForList?.forEach((el, idx) => {
                 result.push(
-                    <div className={`${cl.marker_list_element}`} key={idx}>
-                        <div className={`${cl.marker_list_element_importance} ${cl[el.importance]}`} />
-                        <div className={`${cl.marker_list_element_buttons}`}>
-                            <div className={`${cl.marker_list_element_navigate_button} ${cl.marker_list_element_button}`}
-                                onClick={() => {
-                                    mapRef.current.flyTo([el.latitude, el.longitude], 13);
-                                }}>
-                                <img className={`${cl.marker_list_element_navigate_button_img} ${cl.marker_list_element_button_img}`} alt="navigate" />
-                            </div>
-                            <div className={`${cl.marker_list_element_edit_button} ${cl.marker_list_element_button}`}
-                                onClick={() => {
-                                    setMarkerMenu('edit');
-                                    setEditingMarker(el);
-                                }}>
-                                <img className={`${cl.marker_list_element_edit_button_img} ${cl.marker_list_element_button_img}`} alt="edit" />
-                            </div>
-                            <div className={`${cl.marker_list_element_delete_button} ${cl.marker_list_element_button}`}
-                                onClick={async () => {
-                                    const response = await fetch(`${HOST}:${API_PORT}/api/markers/${el.id}`, {
-                                        method: "DELETE",
-                                        mode: "cors",
-                                        credentials: "include"
-                                    });
-                                    const json = await response.json();
-
-                                    if (response.ok) {
-                                        setMarkersForMap(markersForList.filter(x => x.id !== el.id));
-                                        setMarkersForList(markersForList.filter(x => x.id !== el.id));
-                                    } else if (!response.ok) {
-                                        if (json.message) {
-                                            alert(json.message);
-                                        } else {
-                                            let errors = "";
-                                            for (const prop in json.errors) {
-                                                for (const err in json.errors[prop]) {
-                                                    errors += `${json.errors[prop][err]}\n`;
-                                                }
-                                            }
-                                            errors = errors.slice(0, -1);
-                                            alert(errors);
-                                        }
-                                    } else if (response.status >= 500 && response.status <= 599) {
-                                        alert("Server error.");
-                                    }
-                                }}>
-                                <img className={`${cl.marker_list_element_delete_button_img} ${cl.marker_list_element_button_img}`} alt="delete" />
-                            </div>
-                        </div>
-                        <div className={`${cl.marker_list_element_title_cont}`}>
-                            <h3 className={`${cl.marker_list_element_title}`}>{el.title}</h3>
-                        </div>
-                        <div className={`${cl.marker_list_element_description_cont}`}>
-                            <p className={`${cl.marker_list_element_description}`}>{el.description}</p>
-                        </div>
-                        <div className={`${cl.marker_list_element_coordinates_cont}`}>
-                            <span className={`${cl.marker_list_element_latitude}`}>lt: {el.latitude}</span>
-                            <span className={`${cl.marker_list_element_longitude}`}>lg: {el.longitude}</span>
-                        </div>
-                        <div className={`${cl.marker_list_element_starts_at_cont}`}>
-                            <span className={`${cl.marker_list_element_starts_at}`}>{new Date(el.startsAt).toLocaleString()}</span>
-                        </div>
-                    </div>
+                    <MarkerListElement
+                        key={idx}
+                        marker={el}
+                        navigate={navigateToMarker}
+                        edit={editMarker}
+                        remove={removeMarkerRequest} />
                 );
             });
 
@@ -632,6 +578,8 @@ const MainLayout = () => {
     }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type]);
 
     const loadMarkersForMap = React.useCallback(async (bounds) => {
+        setMarkersForMapLoading(true);
+
         let url = `${HOST}:${API_PORT}/api/markers/map`;
         url += `?n_e_lat=${bounds.getNorthEast().lat}`;
         url += `&n_e_long=${bounds.getNorthEast().lng}`;
@@ -646,6 +594,46 @@ const MainLayout = () => {
         const json = await response.json();
 
         setMarkersForMap(json.data || []);
+
+        setMarkersForMapLoading(false);
+    }, []);
+
+    const removeMarkerRequest = React.useCallback(async (marker) => {
+        const response = await fetch(`${HOST}:${API_PORT}/api/markers/${marker.id}`, {
+            method: "DELETE",
+            mode: "cors",
+            credentials: "include"
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            setMarkersForMap(markersForList.filter(x => x.id !== marker.id));
+            loadMarkersForList(1);
+        } else if (!response.ok) {
+            if (json.message) {
+                alert(json.message);
+            } else {
+                let errors = "";
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors += `${json.errors[prop][err]}\n`;
+                    }
+                }
+                errors = errors.slice(0, -1);
+                alert(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
+            alert("Server error.");
+        }
+    }, [loadMarkersForList, markersForList]);
+
+    const navigateToMarker = React.useCallback((marker) => {
+        mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
+    }, []);
+
+    const editMarker = React.useCallback((marker) => {
+        setMarkerMenu('edit');
+        setEditingMarker(marker);
     }, []);
 
     const mapLoadEvent = React.useCallback((map) => {
@@ -780,6 +768,17 @@ const MainLayout = () => {
                     <img className={`${cl.right_side_menu__log_out_button__img}`}
                         alt='log out' />
                 </button>
+                {
+                    markersForMapLoading ?
+                        <div className={cl.map_markers_loading}>
+                            <LoadingAnimation
+                                curveColor1="#FFFFFF"
+                                curveColor2="#000000"
+                                size="28px"
+                                curveWidth="5px" />
+                        </div>
+                        : <></>
+                }
             </div>
         </div>
     );

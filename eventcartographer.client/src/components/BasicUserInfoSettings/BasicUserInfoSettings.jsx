@@ -60,7 +60,7 @@ const BasicUserInfoSettings = React.memo(() => {
 
     React.useEffect(() => {
         loadUserInfo();
-    });
+    }, []);
 
     if (userInfo === null) {
         return (
