@@ -53,7 +53,7 @@ const SignUpLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Email is sent to confirm your email address.");
+            alert(t('sign-up.email-is-sent'));
             window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`
         } else if (!response.ok) {
             if (json.message) {

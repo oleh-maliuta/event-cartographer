@@ -4,8 +4,10 @@ import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
 import Panel from '../../components/Panel/Panel';
+import { useTranslation } from 'react-i18next';
 
 const ResetPasswordLayout = () => {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
 
     const [submitting, setSubmitting] = React.useState(false);
@@ -43,7 +45,7 @@ const ResetPasswordLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Password is reset.");
+            alert(t('reset-password.password-is-reset'));
             window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
         } else if (!response.ok) {
             if (json.message) {
@@ -59,11 +61,11 @@ const ResetPasswordLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setSubmitting(false);
-    }, [searchParams]);
+    }, [searchParams, t]);
 
     const windowKeyPressEvent = React.useCallback((e) => {
         switch (e.key) {
@@ -85,24 +87,24 @@ const ResetPasswordLayout = () => {
 
     return (
         <Panel
-            title='Reset password'>
+            title={t('reset-password.panel-header')}>
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
-                label='Password'
+                label={t('reset-password.password-input')}
                 type='password'
-                placeholder='Password'
+                placeholder={t('reset-password.password-input')}
                 maxLength='200'
                 ref={passwordInputRef} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
-                label='Confirm password'
+                label={t('reset-password.confirm-password-input')}
                 type='password'
-                placeholder='Confirm password'
+                placeholder={t('reset-password.confirm-password-input')}
                 maxLength='200'
                 ref={confirmPasswordInputRef} />
             <PanelButton
                 style={submitButtonStyle}
-                text='Submit'
+                text={t('reset-password.submit')}
                 loading={submitting}
                 onClick={resetPasswordRequest} />
         </Panel>

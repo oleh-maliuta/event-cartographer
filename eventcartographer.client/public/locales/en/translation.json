@@ -14,7 +14,8 @@
             "description": "Input username of your account to send an email to give you a permission to reset the password.",
             "username-input": "Username",
             "cancel": "Cancel",
-            "send-mail": "Send mail"
+            "send-mail": "Send mail",
+            "email-is-sent": "Email is sent."
         }
     },
     "sign-up": {
@@ -24,6 +25,14 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "create-account": "Create account",
-        "sign-in-link": "Sign in"
+        "sign-in-link": "Sign in",
+        "email-is-sent": "Email is sent to confirm your email address."
+    },
+    "reset-password": {
+        "panel-header": "Reset password",
+        "password-input": "Password",
+        "confirm-password-input": "Confirm password",
+        "submit": "Submit",
+        "password-is-reset": "Password is reset."
     }
 }

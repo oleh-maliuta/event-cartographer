@@ -85,7 +85,7 @@ const SignInLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Email is sent.");
+            alert(t('sign-in.reset-password-modal-window.email-is-sent'));
             dialogRef.current.close();
         } else if (!response.ok) {
             if (json.message) {
