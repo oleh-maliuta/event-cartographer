@@ -3,7 +3,7 @@
 }
 
 .panel__other_settings__element__header {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .panel__other_settings__element__description {
@@ -17,7 +17,7 @@
     width: calc(100% - 6px);
     border: 2px solid gray;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 1.125rem;
     padding-block: 3px;
     padding-left: 3px;
     margin-top: 12px;
@@ -28,7 +28,7 @@
     width: calc(100% - 6px);
     border: 2px solid gray;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 1.125rem;
     padding-block: 3px;
     padding-left: 3px;
     margin-top: 12px;
@@ -41,7 +41,7 @@
     border-radius: 5px;
     background-color: rgb(255, 60, 60);
     color: white;
-    font-size: 18px;
+    font-size: 1.125rem;
     padding-inline: 10px;
     margin-top: 15px;
 

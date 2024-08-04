@@ -13,7 +13,7 @@
 
 .page_navigator__obj {
     cursor: pointer;
-    font-size: 22px;
+    font-size: 1.375rem;
     padding-block: 2px;
     padding-inline: 4px;
     margin-inline: 6px;

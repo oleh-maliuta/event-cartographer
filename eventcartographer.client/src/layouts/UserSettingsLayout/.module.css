@@ -51,7 +51,7 @@
 .panel__page_header__text {
     cursor: pointer;
     color: rgb(30, 30, 30);
-    font-size: 30px;
+    font-size: 1.875rem;
     text-align: center;
 }
 

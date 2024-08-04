@@ -1,27 +1,23 @@
 .options {
     position: relative;
-    display: grid;
-    grid-template-columns: 25% auto;
+    height: 17px;
     margin-top: 30px;
 
     @media (width < 310px) {
+        position: static;
         display: block;
+        text-align: center;
+        height: 47px;
     }
-}
-
-.options_sign_up {
-    position: relative;
-    height: 15px;
-    width: 100%;
 }
 
 .options_sign_up_link {
     position: absolute;
-    font-size: 15px;
+    width: 100%;
+    font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
     text-decoration: none;
-    text-align: center;
     text-wrap: nowrap;
 
     &:hover {
@@ -29,18 +25,9 @@
     }
 
     @media (width < 310px) {
-        margin-left: 50%;
-        transform: translateX(-50%);
-    }
-}
-
-.options_forgot_password {
-    position: relative;
-    height: 15px;
-    width: 100%;
-
-    @media (width < 310px) {
-        margin-top: 20px;
+        position: static;
+        display: block;
+        text-align: center;
     }
 }
 
@@ -48,10 +35,11 @@
     cursor: pointer;
     position: absolute;
     right: 0;
-    font-size: 15px;
+    width: 100%;
+    font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
-    text-align: center;
+    text-align: right;
     text-wrap: nowrap;
 
     &:hover {
@@ -59,9 +47,10 @@
     }
 
     @media (width < 310px) {
-        right: inherit;
-        margin-left: 50%;
-        transform: translateX(-50%);
+        position: static;
+        display: block;
+        text-align: center;
+        margin-top: 20px;
     }
 }
 
@@ -96,14 +85,14 @@
 
 .modal_window__reset_password__description {
     text-align: justify;
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-top: 20px;
 }
 
 .modal_window__reset_password__input {
     display: block;
     width: calc(100% - 4px);
-    font-size: 20px;
+    font-size: 1.25rem;
     border: 2px solid black;
     border-radius: 5px;
     padding-block: 1px;
@@ -125,7 +114,7 @@
     width: 100px;
     background-color: rgb(255, 59, 59);
     color: white;
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 8px;
     padding-block: 5px;
@@ -143,7 +132,7 @@
     width: 100px;
     background-color: rgb(62, 200, 44);
     color: white;
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 8px;
     padding-block: 5px;

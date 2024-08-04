@@ -197,17 +197,14 @@ const SignInLayout = () => {
                     loading={submitting}
                     onClick={signInRequest} />
                 <div className={cl.options}>
-                    <div className={cl.options_sign_up}>
-                        <Link className={cl.options_sign_up_link} to='/sign-up'>
-                            {t('sign-in.sign-up-link')}
-                        </Link>
-                    </div>
-                    <div className={cl.options_forgot_password}>
-                        <span className={cl.options_forgot_password_link}
-                            onClick={() => setModalWindowVisibility(true)}>
-                            {t('sign-in.forgot-password')}
-                        </span>
-                    </div>
+                    <Link className={cl.options_sign_up_link}
+                        to='/sign-up'>
+                        {t('sign-in.sign-up-link')}
+                    </Link>
+                    <span className={cl.options_forgot_password_link}
+                        onClick={() => setModalWindowVisibility(true)}>
+                        {t('sign-in.forgot-password')}
+                    </span>
                 </div>
             </Panel>
             {isModalWindowVisible ? renderModalWindow() : <></>}

@@ -2,7 +2,7 @@
     cursor: pointer;
     background-color: rgb(211, 0, 0);
     color: white;
-    font-size: 15px;
+    font-size: 0.938rem;
     border: none;
     border-radius: 5px;
     padding-block: 3px;
@@ -62,7 +62,7 @@
     word-wrap: none;
     word-break: keep-all;
     white-space: nowrap;
-    font-size: 21px;
+    font-size: 1.313rem;
     letter-spacing: 1px;
 }
 
@@ -223,7 +223,7 @@
 
 .marker_list_search_input {
     width: 100%;
-    font-size: 20px;
+    font-size: 1.25rem;
     border: 2px solid black;
     border-radius: 5px;
 }
@@ -237,7 +237,7 @@
     height: 29px;
     background-color: black;
     color: white;
-    font-size: 18px;
+    font-size: 1.125rem;
     letter-spacing: 0.5px;
     border: none;
     border-radius: 5px;
@@ -260,13 +260,13 @@
 }
 
 .marker_list_sort_label {
-    font-size: 20px;
+    font-size: 1.25rem;
     padding-top: 2px;
 }
 
 .marker_list_sort_input {
     cursor: pointer;
-    font-size: 20px;
+    font-size: 1.25rem;
     border: 2px solid black;
     border-radius: 5px;
     margin-left: 5px;
@@ -379,7 +379,7 @@
 
 .marker_list_filter_panel_starts_at_input {
     min-width: 0px;
-    font-size: 18px;
+    font-size: 1.125rem;
     border: 2px solid black;
     border-radius: 5px;
 }
@@ -414,17 +414,17 @@
 }
 
 .editing_marker_field_label {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .editing_marker_field_input {
-    font-size: 20px;
+    font-size: 1.25rem;
     border: 2px solid black;
     border-radius: 5px;
 }
 
 .editing_marker_field_value {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .editing_marker_coordinates {
@@ -511,7 +511,7 @@
     cursor: pointer;
     color: white;
     background-color: rgb(211, 0, 0);
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 5px;
     padding-block: 8px;
@@ -526,7 +526,7 @@
     cursor: pointer;
     color: white;
     background-color: rgb(0, 185, 68);
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 5px;
     padding-block: 8px;
@@ -542,7 +542,7 @@
     cursor: pointer;
     color: white;
     background-color: rgb(111, 111, 111);
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 5px;
     padding-block: 8px;
@@ -557,7 +557,7 @@
     cursor: pointer;
     color: white;
     background-color: rgb(222, 189, 0);
-    font-size: 20px;
+    font-size: 1.25rem;
     border: none;
     border-radius: 5px;
     padding-block: 8px;

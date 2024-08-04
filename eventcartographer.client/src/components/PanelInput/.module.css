@@ -3,7 +3,7 @@
 }
 
 .label {
-    font-size: 15px;
+    font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
     margin-left: 7px;
@@ -13,7 +13,7 @@
     width: calc(100% - 14px);
     border: 2px solid gray;
     border-radius: 10px;
-    font-size: 17px;
+    font-size: 1.063rem;
     letter-spacing: 0.5px;
     margin-top: 7px;
     padding-block: 10px;
