@@ -1,10 +1,29 @@
 {
+    "general": {
+        "server-error": "Ошибка сервера."
+    },
     "sign-in": {
         "panel-header": "Вход",
         "username-input": "Имя пользователя",
         "password-input": "Пароль",
         "submit": "Отправить",
         "sign-up-link": "Зарегистрироваться",
-        "forgot-password": "Забыли пароль?"
+        "forgot-password": "Забыли пароль?",
+        "reset-password-modal-window": {
+            "header": "Сброс пароля",
+            "description": "Введите имя пользователя вашей учетной записи, чтобы отправить электронное письмо с разрешением на сброс пароля.",
+            "username-input": "Имя пользователя",
+            "cancel": "Отменить",
+            "send-mail": "Отправить письмо"
+        }
+    },
+    "sign-up": {
+        "panel-header": "Регистрация",
+        "username-input": "Имя пользователя",
+        "email-address-input": "Адрес электронной почты",
+        "password-input": "Пароль",
+        "confirm-password-input": "Подтверждение пароля",
+        "create-account": "Создать аккаунт",
+        "sign-in-link": "Вход"
     }
 }

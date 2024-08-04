@@ -13,11 +13,11 @@ const SignInLayout = () => {
 
     const [submitting, setSubmitting] = React.useState(false);
     const [sendingEmail, setSendingEmail] = React.useState(false);
-    const [isModalWindowVisible, setModalWindowVisibility] = React.useState(false);
 
     const usernameInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const resetPasswordInputRef = React.useRef(null);
+    const dialogRef = React.useRef(null);
 
     const usernameInfoInputStyle = React.useMemo(() => {
         return { marginTop: '35px' };
@@ -62,11 +62,11 @@ const SignInLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setSubmitting(false);
-    }, []);
+    }, [t]);
 
     async function resetPasswordPermissionRequest() {
         setSendingEmail(true);
@@ -86,7 +86,7 @@ const SignInLayout = () => {
 
         if (response.ok) {
             alert("Email is sent.");
-            setModalWindowVisibility(false);
+            dialogRef.current.close();
         } else if (!response.ok) {
             if (json.message) {
                 alert(json.message);
@@ -101,58 +101,10 @@ const SignInLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setSendingEmail(false);
-    }
-
-    function renderModalWindow() {
-        return (
-            <div className={`${cl.modal_window__background}`}
-                onClick={() => { setModalWindowVisibility(false); }}>
-                <div className={`${cl.modal_window}`}
-                    onClick={(e) => { e.stopPropagation(); }}>
-                    <div className={`${cl.modal_window__content}`}>
-                        <h1 className={`${cl.modal_window__header}`}>Reset password</h1>
-                        <p className={`${cl.modal_window__reset_password__description}`}>
-                            Input username of your account to send an email
-                            to give you a permission to reset the password.
-                        </p>
-                        <input className={`${cl.modal_window__reset_password__input}`}
-                            type="text"
-                            placeholder="Username"
-                            maxLength="480"
-                            ref={resetPasswordInputRef} />
-                    </div>
-                    <div className={`${cl.modal_window__control}`}>
-                        <div className={`${cl.modal_window__control__buttons}`}>
-                            <button className={`${cl.modal_window__control__buttons__cancel}`}
-                                onClick={() => { setModalWindowVisibility(false); }}>
-                                Cancel
-                            </button>
-                            <button className={`${cl.modal_window__control__buttons__apply}`}
-                                onClick={() => {
-                                    if (!sendingEmail) {
-                                        resetPasswordPermissionRequest();
-                                    }
-                                }}>
-                                {
-                                    sendingEmail ?
-                                        <LoadingAnimation
-                                            curveColor1="#FFFFFF"
-                                            curveColor2="#00000000"
-                                            size="15px"
-                                            curveWidth="3px" />
-                                        :
-                                        <span>Send mail</span>
-                                }
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
     }
 
     const windowKeyPressEvent = React.useCallback((e) => {
@@ -202,12 +154,54 @@ const SignInLayout = () => {
                         {t('sign-in.sign-up-link')}
                     </Link>
                     <span className={cl.options_forgot_password_link}
-                        onClick={() => setModalWindowVisibility(true)}>
+                        onClick={() => dialogRef.current.showModal()}>
                         {t('sign-in.forgot-password')}
                     </span>
                 </div>
             </Panel>
-            {isModalWindowVisible ? renderModalWindow() : <></>}
+            <dialog className={`${cl.modal_window}`}
+                ref={dialogRef}>
+                <div className={`${cl.modal_window__content}`}>
+                    <h1 className={`${cl.modal_window__header}`}>
+                        {t('sign-in.reset-password-modal-window.header')}
+                    </h1>
+                    <p className={`${cl.modal_window__reset_password__description}`}>
+                        {t('sign-in.reset-password-modal-window.description')}
+                    </p>
+                    <input className={`${cl.modal_window__reset_password__input}`}
+                        type="text"
+                        placeholder={t('sign-in.reset-password-modal-window.username-input')}
+                        maxLength="480"
+                        ref={resetPasswordInputRef} />
+                </div>
+                <div className={`${cl.modal_window__control}`}>
+                    <div className={`${cl.modal_window__control__buttons}`}>
+                        <button className={`${cl.modal_window__control__buttons__cancel}`}
+                            onClick={() => dialogRef.current.close()}>
+                            {t('sign-in.reset-password-modal-window.cancel')}
+                        </button>
+                        <button className={`${cl.modal_window__control__buttons__apply}`}
+                            onClick={() => {
+                                if (!sendingEmail) {
+                                    resetPasswordPermissionRequest();
+                                }
+                            }}>
+                            {
+                                sendingEmail ?
+                                    <LoadingAnimation
+                                        curveColor1="#FFFFFF"
+                                        curveColor2="#00000000"
+                                        size="15px"
+                                        curveWidth="3px" />
+                                    :
+                                    <span>
+                                        {t('sign-in.reset-password-modal-window.send-mail')}
+                                    </span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </dialog>
         </>
     );
 }

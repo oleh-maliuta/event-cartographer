@@ -5,8 +5,11 @@ import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const SignUpLayout = () => {
+    const { t } = useTranslation();
+
     const [submitting, setSubmitting] = React.useState(false);
 
     const usernameInputRef = React.useRef(null);
@@ -66,11 +69,11 @@ const SignUpLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setSubmitting(false);
-    }, []);
+    }, [t]);
 
     const windowKeyPressEvent = React.useCallback((e) => {
         switch (e.key) {
@@ -92,42 +95,44 @@ const SignUpLayout = () => {
 
     return (
         <Panel
-            title='Sign up'>
+            title={t('sign-up.panel-header')}>
             <PanelInput
                 containerStyle={usernameInfoInputStyle}
-                label='Username'
+                label={t('sign-up.username-input')}
                 type='text'
-                placeholder='Username'
+                placeholder={t('sign-up.username-input')}
                 maxLength='100'
                 ref={usernameInputRef} />
             <PanelInput
                 containerStyle={emailInfoInputStyle}
-                label='Email address'
+                label={t('sign-up.email-address-input')}
                 type='email'
-                placeholder='Email address'
+                placeholder={t('sign-up.email-address-input')}
                 maxLength='320'
                 ref={emailInputRef} />
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
-                label='Password'
+                label={t('sign-up.password-input')}
                 type='password'
-                placeholder='Password'
+                placeholder={t('sign-up.password-input')}
                 maxLength='200'
                 ref={passwordInputRef} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
-                label='Confirm password'
+                label={t('sign-up.confirm-password-input')}
                 type='password'
-                placeholder='Confirm password'
+                placeholder={t('sign-up.confirm-password-input')}
                 maxLength='200'
                 ref={confirmPasswordInputRef} />
             <PanelButton
                 style={submitButtonStyle}
-                text='Create account'
+                text={t('sign-up.create-account')}
                 loading={submitting}
                 onClick={signUpRequest} />
             <div className={cl.sign_in_link_cont}>
-                <Link className={cl.sign_in_link} to='/sign-in'>Sign in</Link>
+                <Link className={cl.sign_in_link} to='/sign-in'>
+                    {t('sign-up.sign-in-link')}
+                </Link>
             </div>
         </Panel>
     );

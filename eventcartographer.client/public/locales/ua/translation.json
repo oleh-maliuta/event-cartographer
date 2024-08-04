@@ -1,10 +1,29 @@
 {
+    "general": {
+        "server-error": "Помилка сервера."
+    },
     "sign-in": {
         "panel-header": "Вхід",
         "username-input": "Ім'я користувача",
         "password-input": "Пароль",
         "submit": "Відправити",
         "sign-up-link": "Зареєструватися",
-        "forgot-password": "Забули пароль?"
+        "forgot-password": "Забули пароль?",
+        "reset-password-modal-window": {
+            "header": "Скидання пароля",
+            "description": "Введіть ім'я користувача вашого облікового запису, щоб надіслати електронний лист з дозволом на скидання пароля.",
+            "username-input": "Ім'я користувача",
+            "cancel": "Скасувати",
+            "send-mail": "Відправити лист"
+        }
+    },
+    "sign-up": {
+        "panel-header": "Реєстрація",
+        "username-input": "Ім'я користувача",
+        "email-address-input": "Адреса електронної пошти",
+        "password-input": "Пароль",
+        "confirm-password-input": "Підтвердження пароля",
+        "create-account": "Створити акаунт",
+        "sign-in-link": "Вхід"
     }
 }

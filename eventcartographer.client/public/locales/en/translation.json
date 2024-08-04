@@ -1,10 +1,29 @@
 {
+    "general": {
+        "server-error": "Server error."
+    },
     "sign-in": {
         "panel-header": "Sign in",
         "username-input": "Username",
         "password-input": "Password",
         "submit": "Submit",
         "sign-up-link": "Sign up",
-        "forgot-password": "Forgot password?"
+        "forgot-password": "Forgot password?",
+        "reset-password-modal-window": {
+            "header": "Reset password",
+            "description": "Input username of your account to send an email to give you a permission to reset the password.",
+            "username-input": "Username",
+            "cancel": "Cancel",
+            "send-mail": "Send mail"
+        }
+    },
+    "sign-up": {
+        "panel-header": "Sign up",
+        "username-input": "Username",
+        "email-address-input": "Email address",
+        "password-input": "Password",
+        "confirm-password-input": "Confirm password",
+        "create-account": "Create account",
+        "sign-in-link": "Sign in"
     }
 }
