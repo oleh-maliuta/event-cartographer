@@ -34,5 +34,38 @@
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
         "password-is-reset": "Password is reset."
+    },
+    "settings": {
+        "header": "Settings",
+        "other": "Other",
+        "basic-info": {
+            "header": "Basic information",
+            "username-input": "Username",
+            "save-changes": "Save changes",
+            "changes-are-saved": "Changes are saved."
+        },
+        "email-address": {
+            "header": "Change email address",
+            "description": "Input your password and a new email address. After that you will receive a mail in your new email address to confirm it.",
+            "password-input": "Password",
+            "new-email-address-input": "New email address",
+            "apply": "Apply",
+            "email-is-sent": "Email is sent."
+        },
+        "password": {
+            "header": "Change password",
+            "old-password-input": "Old password",
+            "new-password-input": "New password",
+            "confirm-new-password-input": "Confirm new password",
+            "apply": "Apply",
+            "password-is-changed": "Password is changed."
+        },
+        "delete-account": {
+            "header": "Delete account",
+            "description": "Before deleting this account, you must input the password below so we make sure you really want to execute the operation.",
+            "password-input": "Password",
+            "delete": "Delete",
+            "account-is-deleted": "Account is deleted."
+        }
     }
 }

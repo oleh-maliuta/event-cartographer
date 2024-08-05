@@ -2,8 +2,11 @@ import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
+import { useTranslation } from 'react-i18next';
 
 const PasswordUserSettings = React.memo(() => {
+    const { t } = useTranslation();
+
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
 
     const oldPasswordInputRef = React.useRef(null);
@@ -29,7 +32,7 @@ const PasswordUserSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Password is changed.");
+            alert(t('settings.password.password-is-changed'));
         } else if (!response.ok) {
             if (json.message) {
                 alert(json.message);
@@ -54,21 +57,21 @@ const PasswordUserSettings = React.memo(() => {
         <div className={cl.panel__other_settings__element}>
             <div className={`${cl.panel__other_settings__element__content}`}>
                 <h3 className={`${cl.panel__other_settings__element__header}`}>
-                    Change password
+                    {t('settings.password.header')}
                 </h3>
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="password"
-                    placeholder="Old password"
+                    placeholder={t('settings.password.old-password-input')}
                     maxLength="200"
                     ref={oldPasswordInputRef} />
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="password"
-                    placeholder="New password"
+                    placeholder={t('settings.password.new-password-input')}
                     maxLength="200"
                     ref={newPasswordInputRef} />
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="password"
-                    placeholder="Confirm new password"
+                    placeholder={t('settings.password.confirm-new-password-input')}
                     maxLength="200"
                     ref={confirmPasswordInputRef} />
             </div>
@@ -87,7 +90,9 @@ const PasswordUserSettings = React.memo(() => {
                                 size="15px"
                                 curveWidth="3px" />
                             :
-                            <span>Apply</span>
+                            <span>
+                                {t('settings.password.apply')}
+                            </span>
                     }
                 </button>
             </div>

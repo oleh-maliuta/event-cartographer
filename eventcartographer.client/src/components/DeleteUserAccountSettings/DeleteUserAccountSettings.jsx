@@ -2,8 +2,11 @@ import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
+import { useTranslation } from 'react-i18next';
 
 const DeleteUserAccountSettings = React.memo(() => {
+    const { t } = useTranslation();
+
     const [deletingAccount, setDeletingAccount] = React.useState(false);
 
     const confirmAccountDeletionInputRef = React.useRef(null);
@@ -25,7 +28,7 @@ const DeleteUserAccountSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Account is deleted.");
+            alert(t('settings.delete-account.account-is-deleted'));
             window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
         } else if (!response.ok) {
             if (json.message) {
@@ -51,16 +54,14 @@ const DeleteUserAccountSettings = React.memo(() => {
         <div className={cl.panel__other_settings__element}>
             <div className={`${cl.panel__other_settings__element__content}`}>
                 <h3 className={`${cl.panel__other_settings__element__header}`}>
-                    Delete account
+                    {t('settings.delete-account.header')}
                 </h3>
                 <p className={`${cl.panel__other_settings__element__description}`}>
-                    Before deleting this account, you must
-                    input the username below so we make sure you
-                    really want to do execute the operation.
+                    {t('settings.delete-account.description')}
                 </p>
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="password"
-                    placeholder="Password"
+                    placeholder={t('settings.delete-account.password-input')}
                     maxLength="200"
                     ref={confirmAccountDeletionInputRef} />
             </div>
@@ -79,7 +80,9 @@ const DeleteUserAccountSettings = React.memo(() => {
                                 size="15px"
                                 curveWidth="3px" />
                             :
-                            <span>Delete</span>
+                            <span>
+                                {t('settings.delete-account.delete')}
+                            </span>
                     }
                 </button>
             </div>

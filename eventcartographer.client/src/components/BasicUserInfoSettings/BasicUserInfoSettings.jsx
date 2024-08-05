@@ -2,8 +2,11 @@ import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
+import { useTranslation } from 'react-i18next';
 
 const BasicUserInfoSettings = React.memo(() => {
+    const { t } = useTranslation();
+
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
 
@@ -37,7 +40,7 @@ const BasicUserInfoSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Changes are saved.");
+            alert(t('settings.basic-info.changes-are-saved'));
         } else if (!response.ok) {
             if (json.message) {
                 alert(json.message);
@@ -75,13 +78,17 @@ const BasicUserInfoSettings = React.memo(() => {
     return (
         <div className={`${cl.panel__basic_info}`}>
             <div className={`${cl.panel__basic_info__header__cont}`}>
-                <h2 className={`${cl.panel__basic_info__header}`}>Basic info</h2>
+                <h2 className={`${cl.panel__basic_info__header}`}>
+                    {t('settings.basic-info.header')}
+                </h2>
             </div>
             <div className={cl.data_input}>
-                <label className={cl.data_input__label}>Username</label>
+                <label className={cl.data_input__label}>
+                    {t('settings.basic-info.username-input')}
+                </label>
                 <input className={cl.data_input__input}
                     type="text"
-                    placeholder="Username"
+                    placeholder={t('settings.basic-info.username-input')}
                     maxLength="100"
                     defaultValue={userInfo.name}
                     ref={usernameInputRef} />
@@ -97,10 +104,12 @@ const BasicUserInfoSettings = React.memo(() => {
                         <LoadingAnimation
                             curveColor1="#FFFFFF"
                             curveColor2="#00000000"
-                            size="20px"
+                            size="15px"
                             curveWidth="3px" />
                         :
-                        <span>Save changes</span>
+                        <span>
+                            {t('settings.basic-info.save-changes')}
+                        </span>
                 }
             </button>
         </div>

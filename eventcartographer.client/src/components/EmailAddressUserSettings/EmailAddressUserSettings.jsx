@@ -2,8 +2,11 @@ import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
+import { useTranslation } from 'react-i18next';
 
 const EmailAddressUserSettings = React.memo(() => {
+    const { t } = useTranslation();
+
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
 
     const passwordInputRef = React.useRef(null);
@@ -27,7 +30,7 @@ const EmailAddressUserSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert("Email is sent.");
+            alert(t('settings.email-address.email-is-sent'));
         } else if (!response.ok) {
             if (json.message) {
                 alert(json.message);
@@ -52,21 +55,19 @@ const EmailAddressUserSettings = React.memo(() => {
         <div className={cl.panel__other_settings__element}>
             <div className={`${cl.panel__other_settings__element__content}`}>
                 <h3 className={`${cl.panel__other_settings__element__header}`}>
-                    Change email
+                    {t('settings.email-address.header')}
                 </h3>
                 <p className={`${cl.panel__other_settings__element__description}`}>
-                    Input your password and a new email.
-                    After that you will receive a mail in your new
-                    email address to confirm it.
+                    {t('settings.email-address.description')}
                 </p>
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="password"
-                    placeholder="Password"
+                    placeholder={t('settings.email-address.password-input')}
                     maxLength="200"
                     ref={passwordInputRef} />
                 <input className={`${cl.panel__other_settings__element__input}`}
                     type="email"
-                    placeholder="New email address"
+                    placeholder={t('settings.email-address.new-email-address-input')}
                     maxLength="320"
                     ref={newEmailInputRef} />
             </div>
@@ -85,7 +86,9 @@ const EmailAddressUserSettings = React.memo(() => {
                                 size="15px"
                                 curveWidth="3px" />
                             :
-                            <span>Apply</span>
+                            <span>
+                                {t('settings.email-address.apply')}
+                            </span>
                     }
                 </button>
             </div>
