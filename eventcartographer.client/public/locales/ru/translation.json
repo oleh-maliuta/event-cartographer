@@ -67,5 +67,27 @@
             "delete": "Удалить",
             "account-is-deleted": "Учётная запись удалена."
         }
+    },
+    "map": {
+        "search-markers-input": "Поиск",
+        "sorting-label": "Сортировать по:",
+        "sort-by-importance-value": "важности",
+        "sort-by-title-value": "заголовку",
+        "sort-by-time-value": "времени начала",
+        "importance-filter-title": "Важность",
+        "low-importance-value": "Низкая",
+        "medium-importance-value": "Средняя",
+        "high-importance-value": "Высокая",
+        "time-of-the-start-filter-title": "Время начала",
+        "marker-edit-latitude-label": "Шир.:",
+        "marker-edit-longitude-label": "Долг.:",
+        "marker-edit-starts-at-label": "Начало в:",
+        "marker-edit-importance-label": "Важность:",
+        "marker-edit-title-label": "Заголовок:",
+        "marker-edit-description-label": "Описание:",
+        "add-marker": "Добавить",
+        "cancel-marker-adding": "Отменить",
+        "edit-marker": "Изменить",
+        "go-to-the-list": "Перейти к списку"
     }
 }

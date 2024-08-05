@@ -45,7 +45,7 @@ const EmailAddressUserSettings = React.memo(() => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setUpdatingEmail(false);

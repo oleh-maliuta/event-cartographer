@@ -67,5 +67,27 @@
             "delete": "Видалити",
             "account-is-deleted": "Обліковий запис видалено."
         }
+    },
+    "map": {
+        "search-markers-input": "Пошук",
+        "sorting-label": "Сортувати за:",
+        "sort-by-importance-value": "важливістю",
+        "sort-by-title-value": "заголовку",
+        "sort-by-time-value": "часом початку",
+        "importance-filter-title": "Важливість",
+        "low-importance-value": "Низька",
+        "medium-importance-value": "Середня",
+        "high-importance-value": "Висока",
+        "time-of-the-start-filter-title": "Час початку",
+        "marker-edit-latitude-label": "Шир.:",
+        "marker-edit-longitude-label": "Довг.:",
+        "marker-edit-starts-at-label": "Початок в:",
+        "marker-edit-importance-label": "Важливість:",
+        "marker-edit-title-label": "Заголовок:",
+        "marker-edit-description-label": "Опис:",
+        "add-marker": "Додати",
+        "cancel-marker-adding": "Відмінити",
+        "edit-marker": "Змінити",
+        "go-to-the-list": "Перейти до списку"
     }
 }

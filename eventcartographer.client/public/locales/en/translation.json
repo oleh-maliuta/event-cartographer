@@ -67,5 +67,27 @@
             "delete": "Delete",
             "account-is-deleted": "Account is deleted."
         }
+    },
+    "map": {
+        "search-markers-input": "Search",
+        "sorting-label": "Sort by:",
+        "sort-by-importance-value": "importance",
+        "sort-by-title-value": "title",
+        "sort-by-time-value": "time of start",
+        "importance-filter-title": "Importance",
+        "low-importance-value": "Low",
+        "medium-importance-value": "Medium",
+        "high-importance-value": "High",
+        "time-of-the-start-filter-title": "Time of the start",
+        "marker-edit-latitude-label": "Lat.:",
+        "marker-edit-longitude-label": "Long.:",
+        "marker-edit-starts-at-label": "Starts at:",
+        "marker-edit-importance-label": "Importance:",
+        "marker-edit-title-label": "Title:",
+        "marker-edit-description-label": "Description:",
+        "add-marker": "Add",
+        "cancel-marker-adding": "Cancel",
+        "edit-marker": "Edit",
+        "go-to-the-list": "Go to the list"
     }
 }

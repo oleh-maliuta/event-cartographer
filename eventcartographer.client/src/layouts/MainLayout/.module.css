@@ -440,19 +440,19 @@
 }
 
 .editing_marker_latitude_label {
-    width: 100px;
+    width: 65px;
 }
 
 .editing_marker_latitude_input {
-    width: calc(100% - 120px);
+    width: calc(100% - 85px);
 }
 
 .editing_marker_longitude_label {
-    width: 100px;
+    width: 65px;
 }
 
 .editing_marker_longitude_input {
-    width: calc(100% - 120px);
+    width: calc(100% - 85px);
 }
 
 .editing_marker_time_and_importance {

@@ -9,8 +9,11 @@ import descendingPng from '../../assets/sort-descending.png';
 import Map from "../../components/Map/Map";
 import PageNavigator from "../../components/PageNavigator/PageNavigator";
 import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
+import { useTranslation } from "react-i18next";
 
 const MainLayout = () => {
+    const { t } = useTranslation();
+
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
     const [markerListPage, setMarkerListPage] = React.useState(1);
@@ -101,7 +104,7 @@ const MainLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
     }
 
@@ -145,7 +148,7 @@ const MainLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setUpdatingMarkerList(false);
@@ -191,7 +194,7 @@ const MainLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
 
         setUpdatingMarkerList(false);
@@ -222,7 +225,7 @@ const MainLayout = () => {
                         <input
                             className={`${cl.marker_list_search_input}`}
                             type='text'
-                            placeholder='Search'
+                            placeholder={t('map.search-markers-input')}
                             ref={markerSearchInputRef} />
                         <button className={`${cl.marker_list_apply_button}`}
                             onClick={() => {
@@ -235,7 +238,9 @@ const MainLayout = () => {
                         </button>
                     </div>
                     <div className={`${cl.marker_list_sort_and_filter_cont}`}>
-                        <span className={`${cl.marker_list_sort_label}`}>Sort by:</span>
+                        <span className={`${cl.marker_list_sort_label}`}>
+                            {t('map.sorting-label')}
+                        </span>
                         <select className={`${cl.marker_list_sort_input}`}
                             value={markerListSort.type}
                             onChange={(e) => {
@@ -245,9 +250,15 @@ const MainLayout = () => {
                                     return newP;
                                 });
                             }}>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='importance'>importance</option>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='title'>title</option>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='startsAt'>date of start</option>
+                            <option className={`${cl.marker_list_sort_input_option}`} value='importance'>
+                                {t('map.sort-by-importance-value')}
+                            </option>
+                            <option className={`${cl.marker_list_sort_input_option}`} value='title'>
+                                {t('map.sort-by-title-value')}
+                            </option>
+                            <option className={`${cl.marker_list_sort_input_option}`} value='startsAt'>
+                                {t('map.sort-by-time-value')}
+                            </option>
                         </select>
                         <button className={`${cl.marker_list_sort_direction_button}`}
                             onClick={() => {
@@ -270,7 +281,9 @@ const MainLayout = () => {
                     <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterVisible ? 'fit-content' : '0px' }}>
                         <div className={`${cl.marker_list_filter_panel}`}>
                             <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
-                                <h3 className={`${cl.marker_list_filter_panel_importance_header}`}>Importance</h3>
+                                <h3 className={`${cl.marker_list_filter_panel_importance_header}`}>
+                                    {t('map.importance-filter-title')}
+                                </h3>
                                 <div className={`${cl.marker_list_filter_panel_importance}`}>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                         <input
@@ -293,7 +306,7 @@ const MainLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_low} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >Low</span>
+                                        >{t('map.low-importance-value')}</span>
                                     </div>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                         <input
@@ -316,7 +329,7 @@ const MainLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_medium} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >Medium</span>
+                                        >{t('map.medium-importance-value')}</span>
                                     </div>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                         <input
@@ -339,7 +352,7 @@ const MainLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_high} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >High</span>
+                                        >{t('map.high-importance-value')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -347,7 +360,9 @@ const MainLayout = () => {
                                 <div className={`${cl.marker_list_filter_panel_sep_line}`} />
                             </div>
                             <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
-                                <h3 className={`${cl.marker_list_filter_panel_starts_at_header}`}>Time of the start</h3>
+                                <h3 className={`${cl.marker_list_filter_panel_starts_at_header}`}>
+                                    {t('map.time-of-the-start-filter-title')}
+                                </h3>
                                 <div className={`${cl.marker_list_filter_panel_starts_at}`}>
                                     <input
                                         className={`${cl.marker_list_filter_panel_starts_at_min} ${cl.marker_list_filter_panel_starts_at_input}`}
@@ -406,7 +421,9 @@ const MainLayout = () => {
             <>
                 <div className={cl.editing_marker_coordinates}>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_latitude}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>Latitude:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>
+                            {t('map.marker-edit-latitude-label')}
+                        </p>
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
                             value={isForAdding ? newMarker.latitude : editingMarker.latitude}
@@ -430,7 +447,9 @@ const MainLayout = () => {
                         />
                     </div>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_longitude}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>Longitude:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
+                            {t('map.marker-edit-longitude-label')}
+                        </p>
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
                             value={isForAdding ? newMarker.longitude : editingMarker.longitude}
@@ -456,7 +475,9 @@ const MainLayout = () => {
                 </div>
                 <div className={cl.editing_marker_time_and_importance}>
                     <div className={`${cl.editing_marker_starts_at}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}}`}>Starts at:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}}`}>
+                            {t('map.marker-edit-starts-at-label')}
+                        </p>
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
@@ -464,19 +485,29 @@ const MainLayout = () => {
                             ref={startsAtInputRef} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>Importance:</p>
+                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
+                            {t('map.marker-edit-importance-label')}
+                        </p>
                         <select
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
                             defaultValue={isForAdding ? undefined : editingMarker.importance}
                             ref={importanceInputRef}>
-                            <option className={cl.editing_marker_importance_input__low_value} value='low'>Low</option>
-                            <option className={cl.editing_marker_importance_input__medium_value} value='medium'>Medium</option>
-                            <option className={cl.editing_marker_importance_input__high_value} value='high'>High</option>
+                            <option className={cl.editing_marker_importance_input__low_value} value='low'>
+                                {t('map.low-importance-value')}
+                            </option>
+                            <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
+                                {t('map.medium-importance-value')}
+                            </option>
+                            <option className={cl.editing_marker_importance_input__high_value} value='high'>
+                                {t('map.high-importance-value')}
+                            </option>
                         </select>
                     </div>
                 </div>
                 <div className={`${cl.editing_marker_title}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}}`}>Title:</p>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}}`}>
+                        {t('map.marker-edit-title-label')}
+                    </p>
                     <input
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
                         type='text'
@@ -485,7 +516,9 @@ const MainLayout = () => {
                         ref={titleInputRef} />
                 </div>
                 <div className={`${cl.editing_marker_description}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}}`}>Description:</p>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}}`}>
+                        {t('map.marker-edit-description-label')}
+                    </p>
                     <textarea
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
                         maxLength='5000'
@@ -499,7 +532,9 @@ const MainLayout = () => {
                                 onClick={() => {
                                     setNewMarker(null);
                                     setMarkerMenu('list');
-                                }}>Cancel</button>
+                                }}>
+                                {t('map.cancel-marker-adding')}
+                            </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_add_button}`}
                                 onClick={() => {
                                     if (!updatingMarkerList) {
@@ -514,7 +549,9 @@ const MainLayout = () => {
                                             size="15px"
                                             curveWidth="3px" />
                                         :
-                                        <span>Add</span>
+                                        <span>
+                                            {t('map.add-marker')}
+                                        </span>
                                 }
                             </button>
                         </div>
@@ -524,7 +561,9 @@ const MainLayout = () => {
                                 onClick={() => {
                                     setEditingMarker(null);
                                     setMarkerMenu('list');
-                                }}>Go back to list</button>
+                                }}>
+                                {t('map.go-to-the-list')}
+                            </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_edit_button}`}
                                 onClick={() => {
                                     if (!updatingMarkerList) {
@@ -539,7 +578,9 @@ const MainLayout = () => {
                                             size="15px"
                                             curveWidth="3px" />
                                         :
-                                        <span>Edit</span>
+                                        <span>
+                                            {t('map.edit-marker')}
+                                        </span>
                                 }
                             </button>
                         </div>
@@ -623,9 +664,9 @@ const MainLayout = () => {
                 alert(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert("Server error.");
+            alert(t('general.server-error'));
         }
-    }, [loadMarkersForList, markersForList]);
+    }, [loadMarkersForList, markersForList, t]);
 
     const navigateToMarker = React.useCallback((marker) => {
         mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
@@ -677,7 +718,7 @@ const MainLayout = () => {
                                 e.stopPropagation();
                                 setNewMarker(null);
                                 setMarkerMenu('list');
-                            }}>Cancel</button>
+                            }}>{t('map.cancel-marker-adding')}</button>
                     </Popup>
                 </Marker>
             );
