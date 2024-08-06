@@ -4,9 +4,9 @@ namespace EventCartographer.Server.Requests
 {
     public class SignInRequest
     {
-        [Required(ErrorMessage = "A username is required.")]
+        [Required(ErrorMessage = "http.request-errors.sign-in.username.required")]
         public string? Username { get; set; }
-        [Required(ErrorMessage = "A password is required.")]
+        [Required(ErrorMessage = "http.request-errors.sign-in.password.required")]
         public string? Password { get; set; }
     }
 }

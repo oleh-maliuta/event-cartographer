@@ -4,15 +4,15 @@ namespace EventCartographer.Server.Requests
 {
     public class ResetPasswordRequest
     {
-        [Required(ErrorMessage = "A username is required.")]
+        [Required(ErrorMessage = "http.request-errors.reset-password.username.required")]
         public string? Username { get; set; }
-        [Required(ErrorMessage = "A new password is required.")]
-        [MaxLength(200, ErrorMessage = "Too long password.")]
-        [MinLength(6, ErrorMessage = "Too short password.")]
+        [Required(ErrorMessage = "http.request-errors.reset-password.new-password.required")]
+        [MaxLength(200, ErrorMessage = "http.request-errors.reset-password.new-password.max-length")]
+        [MinLength(6, ErrorMessage = "http.request-errors.reset-password.new-password.min-length")]
         public string? NewPassword { get; set; }
-        [Required(ErrorMessage = "The password confirmation is required.")]
+        [Required(ErrorMessage = "http.request-errors.reset-password.confirm-new-password.required")]
         public string? ConfirmNewPassword { get; set; }
-        [Required(ErrorMessage = "A token is required.")]
+        [Required(ErrorMessage = "http.request-errors.reset-password.token.required")]
         public string? Token { get; set; }
     }
 }

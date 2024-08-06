@@ -89,5 +89,147 @@
         "cancel-marker-adding": "Cancel",
         "edit-marker": "Edit",
         "go-to-the-list": "Go to the list"
+    },
+    "http": {
+        "request-errors": {
+            "accept-password-resetting": {
+                "username": {
+                    "required": "A username is required."
+                },
+                "token": {
+                    "required": "A token is required."
+                }
+            },
+            "add-marker": {
+                "latitude": {
+                    "required": "A latitude value is required."
+                },
+                "longitude": {
+                    "required": "A longitude value is required."
+                },
+                "importance": {
+                    "required": "An importance value is required."
+                },
+                "title": {
+                    "required": "A title is required.",
+                    "max-length": "Title is too long.",
+                    "min-length": "Title is too short."
+                },
+                "description": {
+                    "max-length": "Description is too long."
+                },
+                "starts-at": {
+                    "required": "A time of the event start is required."
+                }
+            },
+            "delete-user": {
+                "password": {
+                    "required": "A password is required."
+                }
+            },
+            "reset-password": {
+                "username": {
+                    "required": "A username is required."
+                },
+                "new-password": {
+                    "required": "A new password is required.",
+                    "max-length": "New password is too long.",
+                    "min-length": "New password is too short."
+                },
+                "confirm-new-password": {
+                    "required": "The password confirmation is required."
+                },
+                "token": {
+                    "required": "A token is required."
+                }
+            },
+            "send-reset-password-permission": {
+                "username": {
+                    "required": "A username is required."
+                }
+            },
+            "sign-in": {
+                "username": {
+                    "required": "A username is required."
+                },
+                "password": {
+                    "required": "A password is required."
+                }
+            },
+            "sign-up": {
+                "username": {
+                    "required": "A username is required.",
+                    "max-length": "Username is too long.",
+                    "min-length": "Username is too short."
+                },
+                "email": {
+                    "required": "An email address is required.",
+                    "max-length": "Email address is too long.",
+                    "min-length": "Email address is too short.",
+                    "email-address": "The email address is invalid."
+                },
+                "password": {
+                    "required": "A password is required.",
+                    "max-length": "Password is too long.",
+                    "min-length": "Password is too short."
+                },
+                "confirm-password": {
+                    "required": "A password confirmation is required."
+                }
+            },
+            "update-marker": {
+                "latitude": {
+                    "required": "A latitude value is required."
+                },
+                "longitude": {
+                    "required": "A longitude value is required."
+                },
+                "importance": {
+                    "required": "An importance value is required."
+                },
+                "title": {
+                    "required": "A title is required.",
+                    "max-length": "Title is too long.",
+                    "min-length": "Title is too short."
+                },
+                "description": {
+                    "max-length": "Description is too long."
+                },
+                "starts-at": {
+                    "required": "A time of the event start is required."
+                }
+            },
+            "update-user-email": {
+                "password": {
+                    "required": "A password is required."
+                },
+                "email": {
+                    "required": "A new email address is required.",
+                    "max-length": "Email address is too long.",
+                    "min-length": "Email address is too short.",
+                    "email-address": "The new email address is invalid." 
+                }
+            },
+            "update-user-info": {
+                "username": {
+                    "required": "A username is required.",
+                    "max-length": "Username is too long.",
+                    "min-length": "Username is too short."
+                }
+            },
+            "update-user-password": {
+                "old-password": {
+                    "required": "The old password is required."
+                },
+                "new-password": {
+                    "required": "A new password is required.",
+                    "max-length": "New password is too long.",
+                    "min-length": "New password is too short."
+                },
+                "confirm-password": {
+                    "required": "The new password confirmation is required."
+                }
+            }
+        }
     }
 }

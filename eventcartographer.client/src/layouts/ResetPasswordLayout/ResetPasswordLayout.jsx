@@ -54,7 +54,7 @@ const ResetPasswordLayout = () => {
                 let errors = "";
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${json.errors[prop][err]}\n`;
+                        errors += `${t(json.errors[prop][err])}\n`;
                     }
                 }
                 errors = errors.slice(0, -1);

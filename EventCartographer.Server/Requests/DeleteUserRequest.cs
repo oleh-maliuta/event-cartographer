@@ -4,7 +4,7 @@ namespace EventCartographer.Server.Requests
 {
     public class DeleteUserRequest
     {
-        [Required(ErrorMessage = "A password is required.")]
+        [Required(ErrorMessage = "http.request-errors.delete-user.password.required")]
         public string? Password { get; set; }
     }
 }

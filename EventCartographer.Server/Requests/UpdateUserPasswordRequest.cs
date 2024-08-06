@@ -5,13 +5,13 @@ namespace EventCartographer.Server.Requests
 {
     public class UpdateUserPasswordRequest
     {
-        [Required(ErrorMessage = "The old password is required.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-password.old-password.required")]
         public string? OldPassword { get; set; }
-        [Required(ErrorMessage = "A new password is required.")]
-        [MaxLength(200, ErrorMessage = "Too long new password.")]
-        [MinLength(6, ErrorMessage = "Too short new password.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-password.new-password.required")]
+        [MaxLength(200, ErrorMessage = "http.request-errors.update-user-password.new-password.max-length")]
+        [MinLength(6, ErrorMessage = "http.request-errors.update-user-password.new-password.min-length")]
         public string? NewPassword { get; set; }
-        [Required(ErrorMessage = "The new password confirmation is required.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-password.confirm-password.required")]
         public string? ConfirmPassword { get; set; }
     }
 }

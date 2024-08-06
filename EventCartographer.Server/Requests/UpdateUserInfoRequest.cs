@@ -4,9 +4,9 @@ namespace EventCartographer.Server.Requests
 {
     public class UpdateUserInfoRequest
     {
-        [Required(ErrorMessage = "A username is required.")]
-        [MaxLength(100, ErrorMessage = "Too long username.")]
-        [MinLength(3, ErrorMessage = "Too short username.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-info.username.required")]
+        [MaxLength(100, ErrorMessage = "http.request-errors.update-user-info.username.max-length")]
+        [MinLength(3, ErrorMessage = "http.request-errors.update-user-info.username.min-length")]
         public string? Username { get; set; }
     }
 }

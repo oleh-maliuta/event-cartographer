@@ -4,20 +4,20 @@ namespace EventCartographer.Server.Requests
 {
     public class SignUpRequest
     {
-        [Required(ErrorMessage = "A username is required.")]
-        [MaxLength(100, ErrorMessage = "Too long username.")]
-        [MinLength(3, ErrorMessage = "Too short username.")]
+        [Required(ErrorMessage = "http.request-errors.sign-up.username.required")]
+        [MaxLength(100, ErrorMessage = "http.request-errors.sign-up.username.max-length")]
+        [MinLength(3, ErrorMessage = "http.request-errors.sign-up.username.min-length")]
         public string? Username { get; set; }
-        [Required(ErrorMessage = "An email address is required.")]
-        [MaxLength(320, ErrorMessage = "Too long email address.")]
-        [MinLength(1, ErrorMessage = "Too short email address.")]
-        [EmailAddress(ErrorMessage = "The email address is invalid.")]
+        [Required(ErrorMessage = "http.request-errors.sign-up.email.required")]
+        [MaxLength(320, ErrorMessage = "http.request-errors.sign-up.email.max-length")]
+        [MinLength(1, ErrorMessage = "http.request-errors.sign-up.email.min-length")]
+        [EmailAddress(ErrorMessage = "http.request-errors.sign-up.email.email-address")]
         public string? Email { get; set; }
-        [Required(ErrorMessage = "A password is required.")]
-        [MaxLength(200, ErrorMessage = "Too long password.")]
-        [MinLength(6, ErrorMessage = "Too short password.")]
+        [Required(ErrorMessage = "http.request-errors.sign-up.password.required")]
+        [MaxLength(200, ErrorMessage = "http.request-errors.sign-up.password.max-length")]
+        [MinLength(6, ErrorMessage = "http.request-errors.sign-up.password.min-length")]
         public string? Password { get; set; }
-        [Required(ErrorMessage = "A password confirmation is required.")]
+        [Required(ErrorMessage = "http.request-errors.sign-up.confirm-password.required")]
         public string? ConfirmPassword { get; set; }
     }
 }

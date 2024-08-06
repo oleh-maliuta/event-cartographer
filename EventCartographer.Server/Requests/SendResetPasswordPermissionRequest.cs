@@ -4,7 +4,7 @@ namespace EventCartographer.Server.Requests
 {
     public class SendResetPasswordPermissionRequest
     {
-        [Required(ErrorMessage = "A username is required.")]
+        [Required(ErrorMessage = "http.request-errors.send-reset-password-permission.username.required")]
         public string? Username { get; set; }
     }
 }

@@ -4,12 +4,12 @@ namespace EventCartographer.Server.Requests
 {
     public class UpdateUserEmailRequest
     {
-        [Required(ErrorMessage = "A password is required.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-email.password.required")]
         public string? Password { get; set; }
-        [Required(ErrorMessage = "A new email address is required.")]
-        [MaxLength(320, ErrorMessage = "Too long email address.")]
-        [MinLength(1, ErrorMessage = "Too short email address.")]
-        [EmailAddress(ErrorMessage = "The new email address is invalid.")]
+        [Required(ErrorMessage = "http.request-errors.update-user-email.email.required")]
+        [MaxLength(320, ErrorMessage = "http.request-errors.update-user-email.email.max-length")]
+        [MinLength(1, ErrorMessage = "http.request-errors.update-user-email.email.min-length")]
+        [EmailAddress(ErrorMessage = "http.request-errors.update-user-email.email.email-address")]
         public string? Email { get; set; }
     }
 }

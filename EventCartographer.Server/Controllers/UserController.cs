@@ -315,7 +315,7 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPost("accept-reset-password")]
-        public async Task<IActionResult> AcceptPasswordReseting([FromForm] AcceptPasswordResetingRequest request)
+        public async Task<IActionResult> AcceptPasswordReseting([FromForm] AcceptPasswordResettingRequest request)
         {
             User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
 

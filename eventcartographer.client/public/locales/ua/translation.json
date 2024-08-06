@@ -89,5 +89,147 @@
         "cancel-marker-adding": "Відмінити",
         "edit-marker": "Змінити",
         "go-to-the-list": "Перейти до списку"
+    },
+    "http": {
+        "request-errors": {
+            "accept-password-resetting": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                },
+                "token": {
+                    "required": "Потрібен токен."
+                }
+            },
+            "add-marker": {
+                "latitude": {
+                    "required": "Потрібно вказати значення широти."
+                },
+                "longitude": {
+                    "required": "Потрібно вказати значення довготи."
+                },
+                "importance": {
+                    "required": "Потрібно вказати важливість."
+                },
+                "title": {
+                    "required": "Потрібен заголовок.",
+                    "max-length": "Заголовок занадто довгий.",
+                    "min-length": "Заголовок занадто короткий."
+                },
+                "description": {
+                    "max-length": "Опис занадто довгий."
+                },
+                "starts-at": {
+                    "required": "Необхідно вказати час початку події."
+                }
+            },
+            "delete-user": {
+                "password": {
+                    "required": "Потрібен пароль."
+                }
+            },
+            "reset-password": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                },
+                "new-password": {
+                    "required": "Потрібен новий пароль.",
+                    "max-length": "Новий пароль занадто довгий.",
+                    "min-length": "Новий пароль занадто короткий."
+                },
+                "confirm-new-password": {
+                    "required": "Потрібне підтвердження пароля."
+                },
+                "token": {
+                    "required": "Потрібен токен."
+                }
+            },
+            "send-reset-password-permission": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                }
+            },
+            "sign-in": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                },
+                "password": {
+                    "required": "Потрібен пароль."
+                }
+            },
+            "sign-up": {
+                "username": {
+                    "required": "Потрібне ім'я користувача.",
+                    "max-length": "Ім'я користувача занадто довге.",
+                    "min-length": "Ім'я користувача занадто коротке."
+                },
+                "email": {
+                    "required": "Потрібна електронна адреса.",
+                    "max-length": "Адреса електронної пошти занадто довга.",
+                    "min-length": "Адреса електронної пошти занадто коротка.",
+                    "email-address": "Адреса електронної пошти недійсна."
+                },
+                "password": {
+                    "required": "Потрібен пароль.",
+                    "max-length": "Пароль занадто довгий.",
+                    "min-length": "Пароль занадто короткий."
+                },
+                "confirm-password": {
+                    "required": "Потрібне підтвердження пароля."
+                }
+            },
+            "update-marker": {
+                "latitude": {
+                    "required": "Потрібно вказати значення широти."
+                },
+                "longitude": {
+                    "required": "Потрібно вказати значення довготи."
+                },
+                "importance": {
+                    "required": "Потрібно вказати важливість."
+                },
+                "title": {
+                    "required": "Потрібен заголовок.",
+                    "max-length": "Заголовок занадто довгий.",
+                    "min-length": "Заголовок занадто короткий."
+                },
+                "description": {
+                    "max-length": "Опис занадто довгий."
+                },
+                "starts-at": {
+                    "required": "Необхідно вказати час початку події."
+                }
+            },
+            "update-user-email": {
+                "password": {
+                    "required": "Потрібен пароль."
+                },
+                "email": {
+                    "required": "Потрібна нова електронна адреса.",
+                    "max-length": "Адреса електронної пошти занадто довга.",
+                    "min-length": "Адреса електронної пошти занадто коротка.",
+                    "email-address": "Адреса електронної пошти недійсна." 
+                }
+            },
+            "update-user-info": {
+                "username": {
+                    "required": "Потрібне ім'я користувача.",
+                    "max-length": "Ім'я користувача занадто довге.",
+                    "min-length": "Ім'я користувача занадто коротке."
+                }
+            },
+            "update-user-password": {
+                "old-password": {
+                    "required": "Потрібен пароль."
+                },
+                "new-password": {
+                    "required": "Потрібен новий пароль.",
+                    "max-length": "Новий пароль занадто довгий.",
+                    "min-length": "Новий пароль занадто короткий."
+                },
+                "confirm-password": {
+                    "required": "Потрібне підтвердження нового пароля."
+                }
+            }
+        }
     }
 }
