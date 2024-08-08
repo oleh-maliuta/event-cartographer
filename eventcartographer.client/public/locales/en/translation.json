@@ -207,7 +207,7 @@
                     "required": "A new email address is required.",
                     "max-length": "Email address is too long.",
                     "min-length": "Email address is too short.",
-                    "email-address": "The new email address is invalid." 
+                    "email-address": "The new email address is invalid."
                 }
             },
             "update-user-info": {
@@ -229,6 +229,80 @@
                 "confirm-password": {
                     "required": "The new password confirmation is required."
                 }
+            }
+        },
+        "controller-errors": {
+            "user": {
+                "sign-up": {
+                    "same-username": "There is a user with the same username.",
+                    "same-email": "There is a user with the same email address.",
+                    "password-not-confirmed": "The password is not confirmed.",
+                    "email-error": "Error sending the email."
+                },
+                "sign-in": {
+                    "username-or-password": "Invalid username or password.",
+                    "not-activated": "The user is not activated."
+                },
+                "logout": {},
+                "check": {},
+                "self-info": {},
+                "update-user-info": {
+                    "same-username": "There is a user with the same username."
+                },
+                "update-user-password": {
+                    "invalid-old-password": "Invalid old password.",
+                    "password-not-confirmed": "The password is not confirmed."
+                },
+                "update-user-email": {
+                    "current-address": "This is your current email address.",
+                    "same-email": "There is a user with the same email address.",
+                    "invalid-password": "Invalid password.",
+                    "email-error": "Error sending the email."
+                },
+                "delete-user": {
+                    "invalid-password": "Invalid password."
+                },
+                "send-reset-password-permission": {
+                    "user-not-found": "User not found.",
+                    "have-permission": "You have got the permission already.",
+                    "email-error": "Error sending the email."
+                },
+                "accept-password-resetting": {
+                    "user-not-found": "User not found.",
+                    "link": "The link is expired or unavailable."
+                },
+                "reset-password": {
+                    "password-not-confirmed": "The password is not confirmed.",
+                    "user-not-found": "User not found.",
+                    "link": "The link is expired or unavailable."
+                },
+                "confirm-email": {}
+            },
+            "marker": {
+                "add-marker": {
+                    "max-markers": "This account has placed maximum amount of markers on the map.",
+                    "importance-value": "Invalid importance value."
+                },
+                "update-marker": {
+                    "marker-not-found": "Marker not found.",
+                    "not-owner": "The user is not the owner of the marker.",
+                    "importance-value": "Invalid importance value."
+                },
+                "delete-marker": {
+                    "marker-not-found": "Marker not found.",
+                    "not-owner": "The user is not the owner of the marker."
+                },
+                "get-marker": {
+                    "marker-not-found": "Marker not found.",
+                    "not-owner": "The user is not the owner of the marker."
+                },
+                "get-markers-by-bounds": {},
+                "get-markers-by-auth-user": {}
+            }
+        },
+        "attribute-errors": {
+            "authorized": {
+                "unauthorized": "Unauthorized."
             }
         }
     }

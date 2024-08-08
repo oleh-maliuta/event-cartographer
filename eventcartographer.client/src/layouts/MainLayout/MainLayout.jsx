@@ -92,7 +92,7 @@ const MainLayout = () => {
             window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`;
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {
@@ -136,7 +136,7 @@ const MainLayout = () => {
             setNewMarker(null);
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {
@@ -182,7 +182,7 @@ const MainLayout = () => {
             setEditingMarker(null);
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {
@@ -652,7 +652,7 @@ const MainLayout = () => {
             loadMarkersForList(1);
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {

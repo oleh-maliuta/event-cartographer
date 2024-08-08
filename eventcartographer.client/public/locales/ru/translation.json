@@ -230,6 +230,80 @@
                     "required": "Требуется подтверждение нового пароля."
                 }
             }
+        },
+        "controller-errors": {
+            "user": {
+                "sign-up": {
+                    "same-username": "Пользователь с таким же именем уже существует.",
+                    "same-email": "Пользователь с таким же адресом электронной почты уже существует.",
+                    "password-not-confirmed": "Пароль не подтверждён.",
+                    "email-error": "Ошибка отправки письма."
+                },
+                "sign-in": {
+                    "username-or-password": "Неверное имя пользователя или пароль.",
+                    "not-activated": "Пользователь не активирован."
+                },
+                "logout": {},
+                "check": {},
+                "self-info": {},
+                "update-user-info": {
+                    "same-username": "Пользователь с таким же именем уже существует."
+                },
+                "update-user-password": {
+                    "invalid-old-password": "Старый пароль неверный.",
+                    "password-not-confirmed": "Пароль не подтверждён."
+                },
+                "update-user-email": {
+                    "current-address": "Это ваш текущий адрес электронной почты.",
+                    "same-email": "Пользователь с таким же адресом электронной почты уже существует.",
+                    "invalid-password": "Неверный пароль.",
+                    "email-error": "Ошибка отправки письма."
+                },
+                "delete-user": {
+                    "invalid-password": "Неверный пароль."
+                },
+                "send-reset-password-permission": {
+                    "user-not-found": "Пользователь не найден.",
+                    "have-permission": "У вас уже есть разрешение.",
+                    "email-error": "Ошибка отправки письма."
+                },
+                "accept-password-resetting": {
+                    "user-not-found": "Пользователь не найден.",
+                    "link": "Ссылка устарела или недоступна."
+                },
+                "reset-password": {
+                    "password-not-confirmed": "Пароль не подтверждён.",
+                    "user-not-found": "Пользователь не найден.",
+                    "link": "Ссылка устарела или недоступна."
+                },
+                "confirm-email": {}
+            },
+            "marker": {
+                "add-marker": {
+                    "max-markers": "Этот аккаунт разместил максимальное количество маркеров на карте.",
+                    "importance-value": "Неверное значение важности."
+                },
+                "update-marker": {
+                    "marker-not-found": "Маркер не найден.",
+                    "not-owner": "Пользователю не принадлежит данный маркер.",
+                    "importance-value": "Неверное значение важности."
+                },
+                "delete-marker": {
+                    "marker-not-found": "Маркер не найден.",
+                    "not-owner": "Пользователю не принадлежит данный маркер."
+                },
+                "get-marker": {
+                    "marker-not-found": "Маркер не найден.",
+                    "not-owner": "Пользователю не принадлежит данный маркер."
+                },
+                "get-markers-by-bounds": {},
+                "get-markers-by-auth-user": {}
+            }
+        },
+        "attribute-errors": {
+            "authorized": {
+                "unauthorized": "Не авторизован."
+            }
         }
     }
 }

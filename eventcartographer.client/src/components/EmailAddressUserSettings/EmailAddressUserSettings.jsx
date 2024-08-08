@@ -33,7 +33,7 @@ const EmailAddressUserSettings = React.memo(() => {
             alert(t('settings.email-address.email-is-sent'));
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {

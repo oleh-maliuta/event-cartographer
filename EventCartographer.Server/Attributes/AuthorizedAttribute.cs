@@ -10,7 +10,7 @@ namespace EventCartographer.Server.Attributes
         {
             if (context.HttpContext.User?.Identity?.IsAuthenticated != true)
             {
-                BaseResponse.ErrorResponse response = new("Unauthorized.");
+                BaseResponse.ErrorResponse response = new("http.attribute-errors.authorized.unauthorized");
                 context.Result = new UnauthorizedObjectResult(response);
             }
         }

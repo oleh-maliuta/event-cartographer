@@ -49,7 +49,7 @@ const ResetPasswordLayout = () => {
             window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {

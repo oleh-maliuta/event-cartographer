@@ -43,7 +43,7 @@ const BasicUserInfoSettings = React.memo(() => {
             alert(t('settings.basic-info.changes-are-saved'));
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {

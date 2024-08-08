@@ -24,15 +24,14 @@ namespace EventCartographer.Server.Controllers
 
             if ((await DB.Markers.CountDocumentsAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
             {
-                return BadRequest(new BaseResponse.ErrorResponse(
-                    $"This account has placed maximum amount of markers ({maxMarkerAmount}) on the map!"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
             }
 
             string[] importanceArray = ["low", "medium", "high"];
 
             if (!importanceArray.Contains(request.Importance))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid importance value!"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.importance-value"));
             }
 
             Marker marker = new()
@@ -66,17 +65,17 @@ namespace EventCartographer.Server.Controllers
 
             if (marker == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("Marker not found!"));
+                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.marker-not-found"));
             }
 
             if (marker.UserId != AuthorizedUserId)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The user is not the owner of the marker"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.not-owner"));
             }
 
             if (!importanceArray.Contains(request.Importance))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("Invalid importance value!"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.importance-value"));
             }
 
             marker.Latitude = request.Latitude!.Value;
@@ -103,12 +102,12 @@ namespace EventCartographer.Server.Controllers
 
             if (marker == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("Marker not found!"));
+                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.marker.delete-marker.marker-not-found"));
             }
 
             if (marker.UserId != AuthorizedUserId)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The user is not the owner of the marker"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.delete-marker.not-owner"));
             }
 
             user.LastActivityAt = DateTime.UtcNow;
@@ -127,12 +126,12 @@ namespace EventCartographer.Server.Controllers
 
             if (marker == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("Marker not found!"));
+                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.marker.get-marker.marker-not-found"));
             }
 
             if (marker.UserId != AuthorizedUserId)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("The user is not the owner of the marker"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.get-marker.not-owner"));
             }
 
             return Ok(new MarkerResponse(marker));

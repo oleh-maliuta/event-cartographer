@@ -50,7 +50,7 @@ const SignInLayout = () => {
             window.location.href = `${HOST}:${CLIENT_PORT}`;
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {
@@ -89,7 +89,7 @@ const SignInLayout = () => {
             dialogRef.current.close();
         } else if (!response.ok) {
             if (json.message) {
-                alert(json.message);
+                alert(t(json.message));
             } else {
                 let errors = "";
                 for (const prop in json.errors) {

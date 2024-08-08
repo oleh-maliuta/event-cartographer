@@ -230,6 +230,80 @@
                     "required": "Потрібне підтвердження нового пароля."
                 }
             }
+        },
+        "controller-errors": {
+            "user": {
+                "sign-up": {
+                    "same-username": "Користувач із таким самим ім'ям вже існує.",
+                    "same-email": "Користувач із такою ж адресою електронної пошти вже існує.",
+                    "password-not-confirmed": "Пароль не підтверджено.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "sign-in": {
+                    "username-or-password": "Неправильне ім'я користувача або пароль.",
+                    "not-activated": "Користувача не активовано."
+                },
+                "logout": {},
+                "check": {},
+                "self-info": {},
+                "update-user-info": {
+                    "same-username": "Користувач із таким самим ім'ям вже існує."
+                },
+                "update-user-password": {
+                    "invalid-old-password": "Старий пароль неправильний.",
+                    "password-not-confirmed": "Пароль не підтверджено."
+                },
+                "update-user-email": {
+                    "current-address": "Це ваша поточна адреса електронної пошти.",
+                    "same-email": "Користувач із такою ж адресою електронної пошти вже існує.",
+                    "invalid-password": "Невірний пароль.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "delete-user": {
+                    "invalid-password": "Невірний пароль."
+                },
+                "send-reset-password-permission": {
+                    "user-not-found": "Користувач не знайдений.",
+                    "have-permission": "У вас вже є дозвіл.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "accept-password-resetting": {
+                    "user-not-found": "Користувач не знайдений.",
+                    "link": "Посилання застаріло або недоступне."
+                },
+                "reset-password": {
+                    "password-not-confirmed": "Пароль не підтверджено.",
+                    "user-not-found": "Користувач не знайдений.",
+                    "link": "Посилання застаріло або недоступне."
+                },
+                "confirm-email": {}
+            },
+            "marker": {
+                "add-marker": {
+                    "max-markers": "Цей обліковий запис розмістив максимальну кількість маркерів на карті.",
+                    "importance-value": "Неправильне значення важливості."
+                },
+                "update-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер.",
+                    "importance-value": "Неправильне значення важливості."
+                },
+                "delete-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер."
+                },
+                "get-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер."
+                },
+                "get-markers-by-bounds": {},
+                "get-markers-by-auth-user": {}
+            }
+        },
+        "attribute-errors": {
+            "authorized": {
+                "unauthorized": "Не авторизован."
+            }
         }
     }
 }
