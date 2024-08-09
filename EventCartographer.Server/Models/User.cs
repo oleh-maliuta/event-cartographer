@@ -1,22 +1,25 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EventCartographer.Server.Models
 {
     public class User
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-        [BsonElement("name")]
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
-        [BsonElement("email")]
+        [Required]
+        [MaxLength(320)]
         public string Email { get; set; }
-        [BsonElement("passwordHash")]
+        [Required]
         public string PasswordHash { get; set; }
-        [BsonElement("isActivated")]
+        [Required]
         public bool IsActivated { get; set; }
-        [BsonElement("lastActivityAt")]
+        [Required]
         public DateTime LastActivityAt { get; set; }
+
+        public ICollection<ActivationCode> ActivationCodes { get; set; } = [];
+        public ICollection<Marker> Markers { get; set; } = [];
     }
 }

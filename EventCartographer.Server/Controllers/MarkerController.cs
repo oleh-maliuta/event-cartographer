@@ -2,10 +2,10 @@
 using EventCartographer.Server.Models;
 using EventCartographer.Server.Requests;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using EventCartographer.Server.Requests.Queries;
-using EventCartographer.Server.Services.MongoDB;
 using EventCartographer.Server.Attributes;
+using EventCartographer.Server.Services.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -13,7 +13,7 @@ namespace EventCartographer.Server.Controllers
     [Route("api/markers")]
     public class MarkerController : BaseController
     {
-        public MarkerController(MongoDbService service) : base(service) { }
+        public MarkerController(DbApp service) : base(service) { }
 
         [Authorized]
         [HttpPost]
@@ -22,7 +22,7 @@ namespace EventCartographer.Server.Controllers
             const int maxMarkerAmount = 500;
             User user = AuthorizedUser;
 
-            if ((await DB.Markers.CountDocumentsAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
+            if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
             }
@@ -34,34 +34,33 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.importance-value"));
             }
 
-            Marker marker = new()
+            Marker marker = (await DB.Markers.AddAsync(new()
             {
-                UserId = user.Id!,
+                UserId = user.Id,
+                User = user,
                 Latitude = request.Latitude!.Value,
                 Longitude = request.Longitude!.Value,
                 Title = request.Title!,
                 Description = request.Description,
                 Importance = request.Importance!,
                 StartsAt = request.StartsAt!.Value
-            };
+            })).Entity;
 
             user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Markers.InsertOneAsync(marker);
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
-
+            await DB.SaveChangesAsync();
             return Ok(new MarkerResponse(marker));
         }
 
         [Authorized]
         [HttpPut("{markerId}")]
         public async Task<IActionResult> UpdateMarker(
-            string markerId,
+            int markerId,
             UpdateMarkerRequest request)
         {
             string[] importanceArray = ["low", "medium", "high"];
             User user = AuthorizedUser;
-            Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
+            Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
 
             if (marker == null)
             {
@@ -87,18 +86,16 @@ namespace EventCartographer.Server.Controllers
 
             user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Markers.ReplaceOneAsync(x => x.Id == markerId, marker);
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
-
+            await DB.SaveChangesAsync();
             return Ok(new MarkerResponse(marker));
         }
 
         [Authorized]
         [HttpDelete("{markerId}")]
-        public async Task<IActionResult> DeleteMarker(string markerId)
+        public async Task<IActionResult> DeleteMarker(int markerId)
         {
             User user = AuthorizedUser;
-            Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
+            Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
 
             if (marker == null)
             {
@@ -112,17 +109,17 @@ namespace EventCartographer.Server.Controllers
 
             user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Markers.DeleteOneAsync(x => x.Id == markerId);
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            DB.Markers.Remove(marker);
 
+            await DB.SaveChangesAsync();
             return Ok(new MarkerResponse(marker));
         }
 
         [Authorized]
         [HttpGet("{markerId}")]
-        public async Task<IActionResult> GetMarker(string markerId)
+        public async Task<IActionResult> GetMarker(int markerId)
         {
-            Marker? marker = await DB.Markers.Find(x => x.Id == markerId).FirstOrDefaultAsync();
+            Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
 
             if (marker == null)
             {
@@ -143,18 +140,18 @@ namespace EventCartographer.Server.Controllers
         {
             User user = AuthorizedUser;
 
-            Marker[] markers = [.. DB.Markers
-                .AsQueryable()
+            Marker[] markers = await DB.Markers
                 .Where(x =>
                     x.UserId == user.Id &&
                     x.Latitude <= (query.NorthEastLatitude ?? decimal.MinValue) &&
                     x.Latitude >= (query.SouthWestLatitude ?? decimal.MaxValue) &&
                     x.Longitude <= (query.NorthEastLongitude ?? decimal.MinValue) &&
-                    x.Longitude >= (query.SouthWestLongitude ?? decimal.MaxValue))];
+                    x.Longitude >= (query.SouthWestLongitude ?? decimal.MaxValue))
+                .ToArrayAsync();
 
             user.LastActivityAt = DateTime.UtcNow;
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
+            await DB.SaveChangesAsync();
             return Ok(new MarkerResponse(markers));
         }
 
@@ -166,8 +163,7 @@ namespace EventCartographer.Server.Controllers
         {
             User user = AuthorizedUser;
 
-            List<Marker> markers = [.. DB.Markers
-                .AsQueryable()
+            List<Marker> markers = await DB.Markers
                 .Where(x =>
                     x.UserId == user.Id &&
                     (x.Title.Contains(query.Search ?? "") ||
@@ -176,7 +172,8 @@ namespace EventCartographer.Server.Controllers
                     query.Importance.Length == 0 ||
                     query.Importance.Contains(x.Importance)) &&
                     x.StartsAt >= (query.MinTime ?? DateTime.MinValue) &&
-                    x.StartsAt <= (query.MaxTime ?? DateTime.MaxValue))];
+                    x.StartsAt <= (query.MaxTime ?? DateTime.MaxValue))
+                .ToListAsync();
 
             Dictionary<string, int> importanceOrder = new()
             {
@@ -208,7 +205,6 @@ namespace EventCartographer.Server.Controllers
             MarkerResponse.View[] result = [.. markers.Select(p => new MarkerResponse.View(p))];
 
             user.LastActivityAt = DateTime.UtcNow;
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             PageResponse<MarkerResponse.View> response = new(
                 result,
@@ -216,6 +212,7 @@ namespace EventCartographer.Server.Controllers
                 pageQuery.PageSize,
                 totalPagesCount);
 
+            await DB.SaveChangesAsync();
             return Ok(response);
         }
     }

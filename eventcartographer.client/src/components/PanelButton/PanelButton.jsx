@@ -10,7 +10,7 @@ const PanelButton = React.memo(({
     onClick
 }) => {
     return (
-        <button className={cl.main}
+        <button className={cl.panel_button}
             style={style}
             onClick={() => {
                 if (!loading) {

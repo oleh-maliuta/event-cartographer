@@ -1,20 +1,21 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EventCartographer.Server.Models
 {
     public class ActivationCode
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-        [BsonElement("userId")]
-        public string UserId { get; set; }
-        [BsonElement("code")]
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        public User User { get; set; }
+        [Required]
+        [MaxLength(256)]
         public string Code { get; set; }
-        [BsonElement("action")]
+        [Required]
+        [MaxLength(1000)]
         public string Action { get; set; }
-        [BsonElement("expiresAt")]
+        [Required]
         public DateTime ExpiresAt { get; set; }
     }
 }

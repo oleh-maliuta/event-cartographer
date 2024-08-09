@@ -18,7 +18,7 @@ namespace EventCartographer.Server.Responses
         public class View
         {
             [JsonPropertyName("id")]
-            public string? Id { get; set; }
+            public int Id { get; set; }
             [JsonPropertyName("latitude")]
             public decimal Latitude { get; set; }
             [JsonPropertyName("longitude")]
@@ -47,7 +47,7 @@ namespace EventCartographer.Server.Responses
         public class ShortView
         {
             [JsonPropertyName("id")]
-            public string? Id { get; set; }
+            public int Id { get; set; }
             [JsonPropertyName("latitude")]
             public decimal Latitude { get; set; }
             [JsonPropertyName("longitude")]

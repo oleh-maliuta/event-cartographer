@@ -1,37 +1,41 @@
 ﻿using EventCartographer.Server.Models;
-using EventCartographer.Server.Services.MongoDB;
+using EventCartographer.Server.Services.EntityFramework;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using System.Security.Claims;
 
 namespace EventCartographer.Server.Controllers
 {
     public abstract class BaseController : ControllerBase
     {
-        protected MongoDbService DB { get; }
-        protected string AuthorizedUserId
+        protected DbApp DB { get; }
+        protected int AuthorizedUserId
         {
             get
             {
-                string? id = HttpContext.User.Claims
+                var strId = HttpContext.User.Claims
                     .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-                return id ?? throw new InvalidOperationException(
-                    "This property accessible only for authorized users.");
+                if (!int.TryParse(strId, out int id))
+                {
+                    throw new InvalidOperationException("This property accessible only for authorized users.");
+                }
+
+                return id;
             }
         }
         protected User AuthorizedUser
         {
             get
             {
-                User? user = DB.Users.Find(x => x.Id == AuthorizedUserId).FirstOrDefault();
+                User? user = DB.Users.SingleOrDefault(x => x.Id == AuthorizedUserId);
 
-                return user ?? throw new InvalidOperationException(
-                    "This property accessible only for authorized users.");
+                return user is null
+                    ? throw new InvalidOperationException("This property accessible only for authorized users.")
+                    : user;
             }
         }
 
-        public BaseController(MongoDbService db)
+        public BaseController(DbApp db)
         {
             DB = db;
         }

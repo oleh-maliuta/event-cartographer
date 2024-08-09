@@ -12,7 +12,7 @@ const PanelInput = React.memo(React.forwardRef(({
     maxLength
 }, ref) => {
     return (
-        <div className={cl.main}
+        <div className={cl.panel_input}
             style={containerStyle}>
             <label className={cl.label}
                 style={labelStyle}>

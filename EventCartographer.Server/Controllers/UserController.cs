@@ -4,13 +4,13 @@ using EventCartographer.Server.Responses;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using System.Security.Claims;
-using EventCartographer.Server.Services.MongoDB;
 using EventCartographer.Server.Tools;
 using EventCartographer.Server.Services.Email;
 using System.Net;
 using EventCartographer.Server.Attributes;
+using EventCartographer.Server.Services.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -20,7 +20,7 @@ namespace EventCartographer.Server.Controllers
     {
         private readonly IEmailService _emailService;
 
-        public UserController(MongoDbService db, IEmailService emailService) : base(db)
+        public UserController(DbApp db, IEmailService emailService) : base(db)
         {
             _emailService = emailService;
         }
@@ -28,12 +28,12 @@ namespace EventCartographer.Server.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequest request)
         {
-            if (await DB.Users.Find(x => x.Name == request.Username).AnyAsync())
+            if (await DB.Users.AnyAsync(x => x.Name == request.Username))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-username"));
             }
 
-            if (await DB.Users.Find(x => x.Email == request.Email).AnyAsync())
+            if (await DB.Users.AnyAsync(x => x.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
             }
@@ -61,36 +61,32 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
             }
 
-            User user = new()
+            User user = (await DB.Users.AddAsync(new()
             {
                 Name = request.Username!,
                 Email = request.Email!,
                 PasswordHash = PasswordTool.Hash(request.Password!),
                 IsActivated = false,
                 LastActivityAt = DateTime.UtcNow
-            };
+            })).Entity;
 
-            await DB.Users.InsertOneAsync(user);
-
-            DateTime regTime = DateTime.UtcNow;
-
-            ActivationCode activationCode = new()
+            await DB.ActivationCodes.AddAsync(new()
             {
-                UserId = user.Id!,
+                UserId = user.Id,
+                User = user,
                 Code = token,
                 Action = "confirm-registration",
-                ExpiresAt = regTime.AddHours(12)
-            };
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            });
 
-            await DB.ActivationCodes.InsertOneAsync(activationCode);
-
+            await DB.SaveChangesAsync();
             return Ok(new UserResponse(user));
         }
 
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
+            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
             if (user == null)
             {
@@ -111,14 +107,14 @@ namespace EventCartographer.Server.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(new ClaimsIdentity(
                 [
-                    new(ClaimTypes.NameIdentifier, user.Id!),
+                    new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new(ClaimTypes.Name, user.Name)
                 ], CookieAuthenticationDefaults.AuthenticationScheme))
             );
 
             user.LastActivityAt = DateTime.UtcNow;
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
+            await DB.SaveChangesAsync();
             return Ok(new UserResponse(user));
         }
 
@@ -152,14 +148,15 @@ namespace EventCartographer.Server.Controllers
         {
             User user = AuthorizedUser;
 
-            if (await DB.Users.Find(x => x.Name == request.Username && x.Id != user.Id).AnyAsync())
+            if (await DB.Users.AnyAsync(x => x.Name == request.Username && x.Id != user.Id))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-info.same-username"));
             }
 
             user.Name = request.Username!;
+            user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            await DB.SaveChangesAsync();
             return Ok(new UserResponse(user));
         }
 
@@ -180,8 +177,9 @@ namespace EventCartographer.Server.Controllers
             }
 
             user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
+            user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
+            await DB.SaveChangesAsync();
             return Ok(new UserResponse(user));
         }
 
@@ -196,7 +194,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
             }
 
-            if (await DB.Users.Find(x => x.Email == request.Email).AnyAsync())
+            if (await DB.Users.AnyAsync(x => x.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.same-email"));
             }
@@ -224,17 +222,16 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
             }
 
-            DateTime activationTime = DateTime.UtcNow;
-            ActivationCode activationCode = new()
+            await DB.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id!,
+                User = user,
                 Code = token,
                 Action = $"change-email,{request.Email}",
-                ExpiresAt = activationTime.AddHours(12)
-            };
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            });
 
-            await DB.ActivationCodes.InsertOneAsync(activationCode);
-
+            await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
@@ -250,10 +247,9 @@ namespace EventCartographer.Server.Controllers
             }
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            await DB.ActivationCodes.DeleteManyAsync(x => x.UserId == user.Id);
-            await DB.Markers.DeleteManyAsync(x => x.UserId == user.Id);
-            await DB.Users.DeleteOneAsync(x => x.Id == user.Id);
+            DB.Users.Remove(user);
 
+            await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
@@ -261,21 +257,18 @@ namespace EventCartographer.Server.Controllers
         public async Task<IActionResult> SendResetPasswordPermission(
             [FromBody] SendResetPasswordPermissionRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Username)
-                .FirstOrDefaultAsync();
+            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
             if (user == null)
             {
                 return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.user-not-found"));
             }
 
-            IFindFluent<ActivationCode, ActivationCode> existingCodes = DB.ActivationCodes
-                .Find(x =>
+            if (await DB.ActivationCodes
+                .AnyAsync(x =>
                     x.UserId == user.Id &&
                     x.Action.StartsWith("reset-password-permission") &&
-                    x.ExpiresAt > DateTime.UtcNow);
-
-            if (existingCodes.Any())
+                    x.ExpiresAt > DateTime.UtcNow))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
             }
@@ -301,23 +294,23 @@ namespace EventCartographer.Server.Controllers
 
             DateTime resTime = DateTime.UtcNow;
 
-            ActivationCode activationCode = new()
+            await DB.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id!,
+                User = user,
                 Code = token,
                 Action = "reset-password-permission",
                 ExpiresAt = resTime.AddHours(12)
-            };
+            });
 
-            await DB.ActivationCodes.InsertOneAsync(activationCode);
-
+            await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
         [HttpPost("accept-reset-password")]
         public async Task<IActionResult> AcceptPasswordResetting([FromForm] AcceptPasswordResettingRequest request)
         {
-            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
+            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
             if (user == null)
             {
@@ -325,8 +318,7 @@ namespace EventCartographer.Server.Controllers
             }
 
             ActivationCode? activationCode = await DB.ActivationCodes
-                .Find(x => user.Id == x.UserId && x.Code == request.Token)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
 
             if (activationCode == null)
             {
@@ -335,7 +327,8 @@ namespace EventCartographer.Server.Controllers
 
             if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
-                await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                DB.ActivationCodes.Remove(activationCode);
+                await DB.SaveChangesAsync();
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
             }
 
@@ -352,11 +345,11 @@ namespace EventCartographer.Server.Controllers
             }
             else
             {
+                await DB.SaveChangesAsync();
                 return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
             }
 
-            await DB.ActivationCodes.ReplaceOneAsync(x => x.Id == activationCode.Id, activationCode);
-
+            await DB.SaveChangesAsync();
             return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
         }
 
@@ -368,7 +361,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.password-not-confirmed"));
             }
 
-            User? user = await DB.Users.Find(x => x.Name == request.Username).FirstOrDefaultAsync();
+            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
             if (user == null)
             {
@@ -376,8 +369,7 @@ namespace EventCartographer.Server.Controllers
             }
 
             ActivationCode? activationCode = await DB.ActivationCodes
-                .Find(x => user.Id == x.UserId && x.Code == request.Token)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
 
             if (activationCode == null)
             {
@@ -386,7 +378,8 @@ namespace EventCartographer.Server.Controllers
 
             if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
-                await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                DB.ActivationCodes.Remove(activationCode);
+                await DB.SaveChangesAsync();
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
             }
 
@@ -405,9 +398,9 @@ namespace EventCartographer.Server.Controllers
             user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
             user.LastActivityAt = DateTime.UtcNow;
 
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
-            await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+            DB.ActivationCodes.Remove(activationCode);
 
+            await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
@@ -417,9 +410,7 @@ namespace EventCartographer.Server.Controllers
             [FromQuery(Name = "token")]
             string? token)
         {
-            User? user = await DB.Users
-                .Find(x => x.Email == WebUtility.UrlDecode(email))
-                .FirstOrDefaultAsync();
+            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Email == WebUtility.UrlDecode(email));
 
             if (user == null)
             {
@@ -427,8 +418,7 @@ namespace EventCartographer.Server.Controllers
             }
 
             ActivationCode? activationCode = await DB.ActivationCodes
-                .Find(x => user.Id == x.UserId && x.Code == token)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == token);
 
             if (activationCode == null)
             {
@@ -437,6 +427,8 @@ namespace EventCartographer.Server.Controllers
 
             if (DateTime.UtcNow > activationCode.ExpiresAt)
             {
+                DB.ActivationCodes.Remove(activationCode);
+                await DB.SaveChangesAsync();
                 return BadRequest(new BaseResponse.ErrorResponse("The link is expired or unavailable."));
             }
 
@@ -446,19 +438,19 @@ namespace EventCartographer.Server.Controllers
             {
                 case "confirm-registration":
                     user.IsActivated = true;
-                    await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                    DB.ActivationCodes.Remove(activationCode);
                     break;
                 case "change-email":
                     user.Email = actionInfo[1];
-                    await DB.ActivationCodes.DeleteOneAsync(x => x.Id == activationCode.Id);
+                    DB.ActivationCodes.Remove(activationCode);
                     break;
                 default:
                     return BadRequest(new BaseResponse.ErrorResponse("Unknown action."));
             }
 
             user.LastActivityAt = DateTime.UtcNow;
-            await DB.Users.ReplaceOneAsync(x => x.Id == user.Id, user);
 
+            await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
         }
     }

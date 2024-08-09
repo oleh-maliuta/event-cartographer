@@ -1,26 +1,30 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventCartographer.Server.Models
 {
     public class Marker
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-        [BsonElement("userId")]
-        public string UserId { get; set; }
-        [BsonElement("latitude")]
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        public User User { get; set; }
+        [Required]
+        [Precision(38, 20)]
         public decimal Latitude { get; set; }
-        [BsonElement("longitude")]
+        [Required]
+        [Precision(38, 20)]
         public decimal Longitude { get; set; }
-        [BsonElement("title")]
+        [Required]
+        [MaxLength(300)]
         public string Title { get; set; }
-        [BsonElement("description")]
+        [MaxLength(5000)]
         public string? Description { get; set; }
-        [BsonElement("importance")]
+        [Required]
+        [MaxLength(100)]
         public string Importance { get; set; }
-        [BsonElement("startsAt")]
+        [Required]
         public DateTime StartsAt { get; set; }
     }
 }
