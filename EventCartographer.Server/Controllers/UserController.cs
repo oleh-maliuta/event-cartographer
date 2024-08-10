@@ -26,7 +26,9 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpRequest request)
+        public async Task<IActionResult> SignUp(
+            [FromHeader] string? language,
+            [FromBody] SignUpRequest request)
         {
             if (await DB.Users.AnyAsync(x => x.Name == request.Username))
             {
@@ -52,9 +54,10 @@ namespace EventCartographer.Server.Controllers
                     templateName: "registration_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
-                        { "login", request.Username! },
+                        { "username", request.Username! },
                         { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}" }
-                    });
+                    },
+                    language ?? "en");
             }
             catch (Exception)
             {
@@ -185,7 +188,9 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPut("email")]
-        public async Task<IActionResult> UpdateUserEmail([FromBody] UpdateUserEmailRequest request)
+        public async Task<IActionResult> UpdateUserEmail(
+            [FromHeader] string? language,
+            [FromBody] UpdateUserEmailRequest request)
         {
             User user = AuthorizedUser;
 
@@ -213,9 +218,10 @@ namespace EventCartographer.Server.Controllers
                     templateName: "change_email_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
-                        { "login", user.Name },
+                        { "username", user.Name },
                         { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(user.Email)}?token={token}" }
-                    });
+                    },
+                    language ?? "en");
             }
             catch (Exception)
             {
@@ -255,6 +261,7 @@ namespace EventCartographer.Server.Controllers
 
         [HttpPost("reset-password-permission")]
         public async Task<IActionResult> SendResetPasswordPermission(
+            [FromHeader] string? language,
             [FromBody] SendResetPasswordPermissionRequest request)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
@@ -285,7 +292,8 @@ namespace EventCartographer.Server.Controllers
                         { "username", user.Name },
                         { "token", token },
                         { "link", $"https://{HttpContext.Request.Host.Host}:7176/api/users/accept-reset-password" }
-                    });
+                    },
+                    language ?? "en");
             }
             catch (Exception)
             {

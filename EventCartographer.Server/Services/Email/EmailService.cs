@@ -18,7 +18,11 @@ namespace EventCartographer.Server.Services.Email
 			this.configuration = configuration.Value;
 		}
 
-		public async Task SendEmailAsync(string email, string subject, string message, bool isHtml = false)
+		public async Task SendEmailAsync(
+			string email,
+			string subject,
+			string message,
+			bool isHtml = false)
 		{
             using SmtpClient client = Connect();
             using MailMessage mailMessage = new(configuration.Email, email, subject, message);
@@ -27,9 +31,14 @@ namespace EventCartographer.Server.Services.Email
             await client.SendMailAsync(mailMessage);
         }
 
-		public async Task SendEmailUseTemplateAsync(string email, string templateName, Dictionary<string, string>? parameters = null, string? subject = null)
+		public async Task SendEmailUseTemplateAsync(
+			string email,
+			string templateName,
+			Dictionary<string, string>? parameters = null,
+			string language = "en",
+			string? subject = null)
 		{
-			string templatePath = Path.Combine(EmailTemplatesFolder, templateName);
+			string templatePath = Path.Combine(EmailTemplatesFolder, language, templateName);
 			if (!File.Exists(templatePath))
 			{
 				throw new FileNotFoundException($"Template {templateName} not found");

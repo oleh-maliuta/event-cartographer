@@ -37,10 +37,19 @@
     },
     "settings": {
         "header": "Налаштування",
-        "other": "Інше",
+        "security": "Безпека",
         "basic-info": {
             "header": "Основна інформація",
             "username-input": "Ім'я користувача",
+            "save-changes": "Зберегти зміни",
+            "changes-are-saved": "Зміни збережені."
+        },
+        "personalization": {
+            "header": "Персоналізація",
+            "language-input": "Мова",
+            "en-language-value": "English",
+            "ru-language-value": "Русский",
+            "ua-language-value": "Українська",
             "save-changes": "Зберегти зміни",
             "changes-are-saved": "Зміни збережені."
         },

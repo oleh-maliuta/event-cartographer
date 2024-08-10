@@ -5,6 +5,7 @@ import EmailAddressUserSettings from "../../components/EmailAddressUserSettings/
 import PasswordUserSettings from "../../components/PasswordUserSettings/PasswordUserSettings";
 import DeleteUserAccountSettings from "../../components/DeleteUserAccountSettings/DeleteUserAccountSettings";
 import { useTranslation } from 'react-i18next';
+import PersonalizationSettings from '../../components/PersonalizationSettings/PersonalizationSettings';
 
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
@@ -28,13 +29,11 @@ const UserSettingsLayout = () => {
                     <div className={`${cl.panel__page_header__sep_line}`} />
                 </div>
                 <BasicUserInfoSettings />
-                <div className={`${cl.panel__normal_sep_line__cont}`}>
-                    <div className={`${cl.panel__normal_sep_line}`} />
-                </div>
-                <div className={`${cl.panel__other_settings}`}>
-                    <div className={`${cl.panel__other_settings__header__cont}`}>
-                        <h2 className={`${cl.panel__other_settings__header}`}>
-                            {t('settings.other')}
+                <PersonalizationSettings />
+                <div className={`${cl.panel__security_settings}`}>
+                    <div className={`${cl.panel__security_settings__header__cont}`}>
+                        <h2 className={`${cl.panel__security_settings__header}`}>
+                            {t('settings.security')}
                         </h2>
                     </div>
                     <EmailAddressUserSettings />

@@ -112,6 +112,9 @@ const BasicUserInfoSettings = React.memo(() => {
                         </span>
                 }
             </button>
+            <div className={`${cl.panel__normal_sep_line__cont}`}>
+                <div className={`${cl.panel__normal_sep_line}`} />
+            </div>
         </div>
     );
 });

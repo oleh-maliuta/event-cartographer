@@ -760,31 +760,6 @@ const MainLayout = () => {
                 moveend={mapMoveendEvent}
                 renderMarkers={renderMarkersOnMap}
                 ref={mapRef} />
-            <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
-                <div className={`${cl.marker_panel__top_menu}`}>
-                    <div className={
-                        `${cl.marker_panel__top_menu__option} 
-                            ${newMarker === null ? cl.unavailable : ''} 
-                            ${currentMarkerMenu === 'add' ? cl.current : ''}`}
-                        onClick={() => {
-                            if (newMarker) {
-                                setMarkerMenu('add');
-                            }
-                        }}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
-                            alt="add" />
-                    </div>
-                    <div
-                        className={
-                            `${cl.marker_panel__top_menu__option} 
-                            ${currentMarkerMenu === 'list' || currentMarkerMenu === 'edit' ? cl.current : ''}`}
-                        onClick={() => setMarkerMenu('list')}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`} />
-                    </div>
-                </div>
-                {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
-                {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
-            </div>
             <div className={`${cl.right_side_menu} ${isMarkerPanelVisible ? '' : cl.hided}`}>
                 <div className={`${cl.right_side_menu__user_name__cont}`}>
                     <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
@@ -820,6 +795,31 @@ const MainLayout = () => {
                         </div>
                         : <></>
                 }
+            </div>
+            <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
+                <div className={`${cl.marker_panel__top_menu}`}>
+                    <div className={
+                        `${cl.marker_panel__top_menu__option} 
+                            ${newMarker === null ? cl.unavailable : ''} 
+                            ${currentMarkerMenu === 'add' ? cl.current : ''}`}
+                        onClick={() => {
+                            if (newMarker) {
+                                setMarkerMenu('add');
+                            }
+                        }}>
+                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
+                            alt="add" />
+                    </div>
+                    <div
+                        className={
+                            `${cl.marker_panel__top_menu__option} 
+                            ${currentMarkerMenu === 'list' || currentMarkerMenu === 'edit' ? cl.current : ''}`}
+                        onClick={() => setMarkerMenu('list')}>
+                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`} />
+                    </div>
+                </div>
+                {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
+                {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
             </div>
         </div>
     );

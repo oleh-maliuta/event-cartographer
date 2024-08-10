@@ -1,8 +1,5 @@
-.content_loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
+.panel__personalization {
+    margin-top: 20px;
 }
 
 .data_input {
@@ -15,7 +12,7 @@
 
 .data_input__input {
     display: block;
-    width: calc(100% - 6px);
+    width: 100%;
     border: 2px solid gray;
     border-radius: 10px;
     font-size: 1.125rem;

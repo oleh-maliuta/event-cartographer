@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const SignInLayout = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [submitting, setSubmitting] = React.useState(false);
     const [sendingEmail, setSendingEmail] = React.useState(false);
@@ -76,7 +76,8 @@ const SignInLayout = () => {
             mode: "cors",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Language": i18n.language
             },
             body: JSON.stringify({
                 username: resetPasswordInputRef.current.value || null

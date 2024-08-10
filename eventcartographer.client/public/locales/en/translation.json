@@ -37,10 +37,19 @@
     },
     "settings": {
         "header": "Settings",
-        "other": "Other",
+        "security": "Security",
         "basic-info": {
             "header": "Basic information",
             "username-input": "Username",
+            "save-changes": "Save changes",
+            "changes-are-saved": "Changes are saved."
+        },
+        "personalization": {
+            "header": "Personalization",
+            "language-input": "Language",
+            "en-language-value": "English",
+            "ru-language-value": "Русский",
+            "ua-language-value": "Українська",
             "save-changes": "Save changes",
             "changes-are-saved": "Changes are saved."
         },

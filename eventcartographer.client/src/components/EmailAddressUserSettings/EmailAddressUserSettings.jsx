@@ -5,7 +5,7 @@ import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 
 const EmailAddressUserSettings = React.memo(() => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
 
@@ -20,7 +20,8 @@ const EmailAddressUserSettings = React.memo(() => {
             mode: "cors",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Language": i18n.language
             },
             body: JSON.stringify({
                 password: passwordInputRef.current.value || null,

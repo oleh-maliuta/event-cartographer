@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const SignUpLayout = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [submitting, setSubmitting] = React.useState(false);
 
@@ -41,7 +41,8 @@ const SignUpLayout = () => {
             mode: "cors",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Language": i18n.language
             },
             body: JSON.stringify({
                 username: usernameInputRef.current.value || null,
@@ -73,7 +74,7 @@ const SignUpLayout = () => {
         }
 
         setSubmitting(false);
-    }, [t]);
+    }, [t, i18n]);
 
     const windowKeyPressEvent = React.useCallback((e) => {
         switch (e.key) {
