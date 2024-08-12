@@ -1,0 +1,109 @@
+.modal_window {
+    --dialog-color: #ffffff;
+    --header-color: #000000;
+    --description-color: #000000;
+    --username-input-border-color: #000000;
+    --username-input-text-color: #000000;
+}
+
+.modal_window.dark {
+    --dialog-color: #2c2c2c;
+    --header-color: #ffffff;
+    --description-color: #ffffff;
+    --username-input-border-color: #ffffff;
+    --username-input-text-color: #ffffff;
+}
+
+.modal_window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 500px;
+    background-color: var(--dialog-color);
+    border: none;
+    border-radius: 10px;
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.65);
+    }
+}
+
+.modal_window__content {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.modal_window__header {
+    color: var(--header-color);
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.modal_window__reset_password__description {
+    text-align: justify;
+    color: var(--description-color);
+    font-size: 1.125rem;
+    margin-top: 20px;
+}
+
+.modal_window__reset_password__input {
+    display: block;
+    width: calc(100% - 4px);
+    background-color: transparent;
+    color: var(--username-input-text-color);
+    font-size: 1.25rem;
+    border: 2px solid var(--username-input-border-color);
+    border-radius: 5px;
+    padding-block: 1px;
+    padding-left: 4px;
+    margin-top: 10px;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.modal_window__control {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.modal_window__control__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.modal_window__control__buttons__cancel {
+    cursor: pointer;
+    width: 120px;
+    background-color: rgb(255, 59, 59);
+    color: white;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+
+    &:hover {
+        background-color: rgb(163, 37, 37);
+    }
+}
+
+.modal_window__control__buttons__apply {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    background-color: rgb(62, 200, 44);
+    color: white;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+
+    &:hover {
+        background-color: rgb(40, 131, 28);
+    }
+}

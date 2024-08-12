@@ -3,15 +3,19 @@ import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
-const PanelButton = React.memo(({
+const PanelButton = React.memo(React.forwardRef(({
     style,
     text,
     loading,
     onClick
-}) => {
+}, ref) => {
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     return (
-        <button className={cl.panel_button}
+        <button className={`${cl.panel_button} ${cl[theme]}`}
             style={style}
+            ref={ref}
             onClick={() => {
                 if (!loading) {
                     onClick();
@@ -29,9 +33,7 @@ const PanelButton = React.memo(({
             }
         </button>
     );
-});
-
-PanelButton.displayName = 'PanelButton';
+}));
 
 PanelButton.propTypes = {
     style: PropTypes.object,

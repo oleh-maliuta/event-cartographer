@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [submitting, setSubmitting] = React.useState(false);
 
     const usernameInputRef = React.useRef(null);
@@ -95,47 +97,49 @@ const SignUpLayout = () => {
     }, [windowKeyPressEvent]);
 
     return (
-        <Panel
-            title={t('sign-up.panel-header')}>
-            <PanelInput
-                containerStyle={usernameInfoInputStyle}
-                label={t('sign-up.username-input')}
-                type='text'
-                placeholder={t('sign-up.username-input')}
-                maxLength='100'
-                ref={usernameInputRef} />
-            <PanelInput
-                containerStyle={emailInfoInputStyle}
-                label={t('sign-up.email-address-input')}
-                type='email'
-                placeholder={t('sign-up.email-address-input')}
-                maxLength='320'
-                ref={emailInputRef} />
-            <PanelInput
-                containerStyle={passwordInfoInputStyle}
-                label={t('sign-up.password-input')}
-                type='password'
-                placeholder={t('sign-up.password-input')}
-                maxLength='200'
-                ref={passwordInputRef} />
-            <PanelInput
-                containerStyle={confirmPasswordInfoInputStyle}
-                label={t('sign-up.confirm-password-input')}
-                type='password'
-                placeholder={t('sign-up.confirm-password-input')}
-                maxLength='200'
-                ref={confirmPasswordInputRef} />
-            <PanelButton
-                style={submitButtonStyle}
-                text={t('sign-up.create-account')}
-                loading={submitting}
-                onClick={signUpRequest} />
-            <div className={cl.sign_in_link_cont}>
-                <Link className={cl.sign_in_link} to='/sign-in'>
-                    {t('sign-up.sign-in-link')}
-                </Link>
-            </div>
-        </Panel>
+        <div className={`${cl.main} ${cl[theme]}`}>
+            <Panel
+                title={t('sign-up.panel-header')}>
+                <PanelInput
+                    containerStyle={usernameInfoInputStyle}
+                    label={t('sign-up.username-input')}
+                    type='text'
+                    placeholder={t('sign-up.username-input')}
+                    maxLength='100'
+                    ref={usernameInputRef} />
+                <PanelInput
+                    containerStyle={emailInfoInputStyle}
+                    label={t('sign-up.email-address-input')}
+                    type='email'
+                    placeholder={t('sign-up.email-address-input')}
+                    maxLength='320'
+                    ref={emailInputRef} />
+                <PanelInput
+                    containerStyle={passwordInfoInputStyle}
+                    label={t('sign-up.password-input')}
+                    type='password'
+                    placeholder={t('sign-up.password-input')}
+                    maxLength='200'
+                    ref={passwordInputRef} />
+                <PanelInput
+                    containerStyle={confirmPasswordInfoInputStyle}
+                    label={t('sign-up.confirm-password-input')}
+                    type='password'
+                    placeholder={t('sign-up.confirm-password-input')}
+                    maxLength='200'
+                    ref={confirmPasswordInputRef} />
+                <PanelButton
+                    style={submitButtonStyle}
+                    text={t('sign-up.create-account')}
+                    loading={submitting}
+                    onClick={signUpRequest} />
+                <div className={cl.sign_in_link_cont}>
+                    <Link className={cl.sign_in_link} to='/sign-in'>
+                        {t('sign-up.sign-in-link')}
+                    </Link>
+                </div>
+            </Panel>
+        </div>
     );
 }
 

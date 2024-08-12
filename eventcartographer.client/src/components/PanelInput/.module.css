@@ -1,8 +1,23 @@
 .panel_input {
+    --label-color: #000000;
+    --input-text-color: #000000;
+    --input-focus-border-color: #000000;
+    --ms-reveal-filter: none;
+}
+
+.panel_input.dark {
+    --label-color: #ffffff;
+    --input-text-color: #ffffff;
+    --input-focus-border-color: #ffffff;
+    --ms-reveal-filter: invert(100%);
+}
+
+.panel_input {
     margin-top: 35px;
 }
 
 .label {
+    color: var(--label-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
@@ -11,11 +26,22 @@
 
 .input {
     width: calc(100% - 14px);
+    background-color: transparent;
     border: 2px solid gray;
     border-radius: 10px;
+    color: var(--input-text-color);
     font-size: 1.063rem;
     letter-spacing: 0.5px;
     margin-top: 7px;
     padding-block: 10px;
     padding-left: 10px;
+
+    &:focus {
+        outline: none;
+        border: 2px solid var(--input-focus-border-color);
+    }
+
+    &::-ms-reveal {
+        filter: var(--ms-reveal-filter);
+    }
 }

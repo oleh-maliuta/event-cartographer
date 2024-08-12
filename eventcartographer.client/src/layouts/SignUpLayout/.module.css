@@ -1,3 +1,21 @@
+.main {
+    --sign-in-link-color: #0000ee;
+    --sign-in-link-visited-color: #551a8b;
+}
+
+.main.dark {
+    --sign-in-link-color: #0084ff;
+    --sign-in-link-visited-color: #ee82ee;
+}
+
+.main {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
 .sign_in_link_cont {
     display: flex;
     align-items: center;
@@ -13,5 +31,13 @@
 
     &:hover {
         text-decoration: underline;
+    }
+
+    &:link {
+        color: var(--sign-in-link-color);
+    }
+
+    &:visited {
+        color: var(--sign-in-link-visited-color);
     }
 }

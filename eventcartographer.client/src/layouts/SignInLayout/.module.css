@@ -1,3 +1,23 @@
+.main {
+    --sign-up-link-color: #0000ee;
+    --sign-up-link-visited-color: #551a8b;
+    --forgot-password-link-color: #000000;
+}
+
+.main.dark {
+    --sign-up-link-color: #0084ff;
+    --sign-up-link-visited-color: #ee82ee;
+    --forgot-password-link-color: #ffffff;
+}
+
+.main {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
 .options {
     position: relative;
     height: 17px;
@@ -20,6 +40,14 @@
         text-decoration: underline;
     }
 
+    &:link {
+        color: var(--sign-up-link-color);
+    }
+
+    &:visited {
+        color: var(--sign-up-link-visited-color);
+    }
+
     @media (width < 310px) {
         position: static;
         display: block;
@@ -31,6 +59,7 @@
     cursor: pointer;
     position: absolute;
     right: 0;
+    color: var(--forgot-password-link-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
@@ -46,91 +75,5 @@
         display: block;
         text-align: center;
         margin-top: 20px;
-    }
-}
-
-.modal_window {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 500px;
-    background-color: white;
-    border: none;
-    border-radius: 10px;
-
-    &::backdrop {
-        background-color: rgba(0, 0, 0, 0.65);
-    }
-}
-
-.modal_window__content {
-    padding-block: 10px;
-    padding-inline: 15px;
-}
-
-.modal_window__header {
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.modal_window__reset_password__description {
-    text-align: justify;
-    font-size: 1.125rem;
-    margin-top: 20px;
-}
-
-.modal_window__reset_password__input {
-    display: block;
-    width: calc(100% - 4px);
-    font-size: 1.25rem;
-    border: 2px solid black;
-    border-radius: 5px;
-    padding-block: 1px;
-    padding-left: 2px;
-    margin-top: 10px;
-}
-
-.modal_window__control {
-    padding-block: 10px;
-    padding-inline: 15px;
-}
-
-.modal_window__control__buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-
-.modal_window__control__buttons__cancel {
-    cursor: pointer;
-    width: 120px;
-    background-color: rgb(255, 59, 59);
-    color: white;
-    font-size: 1.25rem;
-    border: none;
-    border-radius: 8px;
-    padding-block: 5px;
-
-    &:hover {
-        background-color: rgb(163, 37, 37);
-    }
-}
-
-.modal_window__control__buttons__apply {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 120px;
-    background-color: rgb(62, 200, 44);
-    color: white;
-    font-size: 1.25rem;
-    border: none;
-    border-radius: 8px;
-    padding-block: 5px;
-
-    &:hover {
-        background-color: rgb(40, 131, 28);
     }
 }

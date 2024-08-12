@@ -11,8 +11,11 @@ const PanelInput = React.memo(React.forwardRef(({
     placeholder,
     maxLength
 }, ref) => {
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     return (
-        <div className={cl.panel_input}
+        <div className={`${cl.panel_input} ${cl[theme]}`}
             style={containerStyle}>
             <label className={cl.label}
                 style={labelStyle}>

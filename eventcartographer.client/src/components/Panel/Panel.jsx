@@ -7,12 +7,15 @@ const Panel = React.memo(({
     title,
     children
 }) => {
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     const panelRef = React.useRef(null);
 
     const panelDimensions = useRefDimensions(panelRef);
 
     return (
-        <div className={cl.main}>
+        <div className={`${cl.panel_background} ${cl[theme]}`}>
             <div className={`${cl.panel} ${panelDimensions.height > window.innerHeight ? cl.fixed : ''}`}
                 ref={panelRef}>
                 <div className={cl.panel_header}>

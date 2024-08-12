@@ -1,4 +1,14 @@
 .panel_button {
+    --button-text-color: #ffffff;
+    --button-background-color: linear-gradient(90deg, rgba(0, 140, 73, 1) 0%, rgba(0, 224, 15, 1) 100%);
+}
+
+.panel_button.dark {
+    --button-text-color: #ffffff;
+    --button-background-color: linear-gradient(90deg, rgba(0, 140, 73, 1) 0%, rgba(0, 224, 15, 1) 100%);
+}
+
+.panel_button {
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -7,12 +17,11 @@
     min-height: 49px;
     margin-left: 50%;
     transform: translateX(-50%);
-    background: rgb(0, 140, 73);
-    background: linear-gradient(90deg, rgba(0, 140, 73, 1) 0%, rgba(0, 224, 15, 1) 100%);
+    background: var(--button-background-color);
     border: none;
     border-radius: 50px;
+    color: var(--button-text-color);
     font-size: 1.563rem;
     letter-spacing: 1px;
-    color: white;
     padding-block: 10px;
 }
