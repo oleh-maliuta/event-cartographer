@@ -1,8 +1,32 @@
 .main {
-    position: relative;
+    --background-color: #ffffff;
+    --header-color: #000000;
+    --map-button-color: #1e1e1e;
+    --map-button-hover-color: #686868;
+    --sep-line-color: #000000;
+    --security-settings-header-color: #000000;
+    --map-button-filter: none;
+}
+
+.main.dark {
+    --background-color: #121212;
+    --header-color: #ffffff;
+    --map-button-color: #e1e1e1;
+    --map-button-hover-color: #686868;
+    --sep-line-color: #ffffff;
+    --security-settings-header-color: #ffffff;
+    --map-button-filter: invert(100%);
+}
+
+.main {
+    position: fixed;
     display: flex;
-    justify-content: center;
-    padding: 5px;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-color);
+    overflow-y: auto;
 }
 
 .main__loading {
@@ -14,8 +38,9 @@
 
 .panel {
     position: relative;
-    width: 100%;
-    max-width: 600px;
+    width: calc(100% - 20px);
+    max-width: 650px;
+    padding-bottom: 30px;
 }
 
 .panel__page_header__sep_line__cont {
@@ -28,11 +53,15 @@
 .panel__page_header__sep_line {
     width: 100%;
     height: 2px;
-    background-color: black;
+    background-color: var(--sep-line-color)
 }
 
 .panel__security_settings {
     margin-top: 20px;
+}
+
+.panel__security_settings__header__text {
+    color: var(--security-settings-header-color);
 }
 
 .panel__page_header {
@@ -41,7 +70,7 @@
 
 .panel__page_header__text {
     cursor: pointer;
-    color: rgb(30, 30, 30);
+    color: var(--header-color);
     font-size: 1.875rem;
     text-align: center;
 }
@@ -61,12 +90,12 @@
     align-items: center;
     justify-content: center;
     width: 40px;
-    background-color: rgb(30, 30, 30);
+    background-color: var(--map-button-color);
     border: none;
     border-radius: 5px;
 
     &:hover {
-        background-color: rgb(104, 104, 104);
+        background-color: var(--map-button-hover-color);
     }
 }
 
@@ -74,4 +103,5 @@
     content: url(../../assets/map.png);
     width: 70%;
     height: 70%;
+    filter: var(--map-button-filter);
 }

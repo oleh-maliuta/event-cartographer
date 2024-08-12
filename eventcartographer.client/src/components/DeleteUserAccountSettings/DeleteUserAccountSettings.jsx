@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 const DeleteUserAccountSettings = React.memo(() => {
     const { t } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [deletingAccount, setDeletingAccount] = React.useState(false);
 
     const confirmAccountDeletionInputRef = React.useRef(null);
@@ -51,22 +53,22 @@ const DeleteUserAccountSettings = React.memo(() => {
     }
 
     return (
-        <div className={cl.panel__other_settings__element}>
-            <div className={`${cl.panel__other_settings__element__content}`}>
-                <h3 className={`${cl.panel__other_settings__element__header}`}>
+        <div className={`${cl.element} ${cl[theme]}`}>
+            <div className={`${cl.element__content}`}>
+                <h3 className={`${cl.element__header}`}>
                     {t('settings.delete-account.header')}
                 </h3>
-                <p className={`${cl.panel__other_settings__element__description}`}>
+                <p className={`${cl.element__description}`}>
                     {t('settings.delete-account.description')}
                 </p>
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.delete-account.password-input')}
                     maxLength="200"
                     ref={confirmAccountDeletionInputRef} />
             </div>
-            <div className={`${cl.panel__other_settings__element__control}`}>
-                <button className={`${cl.panel__other_settings__element__control__delete_account}`}
+            <div className={`${cl.element__control}`}>
+                <button className={`${cl.element__control__delete_account}`}
                     onClick={() => {
                         if (!deletingAccount) {
                             deleteAccountRequest();

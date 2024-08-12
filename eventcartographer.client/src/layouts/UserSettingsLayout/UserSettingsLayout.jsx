@@ -1,3 +1,4 @@
+import React from 'react';
 import cl from './.module.css';
 import { CLIENT_PORT, HOST } from "../../constants";
 import BasicUserInfoSettings from "../../components/BasicUserInfoSettings/BasicUserInfoSettings";
@@ -10,8 +11,11 @@ import PersonalizationSettings from '../../components/PersonalizationSettings/Pe
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     return (
-        <div className={`${cl.main}`}>
+        <div className={`${cl.main} ${cl[theme]}`}>
             <div className={cl.panel}>
                 <div className={`${cl.panel__page_header}`}>
                     <h1 className={`${cl.panel__page_header__text}`}>
@@ -31,8 +35,8 @@ const UserSettingsLayout = () => {
                 <BasicUserInfoSettings />
                 <PersonalizationSettings />
                 <div className={`${cl.panel__security_settings}`}>
-                    <div className={`${cl.panel__security_settings__header__cont}`}>
-                        <h2 className={`${cl.panel__security_settings__header}`}>
+                    <div className={`${cl.panel__security_settings__header}`}>
+                        <h2 className={`${cl.panel__security_settings__header__text}`}>
                             {t('settings.security')}
                         </h2>
                     </div>

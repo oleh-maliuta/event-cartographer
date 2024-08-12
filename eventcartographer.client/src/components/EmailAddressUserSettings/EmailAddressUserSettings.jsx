@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 const EmailAddressUserSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
 
     const passwordInputRef = React.useRef(null);
@@ -53,27 +55,27 @@ const EmailAddressUserSettings = React.memo(() => {
     }
 
     return (
-        <div className={cl.panel__other_settings__element}>
-            <div className={`${cl.panel__other_settings__element__content}`}>
-                <h3 className={`${cl.panel__other_settings__element__header}`}>
+        <div className={`${cl.element} ${cl[theme]}`}>
+            <div className={`${cl.element__content}`}>
+                <h3 className={`${cl.element__header}`}>
                     {t('settings.email-address.header')}
                 </h3>
-                <p className={`${cl.panel__other_settings__element__description}`}>
+                <p className={`${cl.element__description}`}>
                     {t('settings.email-address.description')}
                 </p>
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.email-address.password-input')}
                     maxLength="200"
                     ref={passwordInputRef} />
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="email"
                     placeholder={t('settings.email-address.new-email-address-input')}
                     maxLength="320"
                     ref={newEmailInputRef} />
             </div>
-            <div className={`${cl.panel__other_settings__element__control}`}>
-                <button className={`${cl.panel__other_settings__element__control__apply}`}
+            <div className={`${cl.element__control}`}>
+                <button className={`${cl.element__control__apply}`}
                     onClick={() => {
                         if (!updatingEmail) {
                             updateUserEmailRequest();

@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
 
@@ -76,9 +78,9 @@ const BasicUserInfoSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.panel__basic_info}`}>
-            <div className={`${cl.panel__basic_info__header__cont}`}>
-                <h2 className={`${cl.panel__basic_info__header}`}>
+        <div className={`${cl.basic_info} ${cl[theme]}`}>
+            <div className={`${cl.basic_info__header__cont}`}>
+                <h2 className={`${cl.basic_info__header}`}>
                     {t('settings.basic-info.header')}
                 </h2>
             </div>
@@ -112,8 +114,8 @@ const BasicUserInfoSettings = React.memo(() => {
                         </span>
                 }
             </button>
-            <div className={`${cl.panel__normal_sep_line__cont}`}>
-                <div className={`${cl.panel__normal_sep_line}`} />
+            <div className={`${cl.normal_sep_line__cont}`}>
+                <div className={`${cl.normal_sep_line}`} />
             </div>
         </div>
     );

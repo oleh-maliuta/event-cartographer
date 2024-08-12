@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 const PasswordUserSettings = React.memo(() => {
     const { t } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
 
     const oldPasswordInputRef = React.useRef(null);
@@ -54,29 +56,29 @@ const PasswordUserSettings = React.memo(() => {
     }
 
     return (
-        <div className={cl.panel__other_settings__element}>
-            <div className={`${cl.panel__other_settings__element__content}`}>
-                <h3 className={`${cl.panel__other_settings__element__header}`}>
+        <div className={`${cl.element} ${cl[theme]}`}>
+            <div className={`${cl.element__content}`}>
+                <h3 className={`${cl.element__header}`}>
                     {t('settings.password.header')}
                 </h3>
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.password.old-password-input')}
                     maxLength="200"
                     ref={oldPasswordInputRef} />
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.password.new-password-input')}
                     maxLength="200"
                     ref={newPasswordInputRef} />
-                <input className={`${cl.panel__other_settings__element__input}`}
+                <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.password.confirm-new-password-input')}
                     maxLength="200"
                     ref={confirmPasswordInputRef} />
             </div>
-            <div className={`${cl.panel__other_settings__element__control}`}>
-                <button className={`${cl.panel__other_settings__element__control__apply}`}
+            <div className={`${cl.element__control}`}>
+                <button className={`${cl.element__control__apply}`}
                     onClick={() => {
                         if (!updatingPassword) {
                             updateUserPasswordRequest();

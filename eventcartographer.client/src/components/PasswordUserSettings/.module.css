@@ -1,40 +1,55 @@
-.panel__other_settings__element {
+.element {
+    --header-color: #000000;
+    --input-text-color: #000000;
+    --input-border-focus-color: #000000;
+    --ms-reveal-filter: none;
+}
+
+.element.dark {
+    --header-color: #ffffff;
+    --input-text-color: #ffffff;
+    --input-border-focus-color: #ffffff;
+    --ms-reveal-filter: invert(100%);
+}
+
+.element {
     margin-top: 30px;
 }
 
-.panel__other_settings__element__header {
+.element__header {
+    color: var(--header-color);
     font-size: 1.25rem;
 }
 
-.panel__other_settings__element__description {
+.element__description {
     color: gray;
     letter-spacing: 0.5px;
     margin-top: 8px;
 }
 
-.panel__other_settings__element__input {
+.element__input {
     display: block;
     width: calc(100% - 6px);
+    background-color: transparent;
     border: 2px solid gray;
     border-radius: 10px;
+    color: var(--input-text-color);
     font-size: 1.125rem;
     padding-block: 3px;
     padding-left: 3px;
     margin-top: 12px;
+
+    &:focus {
+        outline: none;
+        border: 2px solid var(--input-border-focus-color);
+    }
+
+    &::-ms-reveal {
+        filter: var(--ms-reveal-filter);
+    }
 }
 
-.panel__other_settings__element__input {
-    display: block;
-    width: calc(100% - 6px);
-    border: 2px solid gray;
-    border-radius: 10px;
-    font-size: 1.125rem;
-    padding-block: 3px;
-    padding-left: 3px;
-    margin-top: 12px;
-}
-
-.panel__other_settings__element__control__apply {
+.element__control__apply {
     cursor: pointer;
     min-height: 35px;
     border: none;

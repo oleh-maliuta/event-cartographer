@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next';
 const PersonalizationSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     const languageInputRef = React.useRef(null);
 
     return (
-        <div className={`${cl.panel__personalization}`}>
-            <div className={`${cl.panel__personalization__header__cont}`}>
-                <h2 className={`${cl.panel__personalization__header}`}>
+        <div className={`${cl.personalization} ${cl[theme]}`}>
+            <div className={`${cl.personalization__header__cont}`}>
+                <h2 className={`${cl.personalization__header}`}>
                     {t('settings.personalization.header')}
                 </h2>
                 <div className={cl.data_input}>
@@ -45,8 +48,8 @@ const PersonalizationSettings = React.memo(() => {
                 }}>
                 {t('settings.personalization.save-changes')}
             </button>
-            <div className={`${cl.panel__normal_sep_line__cont}`}>
-                <div className={`${cl.panel__normal_sep_line}`} />
+            <div className={`${cl.normal_sep_line__cont}`}>
+                <div className={`${cl.normal_sep_line}`} />
             </div>
         </div>
     );
