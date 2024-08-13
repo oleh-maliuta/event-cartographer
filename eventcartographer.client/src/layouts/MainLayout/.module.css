@@ -1,5 +1,87 @@
-.marker_popup_cancel_button {
-    cursor: pointer;
+.main {
+    --marker-popup-title-color: #000000;
+    --marker-popup-description-color: #000000;
+    --marker-popup-starts-at-color: #000000;
+    --user-name-background-color: #303030;
+    --user-name-text-color: #ffffff;
+    --marker-panel-button-color: #800080;
+    --settings-button-color: #303030;
+    --logout-button-color: #303030;
+    --marker-panel-background-color: #ffffff;
+    --marker-panel-top-menu-current-option-color: #1e1e1e;
+    --marker-panel-top-menu-option-hover-color: #c4c4c4;
+    --marker-search-input-border-color: #000000;
+    --marker-search-input-text-color: #000000;
+    --marker-search-apply-button-color: #000000;
+    --marker-sort-label-color: #000000;
+    --marker-sort-input-border-color: #000000;
+    --marker-sort-input-text-color: #000000;
+    --marker-sort-input-value-background-color: #ffffff;
+    --marker-sort-direction-button-border-color: #000000;
+    --marker-filter-button-border-color: #000000;
+    --marker-filter-panel-border-color: #000000;
+    --marker-filter-panel-header-color: #000000;
+    --marker-importance-filter-value-label-color: #000000;
+    --marker-time-of-start-filter-input-border-color: #000000;
+    --marker-time-of-start-filter-input-content-color: #000000;
+    --marker-time-of-start-filter-dash-color: #000000;
+    --marker-edit-panel-label-color: #000000;
+    --marker-edit-panel-input-border-color: #000000;
+    --marker-edit-panel-input-text-color: #000000;
+    --marker-panel-button-image-filter: none;
+    --settings-button-image-filter: none;
+    --logout-button-image-filter: none;
+    --marker-panel-top-menu-not-current-option-filter: none;
+    --marker-panel-top-menu-current-option-filter: invert(100%);
+    --marker-search-apply-button-image-filter: none;
+    --marker-sort-direction-button-image-filter: none;
+    --marker-filter-button-image-filter: none;
+    --marker-time-of-start-filter-input-image-filter: none;
+}
+
+.main.dark {
+    --marker-popup-title-color: #ffffff;
+    --marker-popup-description-color: #ffffff;
+    --marker-popup-starts-at-color: #ffffff;
+    --user-name-background-color: #ffffff;
+    --user-name-text-color: #000000;
+    --marker-panel-button-color: #ff4cff;
+    --settings-button-color: #ffffff;
+    --logout-button-color: #ffffff;
+    --marker-panel-background-color: #121212;
+    --marker-panel-top-menu-current-option-color: #e1e1e1;
+    --marker-panel-top-menu-option-hover-color: #4c4c4c;
+    --marker-search-input-border-color: #ffffff;
+    --marker-search-input-text-color: #ffffff;
+    --marker-search-apply-button-color: #ffffff;
+    --marker-sort-label-color: #ffffff;
+    --marker-sort-input-border-color: #ffffff;
+    --marker-sort-input-text-color: #ffffff;
+    --marker-sort-input-value-background-color: #000000;
+    --marker-sort-direction-button-border-color: #ffffff;
+    --marker-filter-button-border-color: #ffffff;
+    --marker-filter-panel-border-color: #ffffff;
+    --marker-filter-panel-header-color: #ffffff;
+    --marker-importance-filter-value-label-color: #ffffff;
+    --marker-time-of-start-filter-input-border-color: #ffffff;
+    --marker-time-of-start-filter-input-content-color: #ffffff;
+    --marker-time-of-start-filter-dash-color: #ffffff;
+    --marker-edit-panel-label-color: #ffffff;
+    --marker-edit-panel-input-border-color: #ffffff;
+    --marker-edit-panel-input-text-color: #ffffff;
+    --marker-panel-button-image-filter: invert(100%);
+    --settings-button-image-filter: invert(100%);
+    --logout-button-image-filter: invert(100%);
+    --marker-panel-top-menu-not-current-option-filter: invert(100%);
+    --marker-panel-top-menu-current-option-filter: none;
+    --marker-search-apply-button-image-filter: invert(100%);
+    --marker-sort-direction-button-image-filter: invert(100%);
+    --marker-filter-button-image-filter: invert(100%);
+    --marker-time-of-start-filter-input-image-filter: invert(100%);
+    --marker-edit-panel-input-image-filter: invert(100%);
+}
+
+.marker_popup__cancel_button {
     background-color: rgb(211, 0, 0);
     color: white;
     font-size: 0.938rem;
@@ -13,21 +95,24 @@
     }
 }
 
-.marker_popup_cont {
+.marker_popup__cont {
     max-height: 300px;
     overflow: hidden;
     overflow-y: auto;
 }
 
-.marker_popup_title {
+.marker_popup__title {
+    color: var(--marker-popup-title-color);
     word-break: break-all;
 }
 
-.marker_popup_description {
+.marker_popup__description {
+    color: var(--marker-popup-description-color);
     word-break: break-all;
 }
 
-.marker_popup_starts_at {
+.marker_popup__starts_at {
+    color: var(--marker-popup-starts-at-color);
     word-break: break-all;
 }
 
@@ -52,13 +137,13 @@
     right: 60px;
     width: fit-content;
     height: 40px;
-    background-color: rgb(48, 48, 48);
+    background-color: var(--user-name-background-color);
     border-radius: 8px;
     padding-inline: 7px;
 }
 
 .right_side_menu__user_name {
-    color: white;
+    color: var(--user-name-text-color);
     word-wrap: none;
     word-break: keep-all;
     white-space: nowrap;
@@ -67,14 +152,13 @@
 }
 
 .right_side_menu__marker_menu_button {
-    cursor: pointer;
     position: absolute;
     top: 0px;
     right: 0px;
     width: 40px;
     height: 40px;
     border-radius: 100%;
-    background-color: purple;
+    background-color: var(--marker-panel-button-color);
     border: none;
 }
 
@@ -84,17 +168,17 @@
     width: 60%;
     height: 60%;
     transform: translate(-50%, -50%);
+    filter: var(--marker-panel-button-image-filter);
 }
 
 .right_side_menu__settings_button {
-    cursor: pointer;
     position: absolute;
     top: 60px;
     right: 0px;
     width: 40px;
     height: 40px;
     border-radius: 100%;
-    background-color: rgb(48, 48, 48);
+    background-color: var(--settings-button-color);
     border: none;
 }
 
@@ -104,17 +188,17 @@
     width: 60%;
     height: 60%;
     transform: translate(-50%, -50%);
+    filter: var(--settings-button-image-filter);
 }
 
 .right_side_menu__log_out_button {
-    cursor: pointer;
     position: absolute;
     top: 120px;
     right: 0px;
     width: 40px;
     height: 40px;
     border-radius: 100%;
-    background-color: rgb(48, 48, 48);
+    background-color: var(--logout-button-color);
     border: none;
 }
 
@@ -124,6 +208,7 @@
     width: 60%;
     height: 60%;
     transform: translate(-40%, -45%);
+    filter: var(--logout-button-image-filter);
 }
 
 .map_markers_loading {
@@ -142,7 +227,7 @@
     bottom: 0px;
     right: 0px;
     width: calc(390px + 5vw);
-    background-color: white;
+    background-color: var(--marker-panel-background-color);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     overflow-y: scroll;
@@ -168,27 +253,31 @@
 }
 
 .marker_panel__top_menu__option {
-    cursor: pointer;
     position: relative;
     width: 50px;
     height: 50px;
+    background-color: transparent;
+    border: none;
     border-radius: 15px;
 
     &.current {
-        background-color: rgb(225, 225, 225);
-        filter: invert(1);
+        background-color: var(--marker-panel-top-menu-current-option-color);
+    }
+
+    &.current>img {
+        filter: var(--marker-panel-top-menu-current-option-filter);
     }
 
     &.unavailable {
         cursor: default;
     }
 
-    &.unavailable>img {
-        filter: invert(0.7);
+    &.unavailable {
+        opacity: 0.3;
     }
 
     &:not(&.current, &.unavailable):hover {
-        background-color: rgb(196, 196, 196);
+        background-color: var(--marker-panel-top-menu-option-hover-color);
     }
 }
 
@@ -199,6 +288,7 @@
     transform: translate(-50%, -50%);
     width: 35px;
     height: 35px;
+    filter: var(--marker-panel-top-menu-not-current-option-filter);
 }
 
 .marker_list_img {
@@ -219,24 +309,26 @@
     display: grid;
     grid-template-columns: 1fr 35px;
     width: calc(100% + 5px);
+    grid-column-gap: 2px;
 }
 
-.marker_list_search_input {
+.marker_list_search__input {
     width: 100%;
+    color: var(--marker-search-input-text-color);
     font-size: 1.25rem;
-    border: 2px solid black;
+    background-color: transparent;
+    border: 2px solid var(--marker-search-input-border-color);
     border-radius: 5px;
+    padding-left: 2px;
 }
 
-.marker_list_apply_button {
+.marker_list__apply_button {
     position: relative;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 29px;
-    background-color: black;
-    color: white;
+    background-color: var(--marker-search-apply-button-color);
     font-size: 1.125rem;
     letter-spacing: 0.5px;
     border: none;
@@ -248,10 +340,11 @@
     }
 }
 
-.marker_list_apply_button__img {
+.marker_list__apply_button__img {
     width: 70%;
     height: 70%;
     content: url(../../assets/search.png);
+    filter: var(--marker-search-apply-button-image-filter);
 }
 
 .marker_list_sort_and_filter_cont {
@@ -260,47 +353,52 @@
 }
 
 .marker_list_sort_label {
+    color: var(--marker-sort-label-color);
     font-size: 1.25rem;
     padding-top: 2px;
 }
 
 .marker_list_sort_input {
-    cursor: pointer;
+    background-color: transparent;
+    color: var(--marker-sort-input-text-color);
     font-size: 1.25rem;
-    border: 2px solid black;
+    border: 2px solid var(--marker-sort-input-border-color);
     border-radius: 5px;
     margin-left: 5px;
+}
+
+.marker_list_sort_input_option {
+    background-color: var(--marker-sort-input-value-background-color);
 }
 
 .marker_list_sort_direction_button {
-    cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 29px;
     height: 29px;
-    background-color: white;
-    border: 2px solid black;
+    background-color: transparent;
+    border: 2px solid var(--marker-sort-direction-button-border-color);
     border-radius: 5px;
     margin-left: 5px;
 }
 
-.marker_list_direction_button_img {
+.marker_list_sort_direction_button_img {
     width: 80%;
     height: 80%;
+    filter: var(--marker-sort-direction-button-image-filter);
 }
 
 .marker_list_filter_button {
-    cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 29px;
     height: 29px;
-    background-color: white;
-    border: 2px solid black;
+    background-color: transparent;
+    border: 2px solid var(--marker-filter-button-border-color);
     border-radius: 5px;
     margin-left: 5px;
 }
@@ -309,6 +407,7 @@
     content: url(../../assets/filter.png);
     width: 80%;
     height: 80%;
+    filter: var(--marker-filter-button-image-filter);
 }
 
 .marker_list_filter_panel_cont {
@@ -318,10 +417,14 @@
 
 .marker_list_filter_panel {
     margin-top: 10px;
-    border: 2px solid black;
+    border: 2px solid var(--marker-filter-panel-border-color);
     border-radius: 5px;
     margin-top: 15px;
     padding-block: 10px;
+}
+
+.marker_list_filter_panel__section_header {
+    color: var(--marker-filter-panel-header-color);
 }
 
 .marker_list_filter_panel_sep_line_cont {
@@ -359,6 +462,7 @@
 }
 
 .marker_list_filter_panel_importance_label {
+    color: var(--marker-importance-filter-value-label-color);
     margin-left: 5px;
 }
 
@@ -379,9 +483,15 @@
 
 .marker_list_filter_panel_starts_at_input {
     min-width: 0px;
+    color: var(--marker-time-of-start-filter-input-content-color);
     font-size: 1.125rem;
-    border: 2px solid black;
+    background-color: transparent;
+    border: 2px solid var(--marker-time-of-start-filter-input-border-color);
     border-radius: 5px;
+
+    &::-webkit-calendar-picker-indicator {
+        filter: var(--marker-time-of-start-filter-input-image-filter);
+    }
 }
 
 .marker_list_filter_panel_starts_at_sep_line_cont {
@@ -393,7 +503,7 @@
 .marker_list_filter_panel_starts_at_sep_line {
     width: calc(100% - 8px);
     height: 2px;
-    background-color: black;
+    background-color: var(--marker-time-of-start-filter-dash-color);
 }
 
 .marker_list {
@@ -414,12 +524,15 @@
 }
 
 .editing_marker_field_label {
+    color: var(--marker-edit-panel-label-color);
     font-size: 1.25rem;
 }
 
 .editing_marker_field_input {
+    background-color: transparent;
+    color: var(--marker-edit-panel-input-text-color);
     font-size: 1.25rem;
-    border: 2px solid black;
+    border: 2px solid var(--marker-edit-panel-input-border-color);
     border-radius: 5px;
 }
 
@@ -463,6 +576,10 @@
 
 .editing_marker_starts_at_input {
     width: calc(100% - 20px);
+
+    &::-webkit-calendar-picker-indicator {
+        filter: var(--marker-edit-panel-input-image-filter);
+    }
 }
 
 .editing_marker_importance_input {
@@ -508,7 +625,6 @@
 }
 
 .editing_marker_cancel_button {
-    cursor: pointer;
     color: white;
     background-color: rgb(211, 0, 0);
     font-size: 1.25rem;
@@ -523,7 +639,6 @@
 }
 
 .editing_marker_add_button {
-    cursor: pointer;
     color: white;
     background-color: rgb(0, 185, 68);
     font-size: 1.25rem;
@@ -539,7 +654,6 @@
 }
 
 .editing_marker_go_back_button {
-    cursor: pointer;
     color: white;
     background-color: rgb(111, 111, 111);
     font-size: 1.25rem;
@@ -554,7 +668,6 @@
 }
 
 .editing_marker_edit_button {
-    cursor: pointer;
     color: white;
     background-color: rgb(222, 189, 0);
     font-size: 1.25rem;

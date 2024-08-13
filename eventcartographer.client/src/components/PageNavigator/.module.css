@@ -1,4 +1,12 @@
 .page_navigator__cont {
+    --obj-color: #000000;
+}
+
+.page_navigator__cont.dark {
+    --obj-color: #ffffff;
+}
+
+.page_navigator__cont {
     position: relative;
     display: flex;
     align-items: center;
@@ -13,6 +21,7 @@
 
 .page_navigator__obj {
     cursor: pointer;
+    color: var(--obj-color);
     font-size: 1.375rem;
     padding-block: 2px;
     padding-inline: 4px;
@@ -22,8 +31,9 @@
     &:hover {
         color: rgb(255, 208, 0);
     }
-}
 
-.current_page_navigator__obj {
-    background-color: #83aaff;
+    &.current {
+        color: #000000;
+        background-color: #83aaff;
+    }
 }

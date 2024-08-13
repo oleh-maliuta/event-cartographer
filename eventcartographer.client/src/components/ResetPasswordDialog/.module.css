@@ -58,10 +58,6 @@
     padding-block: 1px;
     padding-left: 4px;
     margin-top: 10px;
-
-    &:focus {
-        outline: none;
-    }
 }
 
 .modal_window__control {
@@ -76,7 +72,6 @@
 }
 
 .modal_window__control__buttons__cancel {
-    cursor: pointer;
     width: 120px;
     background-color: rgb(255, 59, 59);
     color: white;
@@ -91,7 +86,6 @@
 }
 
 .modal_window__control__buttons__apply {
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;

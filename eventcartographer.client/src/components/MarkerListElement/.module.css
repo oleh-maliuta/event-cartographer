@@ -1,8 +1,24 @@
 .marker_list_element {
+    --background-color: #d7d7d7;
+    --header-color: #000000;
+    --description-color: #000000;
+    --coordinates-color: #000000;
+    --time-color: #000000;
+}
+
+.marker_list_element.dark {
+    --background-color: #3f3f3f;
+    --header-color: #ffffff;
+    --description-color: #ffffff;
+    --coordinates-color: #ffffff;
+    --time-color: #ffffff;
+}
+
+.marker_list_element {
     position: relative;
     padding-block: 10px;
     padding-inline: 10px;
-    background-color: rgb(215, 215, 215);
+    background-color: var(--background-color);
     border-radius: 8px;
 }
 
@@ -11,15 +27,15 @@
     border-radius: 50px;
 
     &.low {
-        background-color: green;
+        background-color: #00a700;
     }
 
     &.medium {
-        background-color: rgb(230, 230, 0);
+        background-color: #e6e600;
     }
 
     &.high {
-        background-color: rgb(212, 0, 0);
+        background-color: #d40000;
     }
 }
 
@@ -29,13 +45,13 @@
 }
 
 .marker_list_element_button {
-    cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 25px;
     height: 25px;
+    border: none;
 }
 
 .marker_list_element_navigate_button {
@@ -92,6 +108,7 @@
 .marker_list_element_title {
     display: -webkit-box;
     overflow: hidden;
+    color: var(--header-color);
     overflow-wrap: break-word;
     word-break: break-all;
     text-overflow: ellipsis;
@@ -108,6 +125,7 @@
 .marker_list_element_description {
     display: -webkit-box;
     overflow: hidden;
+    color: var(--description-color);
     overflow-wrap: break-word;
     word-break: break-all;
     text-overflow: ellipsis;
@@ -125,6 +143,7 @@
 .marker_list_element_latitude {
     display: -webkit-box;
     overflow: hidden;
+    color: var(--coordinates-color);
     overflow-wrap: break-word;
     word-break: break-all;
     text-overflow: ellipsis;
@@ -137,6 +156,7 @@
 .marker_list_element_longitude {
     display: -webkit-box;
     overflow: hidden;
+    color: var(--coordinates-color);
     overflow-wrap: break-word;
     word-break: break-all;
     text-overflow: ellipsis;
@@ -148,4 +168,8 @@
 
 .marker_list_element_starts_at_cont {
     margin-top: 10px;
+}
+
+.marker_list_element_starts_at {
+    color: var(--time-color);
 }

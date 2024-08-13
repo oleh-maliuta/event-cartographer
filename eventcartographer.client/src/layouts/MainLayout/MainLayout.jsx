@@ -14,6 +14,9 @@ import { useTranslation } from "react-i18next";
 const MainLayout = () => {
     const { t } = useTranslation();
 
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
     const [markerListPage, setMarkerListPage] = React.useState(1);
@@ -223,17 +226,17 @@ const MainLayout = () => {
                 <div className={`${cl.marker_list_panel}`}>
                     <div className={cl.marker_list_panel__search}>
                         <input
-                            className={`${cl.marker_list_search_input}`}
+                            className={`${cl.marker_list_search__input}`}
                             type='text'
                             placeholder={t('map.search-markers-input')}
                             ref={markerSearchInputRef} />
-                        <button className={`${cl.marker_list_apply_button}`}
+                        <button className={`${cl.marker_list__apply_button}`}
                             onClick={() => {
                                 if (!markersForListLoading) {
                                     loadMarkersForList(1);
                                 }
                             }}>
-                            <img className={cl.marker_list_apply_button__img}
+                            <img className={cl.marker_list__apply_button__img}
                                 alt="search" />
                         </button>
                     </div>
@@ -269,7 +272,7 @@ const MainLayout = () => {
                                 });
                             }}>
                             <img
-                                className={`${cl.marker_list_direction_button_img}`}
+                                className={`${cl.marker_list_sort_direction_button_img}`}
                                 src={markerListSort.asc ? ascendingPng : descendingPng}
                                 alt='sort direction' />
                         </button>
@@ -281,7 +284,7 @@ const MainLayout = () => {
                     <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterVisible ? 'fit-content' : '0px' }}>
                         <div className={`${cl.marker_list_filter_panel}`}>
                             <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
-                                <h3 className={`${cl.marker_list_filter_panel_importance_header}`}>
+                                <h3 className={cl.marker_list_filter_panel__section_header}>
                                     {t('map.importance-filter-title')}
                                 </h3>
                                 <div className={`${cl.marker_list_filter_panel_importance}`}>
@@ -360,7 +363,7 @@ const MainLayout = () => {
                                 <div className={`${cl.marker_list_filter_panel_sep_line}`} />
                             </div>
                             <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
-                                <h3 className={`${cl.marker_list_filter_panel_starts_at_header}`}>
+                                <h3 className={cl.marker_list_filter_panel__section_header}>
                                     {t('map.time-of-the-start-filter-title')}
                                 </h3>
                                 <div className={`${cl.marker_list_filter_panel_starts_at}`}>
@@ -712,8 +715,8 @@ const MainLayout = () => {
                     key={'new'}
                     position={[newMarker.latitude, newMarker.longitude]}
                     icon={newMarkerIcon}>
-                    <Popup>
-                        <button className={`${cl.marker_popup_cancel_button}`}
+                    <Popup className="marker_popup">
+                        <button className={`${cl.marker_popup__cancel_button}`}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setNewMarker(null);
@@ -730,11 +733,11 @@ const MainLayout = () => {
                     key={el.id}
                     position={[el.latitude, el.longitude]}
                     icon={getImportanceIcon(el.importance)}>
-                    <Popup>
-                        <div className={cl.marker_popup_cont}>
-                            <h2 className={cl.marker_popup_title}>{el.title}</h2>
-                            <p className={cl.marker_popup_description}>{el.description}</p>
-                            <p className={cl.marker_popup_starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
+                    <Popup className="marker_popup">
+                        <div className={cl.marker_popup__cont}>
+                            <h2 className={cl.marker_popup__title}>{el.title}</h2>
+                            <p className={cl.marker_popup__description}>{el.description}</p>
+                            <p className={cl.marker_popup__starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
                         </div>
                     </Popup>
                 </Marker>
@@ -753,7 +756,7 @@ const MainLayout = () => {
     }, [loadMarkersForList]);
 
     return (
-        <div className={cl.main}>
+        <div className={`${cl.main} ${cl[theme]}`}>
             <Map
                 load={mapLoadEvent}
                 click={mapClickEvent}
@@ -798,7 +801,7 @@ const MainLayout = () => {
             </div>
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
                 <div className={`${cl.marker_panel__top_menu}`}>
-                    <div className={
+                    <button className={
                         `${cl.marker_panel__top_menu__option} 
                             ${newMarker === null ? cl.unavailable : ''} 
                             ${currentMarkerMenu === 'add' ? cl.current : ''}`}
@@ -809,14 +812,15 @@ const MainLayout = () => {
                         }}>
                         <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
                             alt="add" />
-                    </div>
-                    <div
+                    </button>
+                    <button
                         className={
                             `${cl.marker_panel__top_menu__option} 
                             ${currentMarkerMenu === 'list' || currentMarkerMenu === 'edit' ? cl.current : ''}`}
                         onClick={() => setMarkerMenu('list')}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`} />
-                    </div>
+                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`}
+                            alt="list" />
+                    </button>
                 </div>
                 {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
                 {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}

@@ -45,13 +45,11 @@
     margin-top: 5px;
 
     &:focus {
-        outline: none;
         border: 2px solid var(--input-border-focus-color);
     }
 }
 
 .save_changes_button {
-    cursor: pointer;
     min-height: 35px;
     background-color: rgb(0, 162, 0);
     color: white;

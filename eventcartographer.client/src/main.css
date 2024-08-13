@@ -3,3 +3,25 @@
     padding: 0;
     font-family: sans-serif, 'Robotic';
 }
+
+button {
+    cursor: pointer;
+}
+
+input {
+    &:focus {
+        outline: none;
+    }
+}
+
+textarea {
+    &:focus {
+        outline: none;
+    }
+}
+
+select {
+    &:focus {
+        outline: none;
+    }
+}

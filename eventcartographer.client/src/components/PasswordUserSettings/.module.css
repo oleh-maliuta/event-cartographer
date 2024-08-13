@@ -40,7 +40,6 @@
     margin-top: 12px;
 
     &:focus {
-        outline: none;
         border: 2px solid var(--input-border-focus-color);
     }
 
@@ -50,7 +49,6 @@
 }
 
 .element__control__apply {
-    cursor: pointer;
     min-height: 35px;
     border: none;
     border-radius: 5px;

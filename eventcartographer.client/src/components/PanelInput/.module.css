@@ -37,7 +37,6 @@
     padding-left: 10px;
 
     &:focus {
-        outline: none;
         border: 2px solid var(--input-focus-border-color);
     }
 

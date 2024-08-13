@@ -7,6 +7,9 @@ const PageNavigator = React.memo(({
     pageCount,
     loadData
 }) => {
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     function renderPageList() {
         if (pageCount <= 1) {
             return;
@@ -103,7 +106,7 @@ const PageNavigator = React.memo(({
         for (let i = start; i <= end; i++) {
             result.push(
                 <span
-                    className={`${cl.page_navigator__obj} ${currentPage === i ? cl.current_page_navigator__obj : ''}`}
+                    className={`${cl.page_navigator__obj} ${currentPage === i ? cl.current : ''}`}
                     key={i}
                     onClick={() => loadPage(i)}>{i}</span>
             );
@@ -116,7 +119,7 @@ const PageNavigator = React.memo(({
     }
 
     return (
-        <div className={cl.page_navigator__cont}>
+        <div className={`${cl.page_navigator__cont} ${cl[theme]}`}>
             <div className={cl.page_navigator}>
                 {renderPageList()}
             </div>

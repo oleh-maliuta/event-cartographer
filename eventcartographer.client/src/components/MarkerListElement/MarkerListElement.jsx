@@ -8,32 +8,35 @@ const MarkerListElement = React.memo(({
     edit,
     remove
 }) => {
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+
     return (
-        <div className={`${cl.marker_list_element}`}
+        <div className={`${cl.marker_list_element} ${cl[theme]}`}
             key={marker.id}>
             <div className={`${cl.marker_list_element_importance} ${cl[marker.importance]}`} />
             <div className={`${cl.marker_list_element_buttons}`}>
-                <div className={`${cl.marker_list_element_navigate_button} ${cl.marker_list_element_button}`}
+                <button className={`${cl.marker_list_element_navigate_button} ${cl.marker_list_element_button}`}
                     onClick={() => {
                         navigate(marker);
                     }}>
                     <img className={`${cl.marker_list_element_navigate_button_img} ${cl.marker_list_element_button_img}`}
                         alt="navigate" />
-                </div>
-                <div className={`${cl.marker_list_element_edit_button} ${cl.marker_list_element_button}`}
+                </button>
+                <button className={`${cl.marker_list_element_edit_button} ${cl.marker_list_element_button}`}
                     onClick={() => {
                         edit(marker);
                     }}>
                     <img className={`${cl.marker_list_element_edit_button_img} ${cl.marker_list_element_button_img}`}
                         alt="edit" />
-                </div>
-                <div className={`${cl.marker_list_element_delete_button} ${cl.marker_list_element_button}`}
+                </button>
+                <button className={`${cl.marker_list_element_delete_button} ${cl.marker_list_element_button}`}
                     onClick={() => {
                         remove(marker);
                     }}>
                     <img className={`${cl.marker_list_element_delete_button_img} ${cl.marker_list_element_button_img}`}
                         alt="delete" />
-                </div>
+                </button>
             </div>
             <div className={`${cl.marker_list_element_title_cont}`}>
                 <h3 className={`${cl.marker_list_element_title}`}>

@@ -69,7 +69,6 @@
 }
 
 .panel__page_header__text {
-    cursor: pointer;
     color: var(--header-color);
     font-size: 1.875rem;
     text-align: center;
@@ -85,7 +84,6 @@
 
 .panel__page_header__map_button {
     position: relative;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;

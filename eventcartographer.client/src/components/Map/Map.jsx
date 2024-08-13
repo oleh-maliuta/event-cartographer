@@ -1,4 +1,5 @@
 import React from "react";
+import "./.css";
 import PropTypes from "prop-types";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MapEventHandler from "../MapEventHandler/MapEventHandler";
@@ -9,24 +10,25 @@ const Map = React.memo(React.forwardRef(({
     moveend,
     renderMarkers
 }, ref) => {
-    const startPosition = [50.4, 30.5];
+    const [theme] = React.useState(localStorage.getItem('theme') ??
+        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
 
     return (
-        <MapContainer
-            center={startPosition}
-            zoom={12}
-            style={{ position: 'fixed', width: '100%', height: '100%' }}
-            ref={ref}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <MapEventHandler
-                load={load}
-                click={click}
-                moveend={moveend} />
-            {renderMarkers()}
-        </MapContainer>
+        <div className={`map_container ${theme}`}>
+            <MapContainer className="map"
+                center={[50.4, 30.5]}
+                zoom={12}
+                ref={ref}>
+                <TileLayer className="map_tile_layer"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapEventHandler
+                    load={load}
+                    click={click}
+                    moveend={moveend} />
+                {renderMarkers()}
+            </MapContainer>
+        </div>
     );
 }));
 
