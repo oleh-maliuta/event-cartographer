@@ -3,17 +3,18 @@ import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
+import useTheme from '../../hooks/useTheme';
 
 const PasswordUserSettings = React.memo(() => {
     const { t } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
 
     const oldPasswordInputRef = React.useRef(null);
     const newPasswordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
+
+    const theme = useTheme();
 
     async function updateUserPasswordRequest() {
         setUpdatingPassword(true);
@@ -56,7 +57,7 @@ const PasswordUserSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.element} ${cl[theme]}`}>
+        <div className={`${cl.element} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.password.header')}

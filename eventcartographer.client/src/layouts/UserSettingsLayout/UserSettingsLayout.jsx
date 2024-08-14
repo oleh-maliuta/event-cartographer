@@ -1,4 +1,3 @@
-import React from 'react';
 import cl from './.module.css';
 import { CLIENT_PORT, HOST } from "../../constants";
 import BasicUserInfoSettings from "../../components/BasicUserInfoSettings/BasicUserInfoSettings";
@@ -7,15 +6,15 @@ import PasswordUserSettings from "../../components/PasswordUserSettings/Password
 import DeleteUserAccountSettings from "../../components/DeleteUserAccountSettings/DeleteUserAccountSettings";
 import { useTranslation } from 'react-i18next';
 import PersonalizationSettings from '../../components/PersonalizationSettings/PersonalizationSettings';
+import useTheme from '../../hooks/useTheme';
 
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+    const theme = useTheme();
 
     return (
-        <div className={`${cl.main} ${cl[theme]}`}>
+        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={cl.panel}>
                 <div className={`${cl.panel__page_header}`}>
                     <h1 className={`${cl.panel__page_header__text}`}>

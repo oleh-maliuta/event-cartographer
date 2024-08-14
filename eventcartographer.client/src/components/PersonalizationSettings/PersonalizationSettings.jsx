@@ -1,17 +1,15 @@
 import React from 'react';
 import cl from './.module.css';
 import { useTranslation } from 'react-i18next';
+import useTheme from '../../hooks/useTheme';
 
 const PersonalizationSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
-
-    const languageInputRef = React.useRef(null);
+    const theme = useTheme();
 
     return (
-        <div className={`${cl.personalization} ${cl[theme]}`}>
+        <div className={`${cl.personalization} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.personalization__header__cont}`}>
                 <h2 className={`${cl.personalization__header}`}>
                     {t('settings.personalization.header')}
@@ -22,8 +20,8 @@ const PersonalizationSettings = React.memo(() => {
                     </label>
                     <select className={cl.data_input__input}
                         defaultValue={i18n.language}
-                        ref={languageInputRef}
                         onChange={(e) => {
+                            localStorage.setItem('language', e.target.value);
                             i18n.changeLanguage(e.target.value);
                         }}>
                         <option className={cl.data_input__input__option}
@@ -40,14 +38,35 @@ const PersonalizationSettings = React.memo(() => {
                         </option>
                     </select>
                 </div>
+                <div className={cl.data_input}>
+                    <label className={cl.data_input__label}>
+                        {t('settings.personalization.theme-input')}
+                    </label>
+                    <select className={cl.data_input__input}
+                        defaultValue={theme.ls ?? "device"}
+                        onChange={(e) => {
+                            if (e.target.value === "device") {
+                                localStorage.removeItem('theme');
+                            } else {
+                                localStorage.setItem('theme', e.target.value);
+                            }
+                            window.location.reload();
+                        }}>
+                        <option className={cl.data_input__input__option}
+                            value="device">
+                            {t('settings.personalization.device-theme-value')}
+                        </option>
+                        <option className={cl.data_input__input__option}
+                            value="light">
+                            {t('settings.personalization.light-theme-value')}
+                        </option>
+                        <option className={cl.data_input__input__option}
+                            value="dark">
+                            {t('settings.personalization.dark-theme-value')}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <button className={cl.save_changes_button}
-                onClick={() => {
-                    localStorage.setItem('language', languageInputRef.current.value);
-                    alert(t('settings.personalization.changes-are-saved'));
-                }}>
-                {t('settings.personalization.save-changes')}
-            </button>
             <div className={`${cl.normal_sep_line__cont}`}>
                 <div className={`${cl.normal_sep_line}`} />
             </div>

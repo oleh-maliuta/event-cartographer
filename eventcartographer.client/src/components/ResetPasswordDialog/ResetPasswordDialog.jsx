@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { API_PORT, HOST } from '../../constants';
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
+import useTheme from '../../hooks/useTheme';
 
 const ResetPasswordDialog = React.memo(({
     dialogState,
@@ -11,12 +12,12 @@ const ResetPasswordDialog = React.memo(({
 }) => {
     const { t, i18n } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [sendingEmail, setSendingEmail] = React.useState(false);
 
     const resetPasswordInputRef = React.useRef(null);
     const dialogRef = React.useRef(null);
+
+    const theme = useTheme();
 
     async function resetPasswordPermissionRequest() {
         setSendingEmail(true);
@@ -67,7 +68,7 @@ const ResetPasswordDialog = React.memo(({
     }, [dialogState]);
 
     return (
-        <dialog className={`${cl.modal_window} ${cl[theme]}`}
+        <dialog className={`${cl.modal_window} ${cl[theme.ls ?? theme.cs]}`}
             ref={dialogRef}
             onCancel={() => setDialogState(false)}>
             <div className={`${cl.modal_window__content}`}>

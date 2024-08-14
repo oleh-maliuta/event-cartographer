@@ -3,16 +3,17 @@ import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
+import useTheme from '../../hooks/useTheme';
 
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
 
     const usernameInputRef = React.useRef(null);
+
+    const theme = useTheme();
 
     async function loadUserInfo() {
         const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
@@ -78,7 +79,7 @@ const BasicUserInfoSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.basic_info} ${cl[theme]}`}>
+        <div className={`${cl.basic_info} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.basic_info__header__cont}`}>
                 <h2 className={`${cl.basic_info__header}`}>
                     {t('settings.basic-info.header')}

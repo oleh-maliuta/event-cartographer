@@ -3,6 +3,7 @@ import "./.css";
 import PropTypes from "prop-types";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MapEventHandler from "../MapEventHandler/MapEventHandler";
+import useTheme from '../../hooks/useTheme';
 
 const Map = React.memo(React.forwardRef(({
     load,
@@ -10,11 +11,10 @@ const Map = React.memo(React.forwardRef(({
     moveend,
     renderMarkers
 }, ref) => {
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+    const theme = useTheme();
 
     return (
-        <div className={`map_container ${theme}`}>
+        <div className={`map_container ${theme.ls ?? theme.cs}`}>
             <MapContainer className="map"
                 center={[50.4, 30.5]}
                 zoom={12}

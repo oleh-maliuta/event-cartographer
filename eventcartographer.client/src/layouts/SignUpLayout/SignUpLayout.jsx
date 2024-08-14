@@ -6,18 +6,19 @@ import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import useTheme from '../../hooks/useTheme';
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [submitting, setSubmitting] = React.useState(false);
 
     const usernameInputRef = React.useRef(null);
     const emailInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
+
+    const theme = useTheme();
 
     const usernameInfoInputStyle = React.useMemo(() => {
         return { marginTop: '35px' };
@@ -97,7 +98,7 @@ const SignUpLayout = () => {
     }, [windowKeyPressEvent]);
 
     return (
-        <div className={`${cl.main} ${cl[theme]}`}>
+        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
             <Panel
                 title={t('sign-up.panel-header')}>
                 <PanelInput

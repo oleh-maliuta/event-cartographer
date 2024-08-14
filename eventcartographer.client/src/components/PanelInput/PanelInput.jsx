@@ -1,6 +1,7 @@
 import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
+import useTheme from "../../hooks/useTheme";
 
 const PanelInput = React.memo(React.forwardRef(({
     containerStyle,
@@ -11,11 +12,10 @@ const PanelInput = React.memo(React.forwardRef(({
     placeholder,
     maxLength
 }, ref) => {
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+    const theme = useTheme();
 
     return (
-        <div className={`${cl.panel_input} ${cl[theme]}`}
+        <div className={`${cl.panel_input} ${cl[theme.ls ?? theme.cs]}`}
             style={containerStyle}>
             <label className={cl.label}
                 style={labelStyle}>

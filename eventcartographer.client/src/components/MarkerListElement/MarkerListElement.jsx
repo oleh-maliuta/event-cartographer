@@ -1,6 +1,7 @@
 import React from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
+import useTheme from '../../hooks/useTheme';
 
 const MarkerListElement = React.memo(({
     marker,
@@ -8,11 +9,10 @@ const MarkerListElement = React.memo(({
     edit,
     remove
 }) => {
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+    const theme = useTheme();
 
     return (
-        <div className={`${cl.marker_list_element} ${cl[theme]}`}
+        <div className={`${cl.marker_list_element} ${cl[theme.ls ?? theme.cs]}`}
             key={marker.id}>
             <div className={`${cl.marker_list_element_importance} ${cl[marker.importance]}`} />
             <div className={`${cl.marker_list_element_buttons}`}>

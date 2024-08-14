@@ -2,6 +2,7 @@ import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import useTheme from "../../hooks/useTheme";
 
 const PanelButton = React.memo(React.forwardRef(({
     style,
@@ -9,11 +10,10 @@ const PanelButton = React.memo(React.forwardRef(({
     loading,
     onClick
 }, ref) => {
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
+    const theme = useTheme();
 
     return (
-        <button className={`${cl.panel_button} ${cl[theme]}`}
+        <button className={`${cl.panel_button} ${cl[theme.ls ?? theme.cs]}`}
             style={style}
             ref={ref}
             onClick={() => {

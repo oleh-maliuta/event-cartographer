@@ -50,8 +50,10 @@
             "en-language-value": "English",
             "ru-language-value": "Русский",
             "ua-language-value": "Українська",
-            "save-changes": "Зберегти зміни",
-            "changes-are-saved": "Зміни збережені."
+            "theme-input": "Тема",
+            "device-theme-value": "Тема пристрою",
+            "light-theme-value": "Світла",
+            "dark-theme-value": "Темна"
         },
         "email-address": {
             "header": "Змінити адресу електронної пошти",

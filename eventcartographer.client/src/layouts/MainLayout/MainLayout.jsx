@@ -10,12 +10,10 @@ import Map from "../../components/Map/Map";
 import PageNavigator from "../../components/PageNavigator/PageNavigator";
 import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
 import { useTranslation } from "react-i18next";
+import useTheme from '../../hooks/useTheme';
 
 const MainLayout = () => {
     const { t } = useTranslation();
-
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
 
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
@@ -48,6 +46,8 @@ const MainLayout = () => {
     const importanceInputRef = React.useRef(null);
     const titleInputRef = React.useRef(null);
     const descriptionInputRef = React.useRef(null);
+
+    const theme = useTheme();
 
     function getImportanceIcon(importance) {
         switch (importance) {
@@ -756,7 +756,7 @@ const MainLayout = () => {
     }, [loadMarkersForList]);
 
     return (
-        <div className={`${cl.main} ${cl[theme]}`}>
+        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
             <Map
                 load={mapLoadEvent}
                 click={mapClickEvent}

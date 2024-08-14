@@ -2,20 +2,20 @@ import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import useRefDimensions from "../../hooks/useRefDimensions";
+import useTheme from "../../hooks/useTheme";
 
 const Panel = React.memo(({
     title,
     children
 }) => {
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
 
     const panelRef = React.useRef(null);
 
+    const theme = useTheme();
     const panelDimensions = useRefDimensions(panelRef);
 
     return (
-        <div className={`${cl.panel_background} ${cl[theme]}`}>
+        <div className={`${cl.panel_background} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.panel} ${panelDimensions.height > window.innerHeight ? cl.fixed : ''}`}
                 ref={panelRef}>
                 <div className={cl.panel_header}>

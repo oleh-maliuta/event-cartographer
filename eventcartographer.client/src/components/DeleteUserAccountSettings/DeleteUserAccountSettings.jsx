@@ -3,15 +3,16 @@ import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
+import useTheme from '../../hooks/useTheme';
 
 const DeleteUserAccountSettings = React.memo(() => {
     const { t } = useTranslation();
 
-    const [theme] = React.useState(localStorage.getItem('theme') ??
-        window.matchMedia("(prefers-color-scheme: light)").matches ? 'light' : 'dark');
     const [deletingAccount, setDeletingAccount] = React.useState(false);
 
     const confirmAccountDeletionInputRef = React.useRef(null);
+
+    const theme = useTheme();
 
     async function deleteAccountRequest() {
         setDeletingAccount(true);
@@ -53,7 +54,7 @@ const DeleteUserAccountSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.element} ${cl[theme]}`}>
+        <div className={`${cl.element} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.delete-account.header')}
