@@ -2,7 +2,7 @@ import React from "react";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
-import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon } from "../../map-icons";
+import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, passedLowImpMarkerIcon, passedMediumImpMarkerIcon, passedHighImpMarkerIcon } from "../../map-icons";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
@@ -49,17 +49,30 @@ const MainLayout = () => {
 
     const theme = useTheme();
 
-    function getImportanceIcon(importance) {
-        switch (importance) {
-            case 'low':
-                return lowImpMarkerIcon;
-            case 'medium':
-                return mediumImpMarkerIcon;
-            case 'high':
-                return highImpMarkerIcon;
-            default:
-                return undefined;
+    function eventPassed(startsAt) {
+        const processedDateTime = new Date(startsAt);
+        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
+        return processedDateTime < new Date();
+    }
+
+    function getLocalTime(dateTime) {
+        if (!dateTime) {
+            return null;
         }
+
+        const processedDateTime = new Date(dateTime);
+        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
+        return processedDateTime;
+    }
+
+    function getUtcTime(dateTime) {
+        if (!dateTime) {
+            return null;
+        }
+
+        const processedDateTime = new Date(dateTime);
+        processedDateTime.setMinutes(processedDateTime.getMinutes() + processedDateTime.getTimezoneOffset());
+        return processedDateTime;
     }
 
     function getDateTimeLocalFormat(dateTime) {
@@ -484,7 +497,7 @@ const MainLayout = () => {
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
-                            defaultValue={isForAdding ? undefined : getDateTimeLocalFormat(editingMarker.startsAt)}
+                            defaultValue={isForAdding ? undefined : getDateTimeLocalFormat(getLocalTime(editingMarker.startsAt))}
                             ref={startsAtInputRef} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
@@ -601,8 +614,8 @@ const MainLayout = () => {
         url += `&q=${markerSearchInputRef.current?.value || ''}`;
         url += `&sort_type=${markerListSort.type}`;
         url += `&sort_by_asc=${markerListSort.asc}`;
-        url += `&min_time=${getDateTimeLocalFormat(markerListTimeOfStartFilter.min) ?? ''}`;
-        url += `&max_time=${getDateTimeLocalFormat(markerListTimeOfStartFilter.max) ?? ''}`;
+        url += `&min_time=${getDateTimeLocalFormat(getUtcTime(markerListTimeOfStartFilter.min)) ?? ''}`;
+        url += `&max_time=${getDateTimeLocalFormat(getUtcTime(markerListTimeOfStartFilter.max)) ?? ''}`;
 
         markerListImportanceFilter.forEach(el => {
             url += `&imp=${el}`
@@ -671,6 +684,21 @@ const MainLayout = () => {
         }
     }, [loadMarkersForList, markersForList, t]);
 
+    const getImportanceIcon = React.useCallback((importance, startsAt) => {
+        const passed = eventPassed(startsAt);
+
+        switch (importance) {
+            case 'low':
+                return passed ? passedLowImpMarkerIcon : lowImpMarkerIcon;
+            case 'medium':
+                return passed ? passedMediumImpMarkerIcon : mediumImpMarkerIcon;
+            case 'high':
+                return passed ? passedHighImpMarkerIcon : highImpMarkerIcon;
+            default:
+                return undefined;
+        }
+    }, []);
+
     const navigateToMarker = React.useCallback((marker) => {
         mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
     }, []);
@@ -732,12 +760,16 @@ const MainLayout = () => {
                 <Marker
                     key={el.id}
                     position={[el.latitude, el.longitude]}
-                    icon={getImportanceIcon(el.importance)}>
+                    icon={getImportanceIcon(el.importance, el.startsAt)}>
                     <Popup className="marker_popup">
                         <div className={cl.marker_popup__cont}>
-                            <h2 className={cl.marker_popup__title}>{el.title}</h2>
-                            <p className={cl.marker_popup__description}>{el.description}</p>
-                            <p className={cl.marker_popup__starts_at}>{new Date(el.startsAt).toLocaleString()}</p>
+                            <div className={cl.marker_popup__main}>
+                                <h2 className={cl.marker_popup__title}>{el.title}</h2>
+                                <p className={cl.marker_popup__description}>{el.description}</p>
+                            </div>
+                            <p className={`${cl.marker_popup__starts_at} ${eventPassed(el.startsAt) ? cl.passed : ''}`}>
+                                {getLocalTime(el.startsAt).toLocaleString()}
+                            </p>
                         </div>
                     </Popup>
                 </Marker>
@@ -745,7 +777,7 @@ const MainLayout = () => {
         });
 
         return result;
-    }, [newMarker, markersForMap, t]);
+    }, [newMarker, markersForMap, t, getImportanceIcon]);
 
     React.useEffect(() => {
         loadUserInfo();

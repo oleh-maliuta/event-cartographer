@@ -96,8 +96,11 @@
 }
 
 .marker_popup__cont {
-    max-height: 300px;
     overflow: hidden;
+}
+
+.marker_popup__main {
+    max-height: 300px;
     overflow-y: auto;
 }
 
@@ -114,6 +117,12 @@
 .marker_popup__starts_at {
     color: var(--marker-popup-starts-at-color);
     word-break: break-all;
+    margin-top: 15px;
+
+    &.passed {
+        color: red;
+        font-weight: bold;
+    }
 }
 
 .right_side_menu {
@@ -615,7 +624,7 @@
 
 .editing_marker_description_input {
     width: calc(100% - 20px);
-    height: 100px;
+    height: 150px;
     resize: none;
 }
 
