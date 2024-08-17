@@ -41,6 +41,7 @@
         "basic-info": {
             "header": "Basic information",
             "username-input": "Username",
+            "permission-to-delete-past-events-input": "Automatically delete past events",
             "save-changes": "Save changes",
             "changes-are-saved": "Changes are saved."
         },
@@ -226,6 +227,9 @@
                     "required": "A username is required.",
                     "max-length": "Username is too long.",
                     "min-length": "Username is too short."
+                },
+                "permission-to-delete-past-events": {
+                    "required": "A permission value to delete past events required."
                 }
             },
             "update-user-password": {
@@ -292,12 +296,14 @@
             "marker": {
                 "add-marker": {
                     "max-markers": "This account has placed maximum amount of markers on the map.",
-                    "importance-value": "Invalid importance value."
+                    "importance-value": "Invalid importance value.",
+                    "past-event-time": "You can not set past time for an event as you have given the permission to delete past events automatically."
                 },
                 "update-marker": {
                     "marker-not-found": "Marker not found.",
                     "not-owner": "The user is not the owner of the marker.",
-                    "importance-value": "Invalid importance value."
+                    "importance-value": "Invalid importance value.",
+                    "past-event-time": "You can not set past time for an event as you have given the permission to delete past events automatically."
                 },
                 "delete-marker": {
                     "marker-not-found": "Marker not found.",

@@ -69,6 +69,7 @@ namespace EventCartographer.Server.Controllers
                 Name = request.Username!,
                 Email = request.Email!,
                 PasswordHash = PasswordTool.Hash(request.Password!),
+                PermissionToDeletePastEvents = false,
                 IsActivated = false,
                 LastActivityAt = DateTime.UtcNow
             })).Entity;
@@ -112,7 +113,12 @@ namespace EventCartographer.Server.Controllers
                 [
                     new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new(ClaimTypes.Name, user.Name)
-                ], CookieAuthenticationDefaults.AuthenticationScheme))
+                ], CookieAuthenticationDefaults.AuthenticationScheme)),
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(3)
+                }
             );
 
             user.LastActivityAt = DateTime.UtcNow;
@@ -156,7 +162,17 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-info.same-username"));
             }
 
+            if (user.PermissionToDeletePastEvents != request.PermissionToDeletePastEvents)
+            {
+                Marker[] passedEvents = await DB.Markers
+                    .Where(x => x.UserId == user.Id && x.StartsAt < DateTime.UtcNow)
+                    .ToArrayAsync();
+
+                DB.Markers.RemoveRange(passedEvents);
+            }
+
             user.Name = request.Username!;
+            user.PermissionToDeletePastEvents = request.PermissionToDeletePastEvents!.Value;
             user.LastActivityAt = DateTime.UtcNow;
 
             await DB.SaveChangesAsync();

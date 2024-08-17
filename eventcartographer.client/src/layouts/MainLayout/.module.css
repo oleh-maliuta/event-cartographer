@@ -102,6 +102,8 @@
 .marker_popup__main {
     max-height: 300px;
     overflow-y: auto;
+    padding-right: 3px;
+    scrollbar-color: gray transparent;
 }
 
 .marker_popup__title {

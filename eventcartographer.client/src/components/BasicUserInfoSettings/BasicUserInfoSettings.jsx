@@ -4,12 +4,14 @@ import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import useTheme from '../../hooks/useTheme';
+import Switch from '../Switch/Switch';
 
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();
 
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
+    const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = React.useState(null);
 
     const usernameInputRef = React.useRef(null);
 
@@ -24,6 +26,10 @@ const BasicUserInfoSettings = React.memo(() => {
         const json = await response.json();
 
         setUserInfo(json.data || undefined);
+
+        if (json.data) {
+            setPermissionToDeletePastEventsValue(json.data.permissionToDeletePastEvents);
+        }
     }
 
     async function updateUserInfoRequest() {
@@ -37,7 +43,8 @@ const BasicUserInfoSettings = React.memo(() => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: usernameInputRef.current.value || null
+                username: usernameInputRef.current.value || null,
+                permissionToDeletePastEvents: permissionToDeletePastEventsValue
             })
         });
         const json = await response.json();
@@ -95,6 +102,14 @@ const BasicUserInfoSettings = React.memo(() => {
                     maxLength="100"
                     defaultValue={userInfo.name}
                     ref={usernameInputRef} />
+            </div>
+            <div className={cl.data_input}>
+                <label className={cl.data_input__label}>
+                    {t('settings.basic-info.permission-to-delete-past-events-input')}
+                </label>
+                <Switch
+                    value={permissionToDeletePastEventsValue}
+                    setValue={setPermissionToDeletePastEventsValue} />
             </div>
             <button className={cl.save_changes_button}
                 onClick={() => {

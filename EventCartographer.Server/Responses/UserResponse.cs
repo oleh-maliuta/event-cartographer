@@ -19,12 +19,15 @@ namespace EventCartographer.Server.Responses
         {
             [JsonPropertyName("name")]
             public string Name { get; set; }
+            [JsonPropertyName("permissionToDeletePastEvents")]
+            public bool PermissionToDeletePastEvents { get; set; }
             [JsonPropertyName("isActivated")]
             public bool IsActivated { get; set; }
 
             public View(User user)
             {
                 Name = user.Name;
+                PermissionToDeletePastEvents = user.PermissionToDeletePastEvents;
                 IsActivated = user.IsActivated;
             }
         }

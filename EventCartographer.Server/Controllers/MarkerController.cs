@@ -34,6 +34,22 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.importance-value"));
             }
 
+            if (user.PermissionToDeletePastEvents)
+            {
+                DateTime now = DateTime.UtcNow;
+
+                if (request.StartsAt < now)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.past-event-time"));
+                }
+
+                Marker[] passedEvents = await DB.Markers
+                    .Where(x => x.UserId == user.Id && x.StartsAt < now)
+                    .ToArrayAsync();
+
+                DB.Markers.RemoveRange(passedEvents);
+            }
+
             Marker marker = (await DB.Markers.AddAsync(new()
             {
                 UserId = user.Id,
@@ -77,6 +93,16 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.importance-value"));
             }
 
+            if (user.PermissionToDeletePastEvents)
+            {
+                DateTime now = DateTime.UtcNow;
+
+                if (request.StartsAt < now)
+                {
+                    return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.past-event-time"));
+                }
+            }
+
             marker.Latitude = request.Latitude!.Value;
             marker.Longitude = request.Longitude!.Value;
             marker.Title = request.Title!;
@@ -107,9 +133,20 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.delete-marker.not-owner"));
             }
 
-            user.LastActivityAt = DateTime.UtcNow;
+            if (user.PermissionToDeletePastEvents)
+            {
+                DateTime now = DateTime.UtcNow;
+
+                Marker[] passedEvents = await DB.Markers
+                    .Where(x => x.UserId == user.Id && x.StartsAt < now)
+                    .ToArrayAsync();
+
+                DB.Markers.RemoveRange(passedEvents);
+            }
 
             DB.Markers.Remove(marker);
+
+            user.LastActivityAt = DateTime.UtcNow;
 
             await DB.SaveChangesAsync();
             return Ok(new MarkerResponse(marker));
@@ -143,6 +180,7 @@ namespace EventCartographer.Server.Controllers
             Marker[] markers = await DB.Markers
                 .Where(x =>
                     x.UserId == user.Id &&
+                    (!user.PermissionToDeletePastEvents || x.StartsAt >= DateTime.UtcNow) &&
                     x.Latitude <= (query.NorthEastLatitude ?? decimal.MinValue) &&
                     x.Latitude >= (query.SouthWestLatitude ?? decimal.MaxValue) &&
                     x.Longitude <= (query.NorthEastLongitude ?? decimal.MinValue) &&
@@ -166,6 +204,7 @@ namespace EventCartographer.Server.Controllers
             List<Marker> markers = await DB.Markers
                 .Where(x =>
                     x.UserId == user.Id &&
+                    (!user.PermissionToDeletePastEvents || x.StartsAt >= DateTime.UtcNow) &&
                     (x.Title.Contains(query.Search ?? "") ||
                     (x.Description ?? "").Contains(query.Search ?? "")) &&
                     (query.Importance == null ||

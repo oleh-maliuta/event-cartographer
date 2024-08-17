@@ -42,7 +42,7 @@ namespace EventCartographer.Server.Services.Background
                     .Where(x => now > x.ExpiresAt)
                     .ToArrayAsync(stoppingToken);
                 User[] usersToCleanup = await _database.Users
-                    .Where(x => now > x.LastActivityAt.AddYears(3))
+                    .Where(x => now > x.LastActivityAt.AddYears(3) || (!x.IsActivated && now > x.LastActivityAt.AddHours(12)))
                     .ToArrayAsync(stoppingToken);
 
                 _database.ActivationCodes.RemoveRange(activationCodesToCleanup);
