@@ -307,7 +307,7 @@ namespace EventCartographer.Server.Controllers
                     {
                         { "username", user.Name },
                         { "token", token },
-                        { "link", $"https://{HttpContext.Request.Host.Host}:7176/api/users/accept-reset-password" }
+                        { "link", $"https://{HttpContext.Request.Host}/api/users/accept-reset-password" }
                     },
                     language ?? "en");
             }
@@ -370,11 +370,11 @@ namespace EventCartographer.Server.Controllers
             else
             {
                 await DB.SaveChangesAsync();
-                return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
+                return Redirect($"https://{Constants.WebClientHost}/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
             }
 
             await DB.SaveChangesAsync();
-            return Redirect($"https://localhost:5173/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
+            return Redirect($"https://{Constants.WebClientHost}/reset-password?user={WebUtility.UrlEncode(user.Name)}&token={activationCode.Code}");
         }
 
         [HttpPut("reset-password")]

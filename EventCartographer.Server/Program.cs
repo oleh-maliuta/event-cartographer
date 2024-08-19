@@ -68,7 +68,7 @@ namespace EventCartographer.Server
             app.UseAuthorization();
             app.UseAuthentication();
             app.UseCors(builder => 
-                builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:5173"));
+                builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod().WithOrigins($"https://{Constants.WebClientHost}"));
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");

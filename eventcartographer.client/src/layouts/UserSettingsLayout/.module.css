@@ -27,6 +27,7 @@
     height: 100vh;
     background-color: var(--background-color);
     overflow-y: auto;
+    scrollbar-color: gray transparent;
 }
 
 .main__loading {
