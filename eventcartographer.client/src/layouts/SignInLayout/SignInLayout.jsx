@@ -8,10 +8,13 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPasswordDialog';
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from '../../components/BlockMessage/BlockMessage';
 
 const SignInLayout = () => {
     const { t } = useTranslation();
 
+    const [messages, setMessages] = React.useState([]);
+    const [invalidationText, setInvalidationText] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);
     const [dialogOpened, setDialogOpened] = React.useState(false);
 
@@ -21,8 +24,16 @@ const SignInLayout = () => {
 
     const theme = useTheme();
 
+    function cleanAllMessages() {
+        setInvalidationText({});
+        setMessages([]);
+    }
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '15px', width: 'calc(100% - 6px)' };
+    }, []);
     const usernameInfoInputStyle = React.useMemo(() => {
-        return { marginTop: '30px' };
+        return { marginTop: '15px' };
     }, []);
     const passwordInfoInputStyle = React.useMemo(() => {
         return { marginTop: '20px' };
@@ -32,6 +43,7 @@ const SignInLayout = () => {
     }, []);
 
     const signInRequest = React.useCallback(async () => {
+        cleanAllMessages();
         setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
@@ -52,19 +64,39 @@ const SignInLayout = () => {
             window.location.href = `${HOST}:${CLIENT_PORT}`;
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const strKey = "http.request-errors.sign-in.";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        if (json.errors[prop][err].startsWith(strKey + "username")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    username: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        } else if (json.errors[prop][err].startsWith(strKey + "password")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    password: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        }  else {
+                            errors.push(t(json.errors[prop][err]));
+                        }
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                if (errors.length > 0) {
+                    setMessages(errors);
+                }
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessages([t('general.server-error')]);
         }
 
         setSubmitting(false);
@@ -94,12 +126,17 @@ const SignInLayout = () => {
         <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
             <Panel
                 title={t('sign-in.panel-header')}>
+                <BlockMessage
+                    style={blockMessageStyle}
+                    state='error'
+                    messages={messages} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     label={t('sign-in.username-input')}
                     type='text'
                     placeholder={t('sign-in.username-input')}
                     maxLength='100'
+                    invalidationText={invalidationText.username}
                     ref={usernameInputRef} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
@@ -107,6 +144,7 @@ const SignInLayout = () => {
                     type='password'
                     placeholder={t('sign-in.password-input')}
                     maxLength='200'
+                    invalidationText={invalidationText.password}
                     ref={passwordInputRef} />
                 <PanelButton
                     style={submitButtonStyle}

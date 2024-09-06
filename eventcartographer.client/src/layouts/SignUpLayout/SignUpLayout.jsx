@@ -1,16 +1,20 @@
 import React from "react";
 import cl from "./.module.css";
-import { API_PORT, CLIENT_PORT, HOST } from "../../constants";
+import { API_PORT, HOST } from "../../constants";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from "../../components/BlockMessage/BlockMessage";
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
+    const [messageState, setMessageState] = React.useState('success');
+    const [messages, setMessages] = React.useState([]);
+    const [invalidationText, setInvalidationText] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);
 
     const usernameInputRef = React.useRef(null);
@@ -20,8 +24,16 @@ const SignUpLayout = () => {
 
     const theme = useTheme();
 
+    function cleanAllMessages() {
+        setInvalidationText({});
+        setMessages([]);
+    }
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '20px', width: 'calc(100% - 6px)' };
+    }, []);
     const usernameInfoInputStyle = React.useMemo(() => {
-        return { marginTop: '35px' };
+        return { marginTop: '15px' };
     }, []);
     const emailInfoInputStyle = React.useMemo(() => {
         return { marginTop: '15px' };
@@ -37,6 +49,7 @@ const SignUpLayout = () => {
     }, []);
 
     const signUpRequest = React.useCallback(async () => {
+        cleanAllMessages();
         setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
@@ -57,23 +70,59 @@ const SignUpLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            alert(t('sign-up.email-is-sent'));
-            window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`
+            setMessageState('success');
+            setMessages([t('sign-up.email-is-sent')]);
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMessageState('error');
+                setMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const strKey = "http.request-errors.sign-up.";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        if (json.errors[prop][err].startsWith(strKey + "username")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    username: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        } else if (json.errors[prop][err].startsWith(strKey + "email")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    email: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        } else if (json.errors[prop][err].startsWith(strKey + "password")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    password: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        } else if (json.errors[prop][err].startsWith(strKey + "confirm-password")) {
+                            setInvalidationText(x => {
+                                return {
+                                    ...x,
+                                    confirmPassword: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
+                                };
+                            });
+                        } else {
+                            errors.push(t(json.errors[prop][err]));
+                        }
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                if (errors.length > 0) {
+                    setMessages(errors);
+                }
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessageState('error');
+            setMessages([t('general.server-error')]);
         }
 
         setSubmitting(false);
@@ -101,12 +150,17 @@ const SignUpLayout = () => {
         <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
             <Panel
                 title={t('sign-up.panel-header')}>
+                <BlockMessage
+                    style={blockMessageStyle}
+                    state={messageState}
+                    messages={messages} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     label={t('sign-up.username-input')}
                     type='text'
                     placeholder={t('sign-up.username-input')}
                     maxLength='100'
+                    invalidationText={invalidationText.username}
                     ref={usernameInputRef} />
                 <PanelInput
                     containerStyle={emailInfoInputStyle}
@@ -114,6 +168,7 @@ const SignUpLayout = () => {
                     type='email'
                     placeholder={t('sign-up.email-address-input')}
                     maxLength='320'
+                    invalidationText={invalidationText.email}
                     ref={emailInputRef} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
@@ -121,6 +176,7 @@ const SignUpLayout = () => {
                     type='password'
                     placeholder={t('sign-up.password-input')}
                     maxLength='200'
+                    invalidationText={invalidationText.password}
                     ref={passwordInputRef} />
                 <PanelInput
                     containerStyle={confirmPasswordInfoInputStyle}
@@ -128,6 +184,7 @@ const SignUpLayout = () => {
                     type='password'
                     placeholder={t('sign-up.confirm-password-input')}
                     maxLength='200'
+                    invalidationText={invalidationText.confirmPassword}
                     ref={confirmPasswordInputRef} />
                 <PanelButton
                     style={submitButtonStyle}

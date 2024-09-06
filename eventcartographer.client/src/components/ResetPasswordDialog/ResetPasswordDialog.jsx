@@ -5,6 +5,7 @@ import { API_PORT, HOST } from '../../constants';
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from '../BlockMessage/BlockMessage';
 
 const ResetPasswordDialog = React.memo(({
     dialogState,
@@ -12,12 +13,18 @@ const ResetPasswordDialog = React.memo(({
 }) => {
     const { t, i18n } = useTranslation();
 
+    const [messageState, setMessageState] = React.useState("success");
+    const [messages, setMessages] = React.useState([]);
     const [sendingEmail, setSendingEmail] = React.useState(false);
 
     const resetPasswordInputRef = React.useRef(null);
     const dialogRef = React.useRef(null);
 
     const theme = useTheme();
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '10px' };
+    }, []);
 
     async function resetPasswordPermissionRequest() {
         setSendingEmail(true);
@@ -37,23 +44,25 @@ const ResetPasswordDialog = React.memo(({
         const json = await response.json();
 
         if (response.ok) {
-            alert(t('sign-in.reset-password-modal-window.email-is-sent'));
+            setMessageState('success');
+            setMessages([t('sign-in.reset-password-modal-window.email-is-sent')]);
             setDialogState(false);
         } else if (!response.ok) {
+            setMessageState('error');
             if (json.message) {
-                alert(t(json.message));
+                setMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const errors = [];
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(`${t(json.errors[prop][err])}`);
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+                setMessages(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessageState('error');
+            setMessages([t('general.server-error')]);
         }
 
         setSendingEmail(false);
@@ -78,6 +87,10 @@ const ResetPasswordDialog = React.memo(({
                 <p className={`${cl.modal_window__reset_password__description}`}>
                     {t('sign-in.reset-password-modal-window.description')}
                 </p>
+                <BlockMessage
+                    style={blockMessageStyle}
+                    state={messageState}
+                    messages={messages} />
                 <input className={`${cl.modal_window__reset_password__input}`}
                     type="text"
                     placeholder={t('sign-in.reset-password-modal-window.username-input')}
