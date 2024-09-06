@@ -33,7 +33,7 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
-        "password-is-reset": "Password is reset."
+        "password-is-reset": "Password is reset. Now you can use it to sign in."
     },
     "settings": {
         "header": "Settings",

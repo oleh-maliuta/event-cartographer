@@ -1,0 +1,49 @@
+.block_message {
+    --default-message-mode-background-color: #a7a7a7;
+    --default-message-mode-text-color: #000000;
+    --error-message-mode-background-color: #d6b4b4;
+    --error-message-mode-text-color: #800000;
+    --success-message-mode-background-color: #b4d6b4;
+    --success-message-mode-text-color: #008000;
+}
+
+.block_message.dark {
+    --default-message-mode-background-color: #808080;
+    --default-message-mode-text-color: #000000;
+    --error-message-mode-background-color: #d6b4b4;
+    --error-message-mode-text-color: #800000;
+    --success-message-mode-background-color: #b4d6b4;
+    --success-message-mode-text-color: #008000;
+}
+
+.block_message {
+    width: calc(100% - 3px);
+    background-color: var(--default-message-mode-background-color);
+    color: var(--default-message-mode-text-color);
+    border-radius: 5px;
+    padding-block: 3px;
+    padding-inline: 3px;
+
+    &>.block_message__text:not(:first-child) {
+        margin-top: 8px;
+    }
+
+    &.success {
+        background-color: var(--success-message-mode-background-color);
+        color: var(--success-message-mode-text-color);
+    }
+
+    &.error {
+        background-color: var(--error-message-mode-background-color);
+        color: var(--error-message-mode-text-color);
+    }
+}
+
+.block_message__text {
+    font-size: 15px;
+    text-wrap: wrap;
+}
+
+.empty {
+    height: 1px;
+}

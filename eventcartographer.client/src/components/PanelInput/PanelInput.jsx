@@ -10,7 +10,8 @@ const PanelInput = React.memo(React.forwardRef(({
     label,
     type,
     placeholder,
-    maxLength
+    maxLength,
+    invalidationText
 }, ref) => {
     const theme = useTheme();
 
@@ -21,7 +22,14 @@ const PanelInput = React.memo(React.forwardRef(({
                 style={labelStyle}>
                 {label}
             </label>
-            <input className={cl.input}
+            {
+                invalidationText ?
+                    <p className={cl.invalidation}>
+                        {invalidationText}
+                    </p>
+                    : <></>
+            }
+            <input className={`${cl.input} ${invalidationText !== undefined ? cl.invalid : ''}`}
                 style={inputStyle}
                 type={type}
                 placeholder={placeholder}
@@ -39,6 +47,7 @@ PanelInput.propTypes = {
     type: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
     maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    invalidationText: PropTypes.string
 };
 
 export default PanelInput;

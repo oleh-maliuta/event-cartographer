@@ -33,7 +33,7 @@
         "password-input": "Пароль",
         "confirm-password-input": "Підтвердження пароля",
         "submit": "Відправити",
-        "password-is-reset": "Пароль було скинуто."
+        "password-is-reset": "Пароль було скинуто. Тепер ви можете використовувати його для входу."
     },
     "settings": {
         "header": "Налаштування",

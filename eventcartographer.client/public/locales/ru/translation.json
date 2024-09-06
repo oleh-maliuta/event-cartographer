@@ -33,7 +33,7 @@
         "password-input": "Пароль",
         "confirm-password-input": "Подтверждение пароля",
         "submit": "Отправить",
-        "password-is-reset": "Пароль был сброшен."
+        "password-is-reset": "Пароль был сброшен. Теперь вы можете использовать его для входа."
     },
     "settings": {
         "header": "Настройки",

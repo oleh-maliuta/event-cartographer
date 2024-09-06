@@ -40,7 +40,7 @@
     -moz-box-shadow: var(--panel-shadow);
     box-shadow: var(--panel-shadow);
     padding-inline: 35px;
-    padding-top: 30px;
+    padding-top: 20px;
     padding-bottom: 30px;
 
     &.fixed {
