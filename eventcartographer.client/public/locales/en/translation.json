@@ -76,8 +76,7 @@
             "header": "Delete account",
             "description": "Before deleting this account, you must input the password below so we make sure you really want to execute the operation.",
             "password-input": "Password",
-            "delete": "Delete",
-            "account-is-deleted": "Account is deleted."
+            "delete": "Delete"
         }
     },
     "map": {
