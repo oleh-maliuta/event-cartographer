@@ -5,8 +5,11 @@
     --user-name-background-color: #303030;
     --user-name-text-color: #ffffff;
     --marker-panel-button-color: #800080;
+    --marker-panel-button-hover-color: #c55ac5;
     --settings-button-color: #303030;
+    --settings-button-hover-color: #818181;
     --logout-button-color: #303030;
+    --logout-button-hover-color: #818181;
     --marker-panel-background-color: #ffffff;
     --marker-panel-top-menu-current-option-color: #1e1e1e;
     --marker-panel-top-menu-option-hover-color: #c4c4c4;
@@ -46,8 +49,11 @@
     --user-name-background-color: #ffffff;
     --user-name-text-color: #000000;
     --marker-panel-button-color: #ff4cff;
+    --marker-panel-button-hover-color: #8d2b8d;
     --settings-button-color: #ffffff;
+    --settings-button-hover-color: #929292;
     --logout-button-color: #ffffff;
+    --logout-button-hover-color: #929292;
     --marker-panel-background-color: #121212;
     --marker-panel-top-menu-current-option-color: #e1e1e1;
     --marker-panel-top-menu-option-hover-color: #4c4c4c;
@@ -132,11 +138,10 @@
     top: 20px;
     right: calc(390px + 5vw + 20px);
     transition: ease 0.4s;
-}
 
-
-.right_side_menu.hided {
-    right: 10px;
+    &.hided {
+        right: 10px;
+    }
 }
 
 .right_side_menu__user_name__cont {
@@ -171,6 +176,10 @@
     border-radius: 100%;
     background-color: var(--marker-panel-button-color);
     border: none;
+
+    &:hover {
+        background-color: var(--marker-panel-button-hover-color);
+    }
 }
 
 .right_side_menu__marker_menu_button__img {
@@ -191,6 +200,10 @@
     border-radius: 100%;
     background-color: var(--settings-button-color);
     border: none;
+
+    &:hover {
+        background-color: var(--settings-button-hover-color);
+    }
 }
 
 .right_side_menu__settings_button__img {
@@ -211,6 +224,10 @@
     border-radius: 100%;
     background-color: var(--logout-button-color);
     border: none;
+
+    &:hover {
+        background-color: var(--logout-button-hover-color);
+    }
 }
 
 .right_side_menu__log_out_button__img {
@@ -220,6 +237,11 @@
     height: 60%;
     transform: translate(-40%, -45%);
     filter: var(--logout-button-image-filter);
+}
+
+.right_side_menu__log_out_button__loading {
+    position: absolute;
+    transform: translate(28%, -50%);
 }
 
 .map_markers_loading {
@@ -523,7 +545,7 @@
     width: calc(100% - 10px);
     grid-template-columns: 1fr 1fr;
     grid-gap: 8px;
-    margin-top: 15px;
+    margin-top: 7px;
 }
 
 .marker_list_loading {
@@ -632,7 +654,7 @@
 
 .editing_marker_buttons {
     display: flex;
-    margin-top: 15px;
+    margin-top: 7px;
 }
 
 .editing_marker_cancel_button {

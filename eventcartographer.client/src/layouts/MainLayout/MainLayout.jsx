@@ -2,7 +2,7 @@ import React from "react";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
-import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, passedLowImpMarkerIcon, passedMediumImpMarkerIcon, passedHighImpMarkerIcon } from "../../map-icons";
+import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, pastLowImpMarkerIcon, pastMediumImpMarkerIcon, pastHighImpMarkerIcon } from "../../map-icons";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
@@ -11,9 +11,13 @@ import PageNavigator from "../../components/PageNavigator/PageNavigator";
 import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
 import { useTranslation } from "react-i18next";
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from "../../components/BlockMessage/BlockMessage";
 
 const MainLayout = () => {
     const { t } = useTranslation();
+
+    const [editMarkerMessages, setEditMarkerMessages] = React.useState([]);
+    const [markerListMessages, setMarkerListMessages] = React.useState([]);
 
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
@@ -31,6 +35,7 @@ const MainLayout = () => {
     const [markersForMapLoading, setMarkersForMapLoading] = React.useState(false);
     const [markersForListLoading, setMarkersForListLoading] = React.useState(false);
     const [updatingMarkerList, setUpdatingMarkerList] = React.useState(false);
+    const [loggingOut, setLoggingOut] = React.useState(false);
 
     const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
@@ -49,7 +54,7 @@ const MainLayout = () => {
 
     const theme = useTheme();
 
-    function eventPassed(startsAt) {
+    function eventIsPast(startsAt) {
         const processedDateTime = new Date(startsAt);
         processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
         return processedDateTime < new Date();
@@ -97,31 +102,19 @@ const MainLayout = () => {
     }
 
     async function logOutRequest() {
+        setLoggingOut(true);
+
         const response = await fetch(`${HOST}:${API_PORT}/api/users/logout`, {
             method: "GET",
             mode: "cors",
             credentials: "include"
         });
-        const json = await response.json();
 
         if (response.ok) {
             window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`;
-        } else if (!response.ok) {
-            if (json.message) {
-                alert(t(json.message));
-            } else {
-                let errors = "";
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
-                    }
-                }
-                errors = errors.slice(0, -1);
-                alert(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
         }
+
+        setLoggingOut(false);
     }
 
     async function addMarkerRequest() {
@@ -150,21 +143,23 @@ const MainLayout = () => {
             loadMarkersForList(1);
             setMarkerMenu('list');
             setNewMarker(null);
+            setEditMarkerMessages([]);
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setEditMarkerMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setEditMarkerMessages(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setEditMarkerMessages([t('general.server-error')]);
         }
 
         setUpdatingMarkerList(false);
@@ -196,21 +191,23 @@ const MainLayout = () => {
             loadMarkersForList(1);
             setMarkerMenu('list');
             setEditingMarker(null);
+            setEditMarkerMessages([]);
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setEditMarkerMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setEditMarkerMessages(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setEditMarkerMessages([t('general.server-error')]);
         }
 
         setUpdatingMarkerList(false);
@@ -410,6 +407,10 @@ const MainLayout = () => {
                         </div>
                     </div>
                 </div>
+                <BlockMessage
+                    style={markerListBlockMessageStyle}
+                    state='error'
+                    messages={markerListMessages} />
                 {
                     markersForListLoading ?
                         <div className={`${cl.marker_list_loading}`}>
@@ -541,6 +542,10 @@ const MainLayout = () => {
                         defaultValue={isForAdding ? undefined : editingMarker.description}
                         ref={descriptionInputRef}></textarea>
                 </div>
+                <BlockMessage
+                    style={markerEditingBlockMessageStyle}
+                    state='error'
+                    messages={editMarkerMessages} />
                 {
                     isForAdding ?
                         <div className={`${cl.editing_marker_buttons}`}>
@@ -548,6 +553,7 @@ const MainLayout = () => {
                                 onClick={() => {
                                     setNewMarker(null);
                                     setMarkerMenu('list');
+                                    setEditMarkerMessages([]);
                                 }}>
                                 {t('map.cancel-marker-adding')}
                             </button>
@@ -577,6 +583,7 @@ const MainLayout = () => {
                                 onClick={() => {
                                     setEditingMarker(null);
                                     setMarkerMenu('list');
+                                    setEditMarkerMessages([]);
                                 }}>
                                 {t('map.go-to-the-list')}
                             </button>
@@ -605,8 +612,16 @@ const MainLayout = () => {
         );
     }
 
+    const markerEditingBlockMessageStyle = React.useMemo(() => {
+        return { marginTop: '8px', width: 'calc(100% - 22px)' };
+    }, []);
+    const markerListBlockMessageStyle = React.useMemo(() => {
+        return { marginTop: '8px', width: 'calc(100% - 16px)' };
+    }, []);
+
     const loadMarkersForList = React.useCallback(async (page) => {
         setMarkersForListLoading(true);
+        setMarkerListMessages([]);
 
         let url = `${HOST}:${API_PORT}/api/markers/search`;
         url += '?page_size=10';
@@ -668,32 +683,33 @@ const MainLayout = () => {
             loadMarkersForList(1);
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMarkerListMessages([t(json.message)]);
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setMarkerListMessages(errors);
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMarkerListMessages([t('general.server-error')]);
         }
     }, [loadMarkersForList, markersForList, t]);
 
     const getImportanceIcon = React.useCallback((importance, startsAt) => {
-        const passed = eventPassed(startsAt);
+        const past = eventIsPast(startsAt);
 
         switch (importance) {
             case 'low':
-                return passed ? passedLowImpMarkerIcon : lowImpMarkerIcon;
+                return past ? pastLowImpMarkerIcon : lowImpMarkerIcon;
             case 'medium':
-                return passed ? passedMediumImpMarkerIcon : mediumImpMarkerIcon;
+                return past ? pastMediumImpMarkerIcon : mediumImpMarkerIcon;
             case 'high':
-                return passed ? passedHighImpMarkerIcon : highImpMarkerIcon;
+                return past ? pastHighImpMarkerIcon : highImpMarkerIcon;
             default:
                 return undefined;
         }
@@ -706,6 +722,7 @@ const MainLayout = () => {
     const editMarker = React.useCallback((marker) => {
         setMarkerMenu('edit');
         setEditingMarker(marker);
+        setMarkerListMessages([]);
     }, []);
 
     const mapLoadEvent = React.useCallback((map) => {
@@ -749,6 +766,7 @@ const MainLayout = () => {
                                 e.stopPropagation();
                                 setNewMarker(null);
                                 setMarkerMenu('list');
+                                setEditMarkerMessages([]);
                             }}>{t('map.cancel-marker-adding')}</button>
                     </Popup>
                 </Marker>
@@ -767,7 +785,7 @@ const MainLayout = () => {
                                 <h2 className={cl.marker_popup__title}>{el.title}</h2>
                                 <p className={cl.marker_popup__description}>{el.description}</p>
                             </div>
-                            <p className={`${cl.marker_popup__starts_at} ${eventPassed(el.startsAt) ? cl.passed : ''}`}>
+                            <p className={`${cl.marker_popup__starts_at} ${eventIsPast(el.startsAt) ? cl.passed : ''}`}>
                                 {getLocalTime(el.startsAt).toLocaleString()}
                             </p>
                         </div>
@@ -814,10 +832,25 @@ const MainLayout = () => {
                     <img className={`${cl.right_side_menu__settings_button__img}`}
                         alt='settings' />
                 </button>
-                <button className={`${cl.right_side_menu__log_out_button}`}
-                    onClick={logOutRequest}>
-                    <img className={`${cl.right_side_menu__log_out_button__img}`}
-                        alt='log out' />
+                <button className={cl.right_side_menu__log_out_button}
+                    onClick={() => {
+                        if (!loggingOut) {
+                            logOutRequest();
+                        }
+                    }}>
+                    {
+                        loggingOut ?
+                            <div className={cl.right_side_menu__log_out_button__loading}>
+                                <LoadingAnimation
+                                    curveColor1="transparent"
+                                    curveColor2="#000000"
+                                    size="18px"
+                                    curveWidth="4px" />
+                            </div>
+                            :
+                            <img className={cl.right_side_menu__log_out_button__img}
+                                alt='log out' />
+                    }
                 </button>
                 {
                     markersForMapLoading ?
@@ -838,6 +871,9 @@ const MainLayout = () => {
                             ${newMarker === null ? cl.unavailable : ''} 
                             ${currentMarkerMenu === 'add' ? cl.current : ''}`}
                         onClick={() => {
+                            if (currentMarkerMenu === 'list') {
+                                setMarkerListMessages([]);
+                            }
                             if (newMarker) {
                                 setMarkerMenu('add');
                             }
@@ -848,8 +884,13 @@ const MainLayout = () => {
                     <button
                         className={
                             `${cl.marker_panel__top_menu__option} 
-                            ${currentMarkerMenu === 'list' || currentMarkerMenu === 'edit' ? cl.current : ''}`}
-                        onClick={() => setMarkerMenu('list')}>
+                            ${['list', 'edit'].includes(currentMarkerMenu) ? cl.current : ''}`}
+                        onClick={() => {
+                            if (currentMarkerMenu === 'add') {
+                                setEditMarkerMessages([]);
+                            }
+                            setMarkerMenu('list');
+                        }}>
                         <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`}
                             alt="list" />
                     </button>
