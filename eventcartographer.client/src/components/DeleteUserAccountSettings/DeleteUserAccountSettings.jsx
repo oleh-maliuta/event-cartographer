@@ -4,10 +4,12 @@ import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from '../BlockMessage/BlockMessage';
 
 const DeleteUserAccountSettings = React.memo(() => {
     const { t } = useTranslation();
 
+    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [deletingAccount, setDeletingAccount] = React.useState(false);
 
     const confirmAccountDeletionInputRef = React.useRef(null);
@@ -31,27 +33,31 @@ const DeleteUserAccountSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert(t('settings.delete-account.account-is-deleted'));
             window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMessages({ state: 'error', list: [t(json.message)] });
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setMessages({ state: 'error', list: errors });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessages({ state: 'error', list: [t('general.server-error')] });
         }
 
         setDeletingAccount(false);
     }
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '8px', width: 'calc(100% - 6px)' };
+    }, []);
 
     return (
         <div className={`${cl.element} ${cl[theme.ls ?? theme.cs]}`}>
@@ -68,6 +74,10 @@ const DeleteUserAccountSettings = React.memo(() => {
                     maxLength="200"
                     ref={confirmAccountDeletionInputRef} />
             </div>
+            <BlockMessage
+                style={blockMessageStyle}
+                state={messages.state}
+                messages={messages.list} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__delete_account}`}
                     onClick={() => {

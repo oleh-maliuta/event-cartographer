@@ -5,10 +5,12 @@ import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import useTheme from '../../hooks/useTheme';
 import Switch from '../Switch/Switch';
+import BlockMessage from '../BlockMessage/BlockMessage';
 
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();
 
+    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
     const [userInfo, setUserInfo] = React.useState(null);
     const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = React.useState(null);
@@ -50,26 +52,31 @@ const BasicUserInfoSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert(t('settings.basic-info.changes-are-saved'));
+            setMessages({ state: 'success', list: [t('settings.basic-info.changes-are-saved')] });
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMessages({ state: 'error', list: [t(json.message)] });
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setMessages({ state: 'error', list: errors });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessages({ state: 'error', list: [t('general.server-error')] });
         }
 
         setSavingChangesForUserInfo(false);
     }
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '10px', width: 'calc(100% - 6px)' };
+    }, []);
 
     React.useEffect(() => {
         loadUserInfo();
@@ -111,6 +118,10 @@ const BasicUserInfoSettings = React.memo(() => {
                     value={permissionToDeletePastEventsValue}
                     setValue={setPermissionToDeletePastEventsValue} />
             </div>
+            <BlockMessage
+                style={blockMessageStyle}
+                state={messages.state}
+                messages={messages.list} />
             <button className={cl.save_changes_button}
                 onClick={() => {
                     if (!savingChangesForUserInfo) {

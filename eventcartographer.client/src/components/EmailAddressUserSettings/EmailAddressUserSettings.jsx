@@ -4,10 +4,12 @@ import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import useTheme from '../../hooks/useTheme';
+import BlockMessage from '../BlockMessage/BlockMessage';
 
 const EmailAddressUserSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
 
+    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
 
     const passwordInputRef = React.useRef(null);
@@ -34,26 +36,31 @@ const EmailAddressUserSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            alert(t('settings.email-address.email-is-sent'));
+            setMessages({ state: 'success', list: [t('settings.email-address.email-is-sent')] });
         } else if (!response.ok) {
             if (json.message) {
-                alert(t(json.message));
+                setMessages({ state: 'error', list: [t(json.message)] });
             } else {
-                let errors = "";
+                const errors = [];
+
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        errors += `${t(json.errors[prop][err])}\n`;
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
-                errors = errors.slice(0, -1);
-                alert(errors);
+
+                setMessages({ state: 'error', list: errors });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            alert(t('general.server-error'));
+            setMessages({ state: 'error', list: [t('general.server-error')] });
         }
 
         setUpdatingEmail(false);
     }
+
+    const blockMessageStyle = React.useMemo(() => {
+        return { marginTop: '8px', width: 'calc(100% - 6px)' };
+    }, []);
 
     return (
         <div className={`${cl.element} ${cl[theme.ls ?? theme.cs]}`}>
@@ -75,6 +82,10 @@ const EmailAddressUserSettings = React.memo(() => {
                     maxLength="320"
                     ref={newEmailInputRef} />
             </div>
+            <BlockMessage
+                style={blockMessageStyle}
+                state={messages.state}
+                messages={messages.list} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
                     onClick={() => {
