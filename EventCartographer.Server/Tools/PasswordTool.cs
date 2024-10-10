@@ -49,5 +49,14 @@ namespace EventCartographer.Server.Tools
 
             return true;
         }
+
+        public static bool CheckFormat(string password)
+        {
+            bool hasLowerCase = password.Any(char.IsLower);
+            bool hasUpperCase = password.Any(char.IsUpper);
+            bool hasDigits = password.Any(char.IsDigit);
+
+            return hasLowerCase && hasUpperCase && hasDigits;
+        }
     }
 }

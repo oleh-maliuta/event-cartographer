@@ -9,6 +9,7 @@ namespace EventCartographer.Server.Requests
         [Required(ErrorMessage = "http.request-errors.update-marker.longitude.required")]
         public decimal? Longitude { get; set; }
         [Required(ErrorMessage = "http.request-errors.update-marker.importance.required")]
+        [RegularExpression("^(low|medium|high)$", ErrorMessage = "http.request-errors.update-marker.importance.importance-value")]
         public string? Importance { get; set; }
         [Required(ErrorMessage = "http.request-errors.update-marker.title.required")]
         [MaxLength(300, ErrorMessage = "http.request-errors.update-marker.title.max-length")]

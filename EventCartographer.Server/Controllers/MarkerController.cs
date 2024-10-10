@@ -17,7 +17,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPost]
-        public async Task<IActionResult> AddMarker(AddMarkerRequest request)
+        public async Task<IActionResult> AddMarker(
+            [FromBody] AddMarkerRequest request)
         {
             const int maxMarkerAmount = 500;
             User user = AuthorizedUser;
@@ -25,13 +26,6 @@ namespace EventCartographer.Server.Controllers
             if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
-            }
-
-            string[] importanceArray = ["low", "medium", "high"];
-
-            if (!importanceArray.Contains(request.Importance))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.importance-value"));
             }
 
             if (user.PermissionToDeletePastEvents)
@@ -71,10 +65,9 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("{markerId}")]
         public async Task<IActionResult> UpdateMarker(
-            int markerId,
-            UpdateMarkerRequest request)
+            [FromRoute] int markerId,
+            [FromBody] UpdateMarkerRequest request)
         {
-            string[] importanceArray = ["low", "medium", "high"];
             User user = AuthorizedUser;
             Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
 
@@ -86,11 +79,6 @@ namespace EventCartographer.Server.Controllers
             if (marker.UserId != AuthorizedUserId)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.not-owner"));
-            }
-
-            if (!importanceArray.Contains(request.Importance))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.update-marker.importance-value"));
             }
 
             if (user.PermissionToDeletePastEvents)
@@ -118,7 +106,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpDelete("{markerId}")]
-        public async Task<IActionResult> DeleteMarker(int markerId)
+        public async Task<IActionResult> DeleteMarker(
+            [FromRoute] int markerId)
         {
             User user = AuthorizedUser;
             Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
@@ -154,7 +143,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpGet("{markerId}")]
-        public async Task<IActionResult> GetMarker(int markerId)
+        public async Task<IActionResult> GetMarker(
+            [FromRoute] int markerId)
         {
             Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
 
@@ -173,7 +163,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpGet("map")]
-        public async Task<IActionResult> GetMarkersByBounds([FromQuery] MarkerBoundQuery query)
+        public async Task<IActionResult> GetMarkersByBounds(
+            [FromQuery] MarkerBoundQuery query)
         {
             User user = AuthorizedUser;
 

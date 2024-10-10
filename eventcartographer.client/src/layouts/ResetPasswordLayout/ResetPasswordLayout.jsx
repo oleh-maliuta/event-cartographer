@@ -69,7 +69,7 @@ const ResetPasswordLayout = () => {
         } else if (!response.ok) {
             setMessageState('error');
             if (json.message) {
-                alert(t(json.message));
+                setMessages([t(json.message)]);
             } else {
                 const strKey = "http.request-errors.reset-password.";
                 const errors = [];

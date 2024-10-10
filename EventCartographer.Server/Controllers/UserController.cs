@@ -40,6 +40,11 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
             }
 
+            if (!PasswordTool.CheckFormat(request.Password ?? ""))
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
+            }
+
             if (request.Password != request.ConfirmPassword)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.password-not-confirmed"));
@@ -88,7 +93,8 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
+        public async Task<IActionResult> SignIn(
+            [FromBody] SignInRequest request)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
@@ -153,7 +159,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPut("info")]
-        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
+        public async Task<IActionResult> UpdateUserInfo(
+            [FromBody] UpdateUserInfoRequest request)
         {
             User user = AuthorizedUser;
 
@@ -181,13 +188,19 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPut("password")]
-        public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordRequest request)
+        public async Task<IActionResult> UpdateUserPassword(
+            [FromBody] UpdateUserPasswordRequest request)
         {
             User? user = AuthorizedUser;
 
             if (!PasswordTool.Validate(request.OldPassword!, user.PasswordHash))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.invalid-old-password"));
+            }
+
+            if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.incorrect-password"));
             }
 
             if (request.NewPassword != request.ConfirmPassword)
@@ -259,7 +272,8 @@ namespace EventCartographer.Server.Controllers
 
         [Authorized]
         [HttpPut("delete")]
-        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
+        public async Task<IActionResult> DeleteUser(
+            [FromBody] DeleteUserRequest request)
         {
             User? user = AuthorizedUser;
 
@@ -332,7 +346,8 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPost("accept-reset-password")]
-        public async Task<IActionResult> AcceptPasswordResetting([FromForm] AcceptPasswordResettingRequest request)
+        public async Task<IActionResult> AcceptPasswordResetting(
+            [FromForm] AcceptPasswordResettingRequest request)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
 
@@ -378,11 +393,17 @@ namespace EventCartographer.Server.Controllers
         }
 
         [HttpPut("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordRequest request)
         {
             if (request.NewPassword != request.ConfirmNewPassword)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.password-not-confirmed"));
+            }
+
+            if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));
             }
 
             User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
@@ -430,9 +451,8 @@ namespace EventCartographer.Server.Controllers
 
         [HttpGet("confirm-email/{email}")]
         public async Task<IActionResult> ConfirmEmail(
-            string email,
-            [FromQuery(Name = "token")]
-            string? token)
+            [FromRoute] string email,
+            [FromQuery(Name = "token")] string? token)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(x => x.Email == WebUtility.UrlDecode(email));
 
