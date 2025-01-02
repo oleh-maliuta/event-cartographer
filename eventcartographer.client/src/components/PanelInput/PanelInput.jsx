@@ -18,18 +18,18 @@ const PanelInput = React.memo(React.forwardRef(({
     return (
         <div className={`${cl.panel_input} ${cl[theme.ls ?? theme.cs]}`}
             style={containerStyle}>
-            <label className={cl.label}
+            <label className={cl.panel_input__label}
                 style={labelStyle}>
                 {label}
             </label>
             {
                 invalidationText ?
-                    <p className={cl.invalidation}>
+                    <p className={cl.panel_input__invalidation}>
                         {invalidationText}
                     </p>
                     : <></>
             }
-            <input className={`${cl.input} ${invalidationText !== undefined ? cl.invalid : ''}`}
+            <input className={`${cl.panel_input__input} ${invalidationText !== undefined ? cl.invalid : ''}`}
                 style={inputStyle}
                 type={type}
                 placeholder={placeholder}

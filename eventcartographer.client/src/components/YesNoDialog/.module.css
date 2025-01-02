@@ -1,0 +1,96 @@
+.yes_no_dialog {
+    --dialog-color: #ffffff;
+    --header-color: #000000;
+    --description-color: #000000;
+}
+
+.yes_no_dialog.dark {
+    --dialog-color: #2c2c2c;
+    --header-color: #ffffff;
+    --description-color: #ffffff;
+}
+
+.yes_no_dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 500px;
+    background-color: var(--dialog-color);
+    border: none;
+    border-radius: 10px;
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.65);
+    }
+}
+
+.yes_no_dialog__content {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.yes_no_dialog__header {
+    color: var(--header-color);
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.yes_no_dialog__description {
+    text-align: justify;
+    color: var(--description-color);
+    font-size: 1.125rem;
+    margin-top: 20px;
+}
+
+.yes_no_dialog__control {
+    padding-block: 10px;
+    padding-inline: 15px;
+}
+
+.yes_no_dialog__control__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.yes_no_dialog__control__buttons__yes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    background-color: rgb(62, 200, 44);
+    color: white;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+
+    &:disabled {
+        cursor: default;
+        background-color: #808080;
+    }
+
+    &:not(:disabled):hover {
+        background-color: rgb(40, 131, 28);
+    }
+}
+
+.yes_no_dialog__control__buttons__no {
+    width: 120px;
+    background-color: rgb(255, 59, 59);
+    color: white;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 8px;
+    padding-block: 5px;
+
+    &:disabled {
+        cursor: default;
+        background-color: #808080;
+    }
+
+    &:not(:disabled):hover {
+        background-color: rgb(163, 37, 37);
+    }
+}

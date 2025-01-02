@@ -1,4 +1,4 @@
-.panel_background {
+.panel__background {
     --panel-background-color: #f5f5f5;
     --panel-color: #ffffff;
     --header-color: #000000;
@@ -6,7 +6,7 @@
     --panel-shadow: 0px 0px 29px -8px rgba(0, 0, 0, 0.75);
 }
 
-.panel_background.dark {
+.panel__background.dark {
     --panel-background-color: #121212;
     --panel-color: #1f1f1f;
     --header-color: #ffffff;
@@ -14,7 +14,7 @@
     --panel-shadow: 0px 0px 29px -8px rgb(0, 0, 0);
 }
 
-.panel_background {
+.panel__background {
     position: fixed;
     top: 0;
     left: 0;
@@ -54,17 +54,17 @@
     }
 }
 
-.panel_header {
+.panel__header {
     width: 100%;
 }
 
-.panel_header_text {
+.panel__header__text {
     color: var(--header-color);
     font-size: 2.5rem;
     text-align: center;
 }
 
-.panel_header_line {
+.panel__header__line {
     width: 120px;
     height: 7px;
     border-radius: 50px;

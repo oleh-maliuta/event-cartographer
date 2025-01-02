@@ -99,7 +99,15 @@
         "add-marker": "Add",
         "cancel-marker-adding": "Cancel",
         "edit-marker": "Edit",
-        "go-to-the-list": "Go to the list"
+        "go-to-the-list": "Go to the list",
+        "remove-marker": {
+            "dialog-title": "Remove the marker",
+            "dialog-description": "Are you sure you want to remove the marker?"
+        }
+    },
+    "yes-no-dialog": {
+        "yes-button": "Yes",
+        "no-button": "No"
     },
     "http": {
         "request-errors": {

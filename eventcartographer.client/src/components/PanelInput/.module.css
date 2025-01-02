@@ -16,20 +16,20 @@
     margin-top: 35px;
 }
 
-.label {
+.panel_input__label {
     color: var(--label-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
 }
 
-.invalidation {
+.panel_input__invalidation {
     color: #ff4040;
     font-size: 0.93rem;
     margin-top: 5px;
 }
 
-.input {
+.panel_input__input {
     width: calc(100% - 14px);
     background-color: transparent;
     border: 2px solid #808080;

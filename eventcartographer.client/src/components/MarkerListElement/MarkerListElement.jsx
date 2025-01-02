@@ -30,50 +30,50 @@ const MarkerListElement = React.memo(({
     return (
         <div className={`${cl.marker_list_element} ${cl[theme.ls ?? theme.cs]}`}
             key={marker.id}>
-            <div className={`${cl.marker_list_element_importance} ${cl[marker.importance]}`} />
-            <div className={`${cl.marker_list_element_buttons}`}>
-                <button className={`${cl.marker_list_element_navigate_button} ${cl.marker_list_element_button}`}
+            <div className={`${cl.marker_list_element__importance} ${cl[marker.importance]}`} />
+            <div className={`${cl.marker_list_element__buttons}`}>
+                <button className={`${cl.marker_list_element__navigate_button} ${cl.marker_list_element__button}`}
                     onClick={() => {
                         navigate(marker);
                     }}>
-                    <img className={`${cl.marker_list_element_navigate_button_img} ${cl.marker_list_element_button_img}`}
+                    <img className={`${cl.marker_list_element__navigate_button__img} ${cl.marker_list_element__button__img}`}
                         alt="navigate" />
                 </button>
-                <button className={`${cl.marker_list_element_edit_button} ${cl.marker_list_element_button}`}
+                <button className={`${cl.marker_list_element__edit_button} ${cl.marker_list_element__button}`}
                     onClick={() => {
                         edit(marker);
                     }}>
-                    <img className={`${cl.marker_list_element_edit_button_img} ${cl.marker_list_element_button_img}`}
+                    <img className={`${cl.marker_list_element__edit_button__img} ${cl.marker_list_element__button__img}`}
                         alt="edit" />
                 </button>
-                <button className={`${cl.marker_list_element_delete_button} ${cl.marker_list_element_button}`}
+                <button className={`${cl.marker_list_element__delete_button} ${cl.marker_list_element__button}`}
                     onClick={() => {
                         remove(marker);
                     }}>
-                    <img className={`${cl.marker_list_element_delete_button_img} ${cl.marker_list_element_button_img}`}
+                    <img className={`${cl.marker_list_element__delete_button__img} ${cl.marker_list_element__button__img}`}
                         alt="delete" />
                 </button>
             </div>
-            <div className={`${cl.marker_list_element_title_cont}`}>
-                <h3 className={`${cl.marker_list_element_title}`}>
+            <div className={`${cl.marker_list_element__title__cont}`}>
+                <h3 className={`${cl.marker_list_element__title}`}>
                     {marker.title}
                 </h3>
             </div>
-            <div className={`${cl.marker_list_element_description_cont}`}>
-                <p className={`${cl.marker_list_element_description}`}>
+            <div className={`${cl.marker_list_element__description__cont}`}>
+                <p className={`${cl.marker_list_element__description}`}>
                     {marker.description}
                 </p>
             </div>
-            <div className={`${cl.marker_list_element_coordinates_cont}`}>
-                <span className={`${cl.marker_list_element_latitude}`}>
+            <div className={`${cl.marker_list_element__coordinates__cont}`}>
+                <span className={`${cl.marker_list_element__latitude}`}>
                     lt: {marker.latitude}
                 </span>
-                <span className={`${cl.marker_list_element_longitude}`}>
+                <span className={`${cl.marker_list_element__longitude}`}>
                     lg: {marker.longitude}
                 </span>
             </div>
-            <div className={`${cl.marker_list_element_starts_at_cont}`}>
-                <span className={`${cl.marker_list_element_starts_at} ${eventPassed(marker.startsAt) ? cl.passed : ''}`}>
+            <div className={`${cl.marker_list_element__starts_at__cont}`}>
+                <span className={`${cl.marker_list_element__starts_at} ${eventPassed(marker.startsAt) ? cl.passed : ''}`}>
                     {getLocalTime(marker.startsAt).toLocaleString()}
                 </span>
             </div>

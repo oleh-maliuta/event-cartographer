@@ -83,7 +83,7 @@
         "search-markers-input": "Пошук",
         "sorting-label": "Сортувати за:",
         "sort-by-importance-value": "важливістю",
-        "sort-by-title-value": "заголовку",
+        "sort-by-title-value": "заголовком",
         "sort-by-time-value": "часом початку",
         "importance-filter-title": "Важливість",
         "low-importance-value": "Низька",
@@ -99,7 +99,15 @@
         "add-marker": "Додати",
         "cancel-marker-adding": "Відмінити",
         "edit-marker": "Змінити",
-        "go-to-the-list": "Перейти до списку"
+        "go-to-the-list": "Перейти до списку",
+        "remove-marker": {
+            "dialog-title": "Видалити маркер",
+            "dialog-description": "Ви впевнені, що хочете видалити цей маркер?"
+        }
+    },
+    "yes-no-dialog": {
+        "yes-button": "Так",
+        "no-button": "Ні"
     },
     "http": {
         "request-errors": {

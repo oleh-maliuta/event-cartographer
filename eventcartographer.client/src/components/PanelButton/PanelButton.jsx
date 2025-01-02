@@ -28,8 +28,7 @@ const PanelButton = React.memo(React.forwardRef(({
                         curveColor2="#00000000"
                         size="20px"
                         curveWidth="3px" />
-                    :
-                    <span>{text}</span>
+                    : text
             }
         </button>
     );

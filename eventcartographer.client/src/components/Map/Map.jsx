@@ -16,8 +16,8 @@ const Map = React.memo(React.forwardRef(({
     return (
         <div className={`map_container ${theme.ls ?? theme.cs}`}>
             <MapContainer className="map"
-                center={[50.4, 30.5]}
-                zoom={12}
+                center={[35, 0]}
+                zoom={3}
                 ref={ref}>
                 <TileLayer className="map_tile_layer"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

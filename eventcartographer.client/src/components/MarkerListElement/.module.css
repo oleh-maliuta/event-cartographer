@@ -1,5 +1,5 @@
 .marker_list_element {
-    --background-color: #d7d7d7;
+    --background-color: #cfcfcf;
     --header-color: #000000;
     --description-color: #000000;
     --coordinates-color: #000000;
@@ -22,7 +22,7 @@
     border-radius: 8px;
 }
 
-.marker_list_element_importance {
+.marker_list_element__importance {
     height: 7px;
     border-radius: 50px;
 
@@ -39,12 +39,12 @@
     }
 }
 
-.marker_list_element_buttons {
+.marker_list_element__buttons {
     display: flex;
     margin-top: 10px;
 }
 
-.marker_list_element_button {
+.marker_list_element__button {
     position: relative;
     display: flex;
     align-items: center;
@@ -54,7 +54,7 @@
     border: none;
 }
 
-.marker_list_element_navigate_button {
+.marker_list_element__navigate_button {
     background-color: rgb(66, 167, 255);
     border-radius: 5px;
 
@@ -63,7 +63,7 @@
     }
 }
 
-.marker_list_element_edit_button {
+.marker_list_element__edit_button {
     background-color: rgb(255, 162, 0);
     border-radius: 5px;
     margin-left: 5px;
@@ -73,7 +73,7 @@
     }
 }
 
-.marker_list_element_delete_button {
+.marker_list_element__delete_button {
     background-color: rgb(212, 0, 0);
     border-radius: 5px;
     margin-left: 5px;
@@ -83,29 +83,29 @@
     }
 }
 
-.marker_list_element_button_img {
+.marker_list_element__button__img {
     width: 70%;
     height: 70%;
 }
 
-.marker_list_element_navigate_button_img {
+.marker_list_element__navigate_button__img {
     content: url(../../assets/navigate.png);
 }
 
-.marker_list_element_edit_button_img {
+.marker_list_element__edit_button__img {
     content: url(../../assets/edit.png);
 }
 
-.marker_list_element_delete_button_img {
+.marker_list_element__delete_button__img {
     content: url(../../assets/delete.png);
 }
 
-.marker_list_element_title_cont {
+.marker_list_element__title__cont {
     position: relative;
     margin-top: 10px;
 }
 
-.marker_list_element_title {
+.marker_list_element__title {
     display: -webkit-box;
     overflow: hidden;
     color: var(--header-color);
@@ -117,12 +117,12 @@
     -webkit-box-orient: vertical;
 }
 
-.marker_list_element_description_cont {
+.marker_list_element__description__cont {
     position: relative;
     margin-top: 10px;
 }
 
-.marker_list_element_description {
+.marker_list_element__description {
     display: -webkit-box;
     overflow: hidden;
     color: var(--description-color);
@@ -134,13 +134,13 @@
     -webkit-box-orient: vertical;
 }
 
-.marker_list_element_coordinates_cont {
+.marker_list_element__coordinates__cont {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
 }
 
-.marker_list_element_latitude {
+.marker_list_element__latitude {
     display: -webkit-box;
     overflow: hidden;
     color: var(--coordinates-color);
@@ -153,7 +153,7 @@
     font-family: "Lucida Console", "Courier New", monospace;
 }
 
-.marker_list_element_longitude {
+.marker_list_element__longitude {
     display: -webkit-box;
     overflow: hidden;
     color: var(--coordinates-color);
@@ -166,11 +166,11 @@
     font-family: "Lucida Console", "Courier New", monospace;
 }
 
-.marker_list_element_starts_at_cont {
+.marker_list_element__starts_at__cont {
     margin-top: 10px;
 }
 
-.marker_list_element_starts_at {
+.marker_list_element__starts_at {
     color: var(--time-color);
 
     &.passed {

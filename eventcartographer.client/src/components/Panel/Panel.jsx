@@ -15,12 +15,12 @@ const Panel = React.memo(({
     const panelDimensions = useRefDimensions(panelRef);
 
     return (
-        <div className={`${cl.panel_background} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.panel__background} ${cl[theme.ls ?? theme.cs]}`}>
             <div className={`${cl.panel} ${panelDimensions.height > window.innerHeight ? cl.fixed : ''}`}
                 ref={panelRef}>
-                <div className={cl.panel_header}>
-                    <h1 className={cl.panel_header_text}>{title}</h1>
-                    <div className={cl.panel_header_line} />
+                <div className={cl.panel__header}>
+                    <h1 className={cl.panel__header__text}>{title}</h1>
+                    <div className={cl.panel__header__line} />
                 </div>
                 {children}
             </div>

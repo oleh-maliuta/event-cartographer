@@ -99,7 +99,15 @@
         "add-marker": "Добавить",
         "cancel-marker-adding": "Отменить",
         "edit-marker": "Изменить",
-        "go-to-the-list": "Перейти к списку"
+        "go-to-the-list": "Перейти к списку",
+        "remove-marker": {
+            "dialog-title": "Удалить маркер",
+            "dialog-description": "Вы уверены, что хотите удалить этот маркер?"
+        }
+    },
+    "yes-no-dialog": {
+        "yes-button": "Да",
+        "no-button": "Нет"
     },
     "http": {
         "request-errors": {

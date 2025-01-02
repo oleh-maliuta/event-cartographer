@@ -12,6 +12,7 @@ import MarkerListElement from "../../components/MarkerListElement/MarkerListElem
 import { useTranslation } from "react-i18next";
 import useTheme from '../../hooks/useTheme';
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
+import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 
 const MainLayout = () => {
     const { t } = useTranslation();
@@ -21,6 +22,7 @@ const MainLayout = () => {
 
     const [newMarker, setNewMarker] = React.useState(null);
     const [editingMarker, setEditingMarker] = React.useState(null);
+    const [markerIdToRemove, setMarkerIdToRemove] = React.useState(null);
     const [markerListPage, setMarkerListPage] = React.useState(1);
     const [markerListPageCount, setMarkerListPageCount] = React.useState(0);
     const [mapBounds, setMapBounds] = React.useState(null);
@@ -40,6 +42,8 @@ const MainLayout = () => {
     const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
     const [markerListTimeOfStartFilter, setMarkerListTimeOfStartFilter] = React.useState({ min: undefined, max: undefined });
+
+    const [yesNoDialogIsOpened, setYesNoDialogIsOpened] = React.useState(false);
 
     const mapRef = React.useRef(null);
 
@@ -224,7 +228,7 @@ const MainLayout = () => {
                         marker={el}
                         navigate={navigateToMarker}
                         edit={editMarker}
-                        remove={removeMarkerRequest} />
+                        remove={prepareToRemoveMarker} />
                 );
             });
 
@@ -670,8 +674,8 @@ const MainLayout = () => {
         setMarkersForMapLoading(false);
     }, []);
 
-    const removeMarkerRequest = React.useCallback(async (marker) => {
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers/${marker.id}`, {
+    const removeMarkerRequest = React.useCallback(async (markerId) => {
+        const response = await fetch(`${HOST}:${API_PORT}/api/markers/${markerId}`, {
             method: "DELETE",
             mode: "cors",
             credentials: "include"
@@ -679,7 +683,7 @@ const MainLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            setMarkersForMap(markersForList.filter(x => x.id !== marker.id));
+            setMarkersForMap(markersForList.filter(x => x.id !== markerId));
             loadMarkersForList(1);
         } else if (!response.ok) {
             if (json.message) {
@@ -699,6 +703,22 @@ const MainLayout = () => {
             setMarkerListMessages([t('general.server-error')]);
         }
     }, [loadMarkersForList, markersForList, t]);
+
+    const prepareToRemoveMarker = React.useCallback((marker) => {
+        setMarkerIdToRemove(marker.id);
+        setYesNoDialogIsOpened(true);
+    }, []);
+
+    const removeMarker = React.useCallback(() => {
+        removeMarkerRequest(markerIdToRemove);
+        setMarkerIdToRemove(null);
+        setYesNoDialogIsOpened(false);
+    }, [markerIdToRemove, removeMarkerRequest]);
+
+    const cancelMarkerRemoving = React.useCallback(() => {
+        setMarkerIdToRemove(null);
+        setYesNoDialogIsOpened(false);
+    }, []);
 
     const getImportanceIcon = React.useCallback((importance, startsAt) => {
         const past = eventIsPast(startsAt);
@@ -757,7 +777,7 @@ const MainLayout = () => {
         if (newMarker !== null) {
             result.push(
                 <Marker
-                    key={'new'}
+                    key='new'
                     position={[newMarker.latitude, newMarker.longitude]}
                     icon={newMarkerIcon}>
                     <Popup className="marker_popup">
@@ -898,6 +918,12 @@ const MainLayout = () => {
                 {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
                 {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
             </div>
+            <YesNoDialog
+                dialogState={yesNoDialogIsOpened}
+                title={t('map.remove-marker.dialog-title')}
+                description={t('map.remove-marker.dialog-description')}
+                onYesButtonClick={removeMarker}
+                onNoButtonClick={cancelMarkerRemoving} />
         </div>
     );
 };
