@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import { API_PORT, HOST } from '../../constants';
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
-import useTheme from '../../hooks/useTheme';
 import BlockMessage from '../BlockMessage/BlockMessage';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const ResetPasswordDialog = React.memo(({
     dialogState,
@@ -20,7 +20,7 @@ const ResetPasswordDialog = React.memo(({
     const resetPasswordInputRef = React.useRef(null);
     const dialogRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     const blockMessageStyle = React.useMemo(() => {
         return { marginTop: '10px' };
@@ -77,7 +77,7 @@ const ResetPasswordDialog = React.memo(({
     }, [dialogState]);
 
     return (
-        <dialog className={`${cl.modal_window} ${cl[theme.ls ?? theme.cs]}`}
+        <dialog className={`${cl.modal_window} ${cl[theme]}`}
             ref={dialogRef}
             onCancel={() => setDialogState(false)}>
             <div className={`${cl.modal_window__content}`}>

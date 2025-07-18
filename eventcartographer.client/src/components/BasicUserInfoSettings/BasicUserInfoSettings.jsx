@@ -3,9 +3,9 @@ import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
-import useTheme from '../../hooks/useTheme';
 import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();
@@ -17,7 +17,7 @@ const BasicUserInfoSettings = React.memo(() => {
 
     const usernameInputRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     async function loadUserInfo() {
         const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
@@ -93,7 +93,7 @@ const BasicUserInfoSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.basic_info} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.basic_info} ${cl[theme]}`}>
             <div className={`${cl.basic_info__header__cont}`}>
                 <h2 className={`${cl.basic_info__header}`}>
                     {t('settings.basic-info.header')}

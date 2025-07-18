@@ -1,15 +1,15 @@
 import React from 'react';
 import cl from './.module.css';
 import { useTranslation } from 'react-i18next';
-import useTheme from '../../hooks/useTheme';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const PersonalizationSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
 
-    const theme = useTheme();
+    const { theme, isDeviceTheme, setThemeMode } = useTheme();
 
     return (
-        <div className={`${cl.personalization} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.personalization} ${cl[theme]}`}>
             <div className={`${cl.personalization__header__cont}`}>
                 <h2 className={`${cl.personalization__header}`}>
                     {t('settings.personalization.header')}
@@ -43,14 +43,9 @@ const PersonalizationSettings = React.memo(() => {
                         {t('settings.personalization.theme-input')}
                     </label>
                     <select className={cl.data_input__input}
-                        defaultValue={theme.ls ?? "device"}
+                        defaultValue={isDeviceTheme ? "device" : theme}
                         onChange={(e) => {
-                            if (e.target.value === "device") {
-                                localStorage.removeItem('theme');
-                            } else {
-                                localStorage.setItem('theme', e.target.value);
-                            }
-                            window.location.reload();
+                            setThemeMode(e.target.value);
                         }}>
                         <option className={cl.data_input__input__option}
                             value="device">

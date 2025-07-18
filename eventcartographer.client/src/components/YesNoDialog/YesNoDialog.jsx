@@ -2,7 +2,7 @@ import React from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
-import useTheme from '../../hooks/useTheme';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const YesNoDialog = React.memo(({
     dialogState,
@@ -17,7 +17,7 @@ const YesNoDialog = React.memo(({
 
     const dialogRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     async function yesButtonClick() {
         setProcessing(true);
@@ -40,7 +40,7 @@ const YesNoDialog = React.memo(({
     }, [dialogState]);
 
     return (
-        <dialog className={`${cl.yes_no_dialog} ${cl[theme.ls ?? theme.cs]}`}
+        <dialog className={`${cl.yes_no_dialog} ${cl[theme]}`}
             ref={dialogRef}>
             <div className={`${cl.yes_no_dialog__content}`}>
                 <h1 className={`${cl.yes_no_dialog__header}`}>

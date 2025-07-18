@@ -10,9 +10,9 @@ import Map from "../../components/Map/Map";
 import PageNavigator from "../../components/PageNavigator/PageNavigator";
 import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
 import { useTranslation } from "react-i18next";
-import useTheme from '../../hooks/useTheme';
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const MainLayout = () => {
     const { t } = useTranslation();
@@ -56,7 +56,7 @@ const MainLayout = () => {
     const titleInputRef = React.useRef(null);
     const descriptionInputRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     function eventIsPast(startsAt) {
         const processedDateTime = new Date(startsAt);
@@ -826,7 +826,7 @@ const MainLayout = () => {
     }, [loadMarkersForList]);
 
     return (
-        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.main} ${cl[theme]}`}>
             <Map
                 load={mapLoadEvent}
                 click={mapClickEvent}

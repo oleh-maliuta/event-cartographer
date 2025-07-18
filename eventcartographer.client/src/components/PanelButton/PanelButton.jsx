@@ -2,7 +2,7 @@ import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const PanelButton = React.memo(React.forwardRef(({
     style,
@@ -10,10 +10,10 @@ const PanelButton = React.memo(React.forwardRef(({
     loading,
     onClick
 }, ref) => {
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     return (
-        <button className={`${cl.panel_button} ${cl[theme.ls ?? theme.cs]}`}
+        <button className={`${cl.panel_button} ${cl[theme]}`}
             style={style}
             ref={ref}
             onClick={() => {

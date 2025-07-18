@@ -1,7 +1,7 @@
 import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const PanelInput = React.memo(React.forwardRef(({
     containerStyle,
@@ -13,10 +13,10 @@ const PanelInput = React.memo(React.forwardRef(({
     maxLength,
     invalidationText
 }, ref) => {
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     return (
-        <div className={`${cl.panel_input} ${cl[theme.ls ?? theme.cs]}`}
+        <div className={`${cl.panel_input} ${cl[theme]}`}
             style={containerStyle}>
             <label className={cl.panel_input__label}
                 style={labelStyle}>

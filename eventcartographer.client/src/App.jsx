@@ -6,6 +6,7 @@ import UserSettingsLayout from "./layouts/UserSettingsLayout/UserSettingsLayout"
 import React from "react";
 import { HOST, API_PORT, CLIENT_PORT } from "./constants";
 import ResetPasswordLayout from "./layouts/ResetPasswordLayout/ResetPasswordLayout";
+import { ThemeProvider } from "./providers/ThemeProvider";
 
 const App = () => {
     async function authCheck() {
@@ -31,15 +32,17 @@ const App = () => {
     }, []);
 
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="sign-up" element={<SignUpLayout />} />
-                <Route path="sign-in" element={<SignInLayout />} />
-                <Route path="reset-password" element={<ResetPasswordLayout />} />
-                <Route path="" element={<MainLayout />} />
-                <Route path="settings" element={<UserSettingsLayout />} />
-            </Routes>
-        </BrowserRouter>
+        <ThemeProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="sign-up" element={<SignUpLayout />} />
+                    <Route path="sign-in" element={<SignInLayout />} />
+                    <Route path="reset-password" element={<ResetPasswordLayout />} />
+                    <Route path="" element={<MainLayout />} />
+                    <Route path="settings" element={<UserSettingsLayout />} />
+                </Routes>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 }
 

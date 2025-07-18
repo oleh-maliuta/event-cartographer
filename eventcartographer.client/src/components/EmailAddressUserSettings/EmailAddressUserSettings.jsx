@@ -3,8 +3,8 @@ import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
-import useTheme from '../../hooks/useTheme';
 import BlockMessage from '../BlockMessage/BlockMessage';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const EmailAddressUserSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
@@ -15,7 +15,7 @@ const EmailAddressUserSettings = React.memo(() => {
     const passwordInputRef = React.useRef(null);
     const newEmailInputRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     async function updateUserEmailRequest() {
         setUpdatingEmail(true);
@@ -63,7 +63,7 @@ const EmailAddressUserSettings = React.memo(() => {
     }, []);
 
     return (
-        <div className={`${cl.element} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.element} ${cl[theme]}`}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.email-address.header')}

@@ -1,14 +1,14 @@
 import React from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
-import useTheme from '../../hooks/useTheme';
+import { useTheme } from "../../providers/ThemeProvider";
 
 const PageNavigator = React.memo(({
     currentPage,
     pageCount,
     loadData
 }) => {
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     function renderPageList() {
         if (pageCount <= 1) {
@@ -119,7 +119,7 @@ const PageNavigator = React.memo(({
     }
 
     return (
-        <div className={`${cl.page_navigator__cont} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.page_navigator__cont} ${cl[theme]}`}>
             <div className={cl.page_navigator}>
                 {renderPageList()}
             </div>

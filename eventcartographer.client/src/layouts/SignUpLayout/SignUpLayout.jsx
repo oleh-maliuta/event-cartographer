@@ -6,8 +6,8 @@ import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import useTheme from '../../hooks/useTheme';
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
@@ -22,7 +22,7 @@ const SignUpLayout = () => {
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     function cleanAllMessages() {
         setInvalidationText({});
@@ -147,7 +147,7 @@ const SignUpLayout = () => {
     }, [windowKeyPressEvent]);
 
     return (
-        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
                 title={t('sign-up.panel-header')}>
                 <BlockMessage

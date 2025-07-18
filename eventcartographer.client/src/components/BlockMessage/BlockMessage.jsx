@@ -1,14 +1,14 @@
 import React from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../providers/ThemeProvider";
 
 const BlockMessage = React.memo(({
     style,
     state,
     messages
 }) => {
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     function renderMessages() {
         const result = [];
@@ -34,7 +34,7 @@ const BlockMessage = React.memo(({
     }
 
     return (
-        <div className={`${cl.block_message} ${cl[state]} ${cl[theme.ls ?? theme.cs]}`}
+        <div className={`${cl.block_message} ${cl[state]} ${cl[theme]}`}
             style={style}>
             {renderMessages()}
         </div>

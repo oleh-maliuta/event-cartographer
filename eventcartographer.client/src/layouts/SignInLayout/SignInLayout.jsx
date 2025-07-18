@@ -7,8 +7,8 @@ import PanelButton from '../../components/PanelButton/PanelButton';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPasswordDialog';
-import useTheme from '../../hooks/useTheme';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const SignInLayout = () => {
     const { t } = useTranslation();
@@ -22,7 +22,7 @@ const SignInLayout = () => {
     const passwordInputRef = React.useRef(null);
     const panelButtonRef = React.useRef(null);
 
-    const theme = useTheme();
+    const { theme } = useTheme();
 
     function cleanAllMessages() {
         setInvalidationText({});
@@ -123,7 +123,7 @@ const SignInLayout = () => {
     }, [windowKeyPressEvent]);
 
     return (
-        <div className={`${cl.main} ${cl[theme.ls ?? theme.cs]}`}>
+        <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
                 title={t('sign-in.panel-header')}>
                 <BlockMessage
