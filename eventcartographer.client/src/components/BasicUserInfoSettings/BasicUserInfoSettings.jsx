@@ -5,7 +5,7 @@ import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const BasicUserInfoSettings = React.memo(() => {
     const { t } = useTranslation();

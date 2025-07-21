@@ -12,7 +12,7 @@ import MarkerListElement from "../../components/MarkerListElement/MarkerListElem
 import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
-import { useTheme } from "../../providers/ThemeProvider";
+import { useTheme } from '../../hooks/useTheme';
 
 const MainLayout = () => {
     const { t } = useTranslation();

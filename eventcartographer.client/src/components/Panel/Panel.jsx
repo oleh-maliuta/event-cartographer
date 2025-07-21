@@ -2,7 +2,7 @@ import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import useRefDimensions from "../../hooks/useRefDimensions";
-import { useTheme } from "../../providers/ThemeProvider";
+import { useTheme } from '../../hooks/useTheme';
 
 const Panel = React.memo(({
     title,

@@ -2,7 +2,7 @@ import React from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const YesNoDialog = React.memo(({
     dialogState,

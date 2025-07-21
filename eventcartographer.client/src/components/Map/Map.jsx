@@ -3,7 +3,7 @@ import "./.css";
 import PropTypes from "prop-types";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MapEventHandler from "../MapEventHandler/MapEventHandler";
-import { useTheme } from "../../providers/ThemeProvider";
+import { useTheme } from '../../hooks/useTheme';
 
 const Map = React.memo(React.forwardRef(({
     load,

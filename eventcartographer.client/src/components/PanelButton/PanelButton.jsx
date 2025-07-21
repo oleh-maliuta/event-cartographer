@@ -2,7 +2,7 @@ import React from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
-import { useTheme } from "../../providers/ThemeProvider";
+import { useTheme } from '../../hooks/useTheme';
 
 const PanelButton = React.memo(React.forwardRef(({
     style,

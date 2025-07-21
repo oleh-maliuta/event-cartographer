@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPasswordDialog';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const SignInLayout = () => {
     const { t } = useTranslation();

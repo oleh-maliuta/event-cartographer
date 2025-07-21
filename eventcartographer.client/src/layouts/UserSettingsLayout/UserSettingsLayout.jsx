@@ -6,7 +6,7 @@ import PasswordUserSettings from "../../components/PasswordUserSettings/Password
 import DeleteUserAccountSettings from "../../components/DeleteUserAccountSettings/DeleteUserAccountSettings";
 import { useTranslation } from 'react-i18next';
 import PersonalizationSettings from '../../components/PersonalizationSettings/PersonalizationSettings';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const UserSettingsLayout = () => {
     const { t } = useTranslation();

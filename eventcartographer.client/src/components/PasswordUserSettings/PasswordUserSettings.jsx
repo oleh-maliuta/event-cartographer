@@ -4,7 +4,7 @@ import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { API_PORT, HOST } from '../../constants';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const PasswordUserSettings = React.memo(() => {
     const { t } = useTranslation();

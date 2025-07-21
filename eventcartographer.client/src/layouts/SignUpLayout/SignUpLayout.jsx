@@ -7,7 +7,7 @@ import PanelButton from "../../components/PanelButton/PanelButton";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
-import { useTheme } from "../../providers/ThemeProvider";
+import { useTheme } from '../../hooks/useTheme';
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();

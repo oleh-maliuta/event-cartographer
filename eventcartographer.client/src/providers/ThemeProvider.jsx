@@ -1,8 +1,11 @@
 import React from 'react';
+import PropTypes from "prop-types";
 
 const ThemeContext = React.createContext();
 
-export const ThemeProvider = ({ children }) => {
+const ThemeProvider = ({
+    children
+}) => {
     const localStorageKey = "theme";
     const allowedThemeValues = ["light", "dark"];
 
@@ -57,13 +60,13 @@ export const ThemeProvider = ({ children }) => {
         }
     };
 
-    function handleColorSchemeChange() {
+    const handleColorSchemeChange = React.useCallback(() => {
         if (isDeviceTheme) {
             setTheme(
                 window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
             );
         }
-    }
+    }, [isDeviceTheme]);
 
     React.useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -73,7 +76,7 @@ export const ThemeProvider = ({ children }) => {
         return () => {
             mediaQuery.removeEventListener('change', handleColorSchemeChange);
         };
-    }, []);
+    }, [handleColorSchemeChange]);
 
     return (
         <ThemeContext.Provider value={{ theme, isDeviceTheme, setThemeMode }}>
@@ -82,10 +85,16 @@ export const ThemeProvider = ({ children }) => {
     );
 };
 
-export const useTheme = () => {
-    const context = React.useContext(ThemeContext);
-    if (context === undefined) {
-        throw new Error('useTheme must be used within a ThemeProvider');
-    }
-    return context;
+ThemeProvider.displayName = "Panel";
+
+ThemeProvider.propTypes = {
+    children: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
+    ]).isRequired
+};
+
+export {
+    ThemeContext,
+    ThemeProvider
 };

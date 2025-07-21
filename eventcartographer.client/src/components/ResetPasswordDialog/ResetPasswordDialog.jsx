@@ -5,7 +5,7 @@ import { API_PORT, HOST } from '../../constants';
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const ResetPasswordDialog = React.memo(({
     dialogState,

@@ -1,7 +1,7 @@
 import React from 'react';
 import cl from './.module.css';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme } from '../../hooks/useTheme';
 
 const PersonalizationSettings = React.memo(() => {
     const { t, i18n } = useTranslation();
