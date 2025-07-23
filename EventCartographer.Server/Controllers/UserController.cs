@@ -28,7 +28,7 @@ namespace EventCartographer.Server.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(
             [FromHeader] string? language,
-            [FromBody] SignUpRequest request)
+            [FromForm] SignUpRequest request)
         {
             if (await DB.Users.AnyAsync(x => x.Name == request.Username))
             {
@@ -43,11 +43,6 @@ namespace EventCartographer.Server.Controllers
             if (!PasswordTool.CheckFormat(request.Password ?? ""))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
-            }
-
-            if (request.Password != request.ConfirmPassword)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.password-not-confirmed"));
             }
 
             string token = StringTool.RandomString(256);
@@ -94,13 +89,14 @@ namespace EventCartographer.Server.Controllers
 
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(
-            [FromBody] SignInRequest request)
+            [FromForm] SignInRequest request)
         {
-            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+            User? user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Name == request.UsernameOrEmail || x.Email == request.UsernameOrEmail);
 
             if (user == null)
             {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-or-password"));
+                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
             }
 
             if (!user.IsActivated)
@@ -110,7 +106,7 @@ namespace EventCartographer.Server.Controllers
 
             if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
             {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-or-password"));
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
             }
 
             await HttpContext.SignInAsync(

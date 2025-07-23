@@ -14,20 +14,12 @@ const SignInLayout = () => {
     const { t } = useTranslation();
 
     const [messages, setMessages] = React.useState([]);
-    const [invalidationText, setInvalidationText] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);
     const [dialogOpened, setDialogOpened] = React.useState(false);
 
-    const usernameInputRef = React.useRef(null);
-    const passwordInputRef = React.useRef(null);
     const panelButtonRef = React.useRef(null);
 
     const { theme } = useTheme();
-
-    function cleanAllMessages() {
-        setInvalidationText({});
-        setMessages([]);
-    }
 
     const blockMessageStyle = React.useMemo(() => {
         return { marginTop: '15px', width: 'calc(100% - 6px)' };
@@ -42,21 +34,15 @@ const SignInLayout = () => {
         return { marginTop: '35px' };
     }, []);
 
-    const signInRequest = React.useCallback(async () => {
-        cleanAllMessages();
+    const signInRequest = React.useCallback(async (e) => {
+        setMessages([]);
         setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
             method: "POST",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: usernameInputRef.current.value || null,
-                password: passwordInputRef.current.value || null
-            })
+            body: new FormData(e.target)
         });
         const json = await response.json();
 
@@ -66,28 +52,11 @@ const SignInLayout = () => {
             if (json.message) {
                 setMessages([t(json.message)]);
             } else {
-                const strKey = "http.request-errors.sign-in.";
                 const errors = [];
 
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        if (json.errors[prop][err].startsWith(strKey + "username")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    username: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else if (json.errors[prop][err].startsWith(strKey + "password")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    password: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        }  else {
-                            errors.push(t(json.errors[prop][err]));
-                        }
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
 
@@ -102,55 +71,39 @@ const SignInLayout = () => {
         setSubmitting(false);
     }, [t]);
 
-    const windowKeyPressEvent = React.useCallback((e) => {
-        switch (e.key) {
-            case "Enter":
-                if (!dialogOpened) {
-                    panelButtonRef.current.click();
-                }
-                break;
-            default:
-                return;
-        }
-    }, [dialogOpened]);
-
-    React.useEffect(() => {
-        window.addEventListener("keypress", windowKeyPressEvent);
-
-        return () => {
-            window.removeEventListener("keypress", windowKeyPressEvent);
-        };
-    }, [windowKeyPressEvent]);
-
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
-                title={t('sign-in.panel-header')}>
+                title={t('sign-in.panel-header')}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    if (submitting) return;
+                    signInRequest(e);
+                }}>
                 <BlockMessage
                     style={blockMessageStyle}
                     state='error'
                     messages={messages} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
+                    name='usernameOrEmail'
                     label={t('sign-in.username-input')}
                     type='text'
                     placeholder={t('sign-in.username-input')}
                     maxLength='100'
-                    invalidationText={invalidationText.username}
-                    ref={usernameInputRef} />
+                    required />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
+                    name='password'
                     label={t('sign-in.password-input')}
                     type='password'
                     placeholder={t('sign-in.password-input')}
                     maxLength='200'
-                    invalidationText={invalidationText.password}
-                    ref={passwordInputRef} />
+                    required />
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-in.submit')}
                     loading={submitting}
-                    onClick={signInRequest}
                     ref={panelButtonRef} />
                 <div className={cl.options}>
                     <Link className={cl.options_sign_up_link}

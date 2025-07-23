@@ -4,7 +4,7 @@
     },
     "sign-in": {
         "panel-header": "Sign in",
-        "username-input": "Username",
+        "username-input": "Username or Email",
         "password-input": "Password",
         "submit": "Submit",
         "sign-up-link": "Sign up",
@@ -21,10 +21,11 @@
     "sign-up": {
         "panel-header": "Sign up",
         "username-input": "Username",
-        "email-address-input": "Email address",
+        "email-address-input": "Email",
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "create-account": "Create account",
+        "password-not-confirmed": "Password not confirmed.",
         "sign-in-link": "Sign in",
         "email-is-sent": "Email is sent to confirm your email address."
     },
@@ -169,8 +170,8 @@
                 }
             },
             "sign-in": {
-                "username": {
-                    "required": "A username is required."
+                "username-or-email": {
+                    "required": "A username or email is required."
                 },
                 "password": {
                     "required": "A password is required."
@@ -178,23 +179,20 @@
             },
             "sign-up": {
                 "username": {
-                    "required": "A username is required.",
+                    "required": "Username is required.",
                     "max-length": "Username is too long.",
-                    "min-length": "Username is too short."
+                    "min-length": "Username is too short.",
+                    "format": "Username can not contain '@'"
                 },
                 "email": {
-                    "required": "An email address is required.",
-                    "max-length": "Email address is too long.",
-                    "min-length": "Email address is too short.",
-                    "email-address": "The email address is invalid."
+                    "required": "Email is required.",
+                    "max-length": "Email is too long.",
+                    "email-address": "Email address is invalid."
                 },
                 "password": {
-                    "required": "A password is required.",
+                    "required": "Password is required.",
                     "max-length": "Password is too long.",
                     "min-length": "Password is too short."
-                },
-                "confirm-password": {
-                    "required": "A password confirmation is required."
                 }
             },
             "update-marker": {
@@ -261,11 +259,10 @@
                     "same-username": "There is a user with the same username.",
                     "same-email": "There is a user with the same email address.",
                     "incorrect-password": "The password must include lower case letters, upper case letters and digits.",
-                    "password-not-confirmed": "The password is not confirmed.",
                     "email-error": "Error sending the email."
                 },
                 "sign-in": {
-                    "username-or-password": "Invalid username or password.",
+                    "username-email-or-password": "Invalid username, email or password.",
                     "not-activated": "The user is not activated."
                 },
                 "logout": {},

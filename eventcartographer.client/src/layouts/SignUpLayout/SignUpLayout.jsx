@@ -14,20 +14,12 @@ const SignUpLayout = () => {
 
     const [messageState, setMessageState] = React.useState('success');
     const [messages, setMessages] = React.useState([]);
-    const [invalidationText, setInvalidationText] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);
 
-    const usernameInputRef = React.useRef(null);
-    const emailInputRef = React.useRef(null);
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
     const { theme } = useTheme();
-
-    function cleanAllMessages() {
-        setInvalidationText({});
-        setMessages([]);
-    }
 
     const blockMessageStyle = React.useMemo(() => {
         return { marginTop: '20px', width: 'calc(100% - 6px)' };
@@ -48,8 +40,8 @@ const SignUpLayout = () => {
         return { marginTop: '30px' };
     }, []);
 
-    const signUpRequest = React.useCallback(async () => {
-        cleanAllMessages();
+    const signUpRequest = React.useCallback(async (e) => {
+        setMessages([]);
         setSubmitting(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
@@ -57,15 +49,9 @@ const SignUpLayout = () => {
             mode: "cors",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json",
                 "Language": i18n.language
             },
-            body: JSON.stringify({
-                username: usernameInputRef.current.value || null,
-                email: emailInputRef.current.value || null,
-                password: passwordInputRef.current.value || null,
-                confirmPassword: confirmPasswordInputRef.current.value || null
-            })
+            body: new FormData(e.target)
         });
         const json = await response.json();
 
@@ -77,46 +63,16 @@ const SignUpLayout = () => {
                 setMessageState('error');
                 setMessages([t(json.message)]);
             } else {
-                const strKey = "http.request-errors.sign-up.";
                 const errors = [];
 
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        if (json.errors[prop][err].startsWith(strKey + "username")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    username: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else if (json.errors[prop][err].startsWith(strKey + "email")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    email: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else if (json.errors[prop][err].startsWith(strKey + "password")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    password: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else if (json.errors[prop][err].startsWith(strKey + "confirm-password")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    confirmPassword: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else {
-                            errors.push(t(json.errors[prop][err]));
-                        }
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
 
                 if (errors.length > 0) {
+                    setMessageState('error')
                     setMessages(errors);
                 }
             }
@@ -126,57 +82,52 @@ const SignUpLayout = () => {
         }
 
         setSubmitting(false);
-    }, [t, i18n]);
-
-    const windowKeyPressEvent = React.useCallback((e) => {
-        switch (e.key) {
-            case "Enter":
-                signUpRequest();
-                break;
-            default:
-                return;
-        }
-    }, [signUpRequest]);
-
-    React.useEffect(() => {
-        window.addEventListener("keypress", windowKeyPressEvent);
-
-        return () => {
-            window.removeEventListener("keypress", windowKeyPressEvent);
-        };
-    }, [windowKeyPressEvent]);
+    }, [i18n.language, t]);
 
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
-                title={t('sign-up.panel-header')}>
+                title={t('sign-up.panel-header')}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    if (submitting) return;
+                    if (confirmPasswordInputRef.current.value !== passwordInputRef.current.value) {
+                        setMessageState('error');
+                        setMessages([t('sign-up.password-not-confirmed')]);
+                        return;
+                    }
+                    signUpRequest(e);
+                }}>
                 <BlockMessage
                     style={blockMessageStyle}
                     state={messageState}
                     messages={messages} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
+                    name='username'
                     label={t('sign-up.username-input')}
                     type='text'
                     placeholder={t('sign-up.username-input')}
+                    minLength='3'
                     maxLength='100'
-                    invalidationText={invalidationText.username}
-                    ref={usernameInputRef} />
+                    required />
                 <PanelInput
                     containerStyle={emailInfoInputStyle}
+                    name='email'
                     label={t('sign-up.email-address-input')}
                     type='email'
                     placeholder={t('sign-up.email-address-input')}
                     maxLength='320'
-                    invalidationText={invalidationText.email}
-                    ref={emailInputRef} />
+                    required />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
+                    name='password'
                     label={t('sign-up.password-input')}
                     type='password'
                     placeholder={t('sign-up.password-input')}
+                    minLength='6'
                     maxLength='200'
-                    invalidationText={invalidationText.password}
+                    required
                     ref={passwordInputRef} />
                 <PanelInput
                     containerStyle={confirmPasswordInfoInputStyle}
@@ -184,13 +135,12 @@ const SignUpLayout = () => {
                     type='password'
                     placeholder={t('sign-up.confirm-password-input')}
                     maxLength='200'
-                    invalidationText={invalidationText.confirmPassword}
+                    required
                     ref={confirmPasswordInputRef} />
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-up.create-account')}
-                    loading={submitting}
-                    onClick={signUpRequest} />
+                    loading={submitting} />
                 <div className={cl.sign_in_link_cont}>
                     <Link className={cl.sign_in_link} to='/sign-in'>
                         {t('sign-up.sign-in-link')}

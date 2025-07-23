@@ -23,12 +23,6 @@
     letter-spacing: 0.5px;
 }
 
-.panel_input__invalidation {
-    color: #ff4040;
-    font-size: 0.93rem;
-    margin-top: 5px;
-}
-
 .panel_input__input {
     width: calc(100% - 14px);
     background-color: transparent;
@@ -40,11 +34,6 @@
     margin-top: 7px;
     padding-block: 10px;
     padding-left: 10px;
-
-    &.invalid {
-        border: 2px solid #ff4040;
-    }
-
     &:focus {
         border: 2px solid var(--input-focus-border-color);
     }

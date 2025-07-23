@@ -7,20 +7,15 @@ import { useTheme } from '../../hooks/useTheme';
 const PanelButton = React.memo(React.forwardRef(({
     style,
     text,
-    loading,
-    onClick
+    loading
 }, ref) => {
     const { theme } = useTheme();
 
     return (
         <button className={`${cl.panel_button} ${cl[theme]}`}
+            type="submit"
             style={style}
-            ref={ref}
-            onClick={() => {
-                if (!loading) {
-                    onClick();
-                }
-            }}>
+            ref={ref}>
             {
                 loading ?
                     <LoadingAnimation
