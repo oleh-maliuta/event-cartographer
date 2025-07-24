@@ -1,5 +1,5 @@
 import cl from './.module.css';
-import { CLIENT_PORT, HOST } from "../../constants";
+import { CLIENT_PORT, HOST } from "../../utils/constants";
 import BasicUserInfoSettings from "../../components/BasicUserInfoSettings/BasicUserInfoSettings";
 import EmailAddressUserSettings from "../../components/EmailAddressUserSettings/EmailAddressUserSettings";
 import PasswordUserSettings from "../../components/PasswordUserSettings/PasswordUserSettings";

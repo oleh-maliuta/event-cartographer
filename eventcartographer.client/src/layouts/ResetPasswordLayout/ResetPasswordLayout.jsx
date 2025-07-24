@@ -1,5 +1,5 @@
 import React from 'react';
-import { API_PORT, HOST } from '../../constants';
+import { API_PORT, HOST } from '../../utils/constants';
 import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
@@ -13,17 +13,11 @@ const ResetPasswordLayout = () => {
 
     const [messageState, setMessageState] = React.useState('success');
     const [messages, setMessages] = React.useState([]);
-    const [invalidationText, setInvalidationText] = React.useState({});
     const [submitting, setSubmitting] = React.useState(false);
     const [isReset, setIsReset] = React.useState(false);
 
     const passwordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
-
-    function cleanAllMessages() {
-        setInvalidationText({});
-        setMessages([]);
-    }
 
     const blockMessageStyle = React.useMemo(() => {
         return { marginTop: '15px', width: 'calc(100% - 6px)' };
@@ -38,27 +32,19 @@ const ResetPasswordLayout = () => {
         return { marginTop: '35px' };
     }, []);
 
-    const resetPasswordRequest = React.useCallback(async () => {
-        if (isReset) {
-            return;
-        }
-
-        cleanAllMessages();
+    const resetPasswordRequest = React.useCallback(async (e) => {
+        setMessages([]);
         setSubmitting(true);
+
+        const formData = new FormData(e.target);
+        formData.append('username', searchParams.get('user') || null);
+        formData.append('token', searchParams.get('token') || null);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: searchParams.get('user') || null,
-                token: searchParams.get('token') || null,
-                newPassword: passwordInputRef.current.value || null,
-                confirmNewPassword: confirmPasswordInputRef.current.value || null
-            })
+            body: formData
         });
         const json = await response.json();
 
@@ -71,28 +57,11 @@ const ResetPasswordLayout = () => {
             if (json.message) {
                 setMessages([t(json.message)]);
             } else {
-                const strKey = "http.request-errors.reset-password.";
                 const errors = [];
 
                 for (const prop in json.errors) {
                     for (const err in json.errors[prop]) {
-                        if (json.errors[prop][err].startsWith(strKey + "new-password")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    password: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else if (json.errors[prop][err].startsWith(strKey + "confirm-new-password")) {
-                            setInvalidationText(x => {
-                                return {
-                                    ...x,
-                                    confirmPassword: json.errors[prop][err].endsWith("required") ? "" : t(json.errors[prop][err])
-                                };
-                            });
-                        } else {
-                            errors.push(t(json.errors[prop][err]));
-                        }
+                        errors.push(t(json.errors[prop][err]));
                     }
                 }
 
@@ -106,40 +75,35 @@ const ResetPasswordLayout = () => {
         }
 
         setSubmitting(false);
-    }, [isReset, searchParams, t]);
-
-    const windowKeyPressEvent = React.useCallback((e) => {
-        switch (e.key) {
-            case "Enter":
-                resetPasswordRequest();
-                break;
-            default:
-                return;
-        }
-    }, [resetPasswordRequest]);
-
-    React.useEffect(() => {
-        window.addEventListener("keypress", windowKeyPressEvent);
-
-        return () => {
-            window.removeEventListener("keypress", windowKeyPressEvent);
-        };
-    }, [windowKeyPressEvent]);
+    }, [searchParams, t]);
 
     return (
         <Panel
-            title={t('reset-password.panel-header')}>
+            title={t('reset-password.panel-header')}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (isReset) return;
+                if (submitting) return;
+                if (confirmPasswordInputRef.current.value !== passwordInputRef.current.value) {
+                    setMessageState('error');
+                    setMessages([t('reset-password.password-not-confirmed')]);
+                    return;
+                }
+                resetPasswordRequest(e);
+            }}>
             <BlockMessage
                 style={blockMessageStyle}
                 state={messageState}
                 messages={messages} />
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
+                name='newPassword'
                 label={t('reset-password.password-input')}
                 type='password'
                 placeholder={t('reset-password.password-input')}
+                minLength='6'
                 maxLength='200'
-                invalidationText={invalidationText.password}
+                required
                 ref={passwordInputRef} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
@@ -147,13 +111,12 @@ const ResetPasswordLayout = () => {
                 type='password'
                 placeholder={t('reset-password.confirm-password-input')}
                 maxLength='200'
-                invalidationText={invalidationText.confirmPassword}
+                required
                 ref={confirmPasswordInputRef} />
             <PanelButton
                 style={submitButtonStyle}
                 text={t('reset-password.submit')}
-                loading={submitting}
-                onClick={resetPasswordRequest} />
+                loading={submitting} />
         </Panel>
     );
 }

@@ -10,8 +10,6 @@ namespace EventCartographer.Server.Requests
         [MaxLength(200, ErrorMessage = "http.request-errors.reset-password.new-password.max-length")]
         [MinLength(6, ErrorMessage = "http.request-errors.reset-password.new-password.min-length")]
         public string? NewPassword { get; set; }
-        [Required(ErrorMessage = "http.request-errors.reset-password.confirm-new-password.required")]
-        public string? ConfirmNewPassword { get; set; }
         [Required(ErrorMessage = "http.request-errors.reset-password.token.required")]
         public string? Token { get; set; }
     }

@@ -1,14 +1,14 @@
 import React from 'react';
 import cl from './.module.css';
-import { API_PORT, CLIENT_PORT, HOST } from '../../constants';
+import { API_PORT, CLIENT_PORT, HOST } from '../../utils/constants';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPasswordDialog';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
+import MemoLink from '../../components/MemoLink/MemoLink';
 
 const SignInLayout = () => {
     const { t } = useTranslation();
@@ -100,20 +100,21 @@ const SignInLayout = () => {
                     placeholder={t('sign-in.password-input')}
                     maxLength='200'
                     required />
+                <div className={cl.forgot_password_link_cont}>
+                    <span className={cl.forgot_password_link}
+                        onClick={() => setDialogOpened(true)}>
+                        {t('sign-in.forgot-password')}
+                    </span>
+                </div>
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-in.submit')}
                     loading={submitting}
                     ref={panelButtonRef} />
-                <div className={cl.options}>
-                    <Link className={cl.options_sign_up_link}
-                        to='/sign-up'>
+                <div className={cl.sign_up_link_cont}>
+                    <MemoLink className={cl.sign_up_link} to='/sign-up'>
                         {t('sign-in.sign-up-link')}
-                    </Link>
-                    <span className={cl.options_forgot_password_link}
-                        onClick={() => setDialogOpened(true)}>
-                        {t('sign-in.forgot-password')}
-                    </span>
+                    </MemoLink>
                 </div>
             </Panel>
             <ResetPasswordDialog

@@ -18,52 +18,19 @@
     right: 0px;
 }
 
-.options {
-    position: relative;
-    height: 17px;
-    margin-top: 30px;
-
-    @media (width < 310px) {
-        height: 47px;
-    }
+.forgot_password_link_cont {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    margin-top: 5px;
 }
 
-.options_sign_up_link {
-    position: absolute;
-    font-size: 0.938rem;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    text-decoration: none;
-    text-wrap: nowrap;
-
-    &:hover {
-        text-decoration: underline;
-    }
-
-    &:link {
-        color: var(--sign-up-link-color);
-    }
-
-    &:visited {
-        color: var(--sign-up-link-visited-color);
-    }
-
-    @media (width < 310px) {
-        position: static;
-        display: block;
-        text-align: center;
-    }
-}
-
-.options_forgot_password_link {
+.forgot_password_link {
     cursor: pointer;
-    position: absolute;
-    right: 0;
     color: var(--forgot-password-link-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
-    text-align: right;
     text-wrap: nowrap;
 
     &:hover {
@@ -75,5 +42,31 @@
         display: block;
         text-align: center;
         margin-top: 20px;
+    }
+}
+
+.sign_up_link_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.sign_up_link {
+    font-size: 0.938rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:link {
+        color: var(--sign-up-link-color);
+    }
+
+    &:visited {
+        color: var(--sign-up-link-visited-color);
     }
 }

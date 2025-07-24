@@ -11,8 +11,8 @@
         "forgot-password": "Forgot password?",
         "reset-password-modal-window": {
             "header": "Reset password",
-            "description": "Input username of your account to send an email to give you a permission to reset the password.",
-            "username-input": "Username",
+            "description": "Input username or email of your account to send a mail to give you the permission to reset the password.",
+            "username-or-email-input": "Username or Email",
             "cancel": "Cancel",
             "send-mail": "Send mail",
             "email-is-sent": "Email is sent."
@@ -34,6 +34,7 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
+        "password-not-confirmed": "Password not confirmed.",
         "password-is-reset": "Password is reset. Now you can use it to sign in."
     },
     "settings": {
@@ -114,25 +115,25 @@
         "request-errors": {
             "accept-password-resetting": {
                 "username": {
-                    "required": "A username is required."
+                    "required": "Username is required."
                 },
                 "token": {
-                    "required": "A token is required."
+                    "required": "Token is required."
                 }
             },
             "add-marker": {
                 "latitude": {
-                    "required": "A latitude value is required."
+                    "required": "Latitude value is required."
                 },
                 "longitude": {
-                    "required": "A longitude value is required."
+                    "required": "Longitude value is required."
                 },
                 "importance": {
-                    "required": "An importance value is required.",
+                    "required": "Importance value is required.",
                     "importance-value": "Invalid importance value."
                 },
                 "title": {
-                    "required": "A title is required.",
+                    "required": "Title is required.",
                     "max-length": "Title is too long.",
                     "min-length": "Title is too short."
                 },
@@ -140,41 +141,38 @@
                     "max-length": "Description is too long."
                 },
                 "starts-at": {
-                    "required": "A time of the event start is required."
+                    "required": "Time of the event start is required."
                 }
             },
             "delete-user": {
                 "password": {
-                    "required": "A password is required."
+                    "required": "Password is required."
                 }
             },
             "reset-password": {
                 "username": {
-                    "required": "A username is required."
+                    "required": "Username is required."
                 },
                 "new-password": {
-                    "required": "A new password is required.",
+                    "required": "New password is required.",
                     "max-length": "New password is too long.",
                     "min-length": "New password is too short."
                 },
-                "confirm-new-password": {
-                    "required": "The password confirmation is required."
-                },
                 "token": {
-                    "required": "A token is required."
+                    "required": "Token is required."
                 }
             },
             "send-reset-password-permission": {
-                "username": {
-                    "required": "A username is required."
+                "username-or-email": {
+                    "required": "Username or email is required."
                 }
             },
             "sign-in": {
                 "username-or-email": {
-                    "required": "A username or email is required."
+                    "required": "Username or email is required."
                 },
                 "password": {
-                    "required": "A password is required."
+                    "required": "Password is required."
                 }
             },
             "sign-up": {
@@ -197,17 +195,17 @@
             },
             "update-marker": {
                 "latitude": {
-                    "required": "A latitude value is required."
+                    "required": "Latitude value is required."
                 },
                 "longitude": {
-                    "required": "A longitude value is required."
+                    "required": "Longitude value is required."
                 },
                 "importance": {
-                    "required": "An importance value is required.",
+                    "required": "Importance value is required.",
                     "importance-value": "Invalid importance value."
                 },
                 "title": {
-                    "required": "A title is required.",
+                    "required": "Title is required.",
                     "max-length": "Title is too long.",
                     "min-length": "Title is too short."
                 },
@@ -215,41 +213,41 @@
                     "max-length": "Description is too long."
                 },
                 "starts-at": {
-                    "required": "A time of the event start is required."
+                    "required": "Time of the event start is required."
                 }
             },
             "update-user-email": {
                 "password": {
-                    "required": "A password is required."
+                    "required": "Password is required."
                 },
                 "email": {
-                    "required": "A new email address is required.",
+                    "required": "New email address is required.",
                     "max-length": "Email address is too long.",
                     "min-length": "Email address is too short.",
-                    "email-address": "The new email address is invalid."
+                    "email-address": "New email address is invalid."
                 }
             },
             "update-user-info": {
                 "username": {
-                    "required": "A username is required.",
+                    "required": "Username is required.",
                     "max-length": "Username is too long.",
                     "min-length": "Username is too short."
                 },
                 "permission-to-delete-past-events": {
-                    "required": "A permission value to delete past events required."
+                    "required": "Permission value to delete past events required."
                 }
             },
             "update-user-password": {
                 "old-password": {
-                    "required": "The old password is required."
+                    "required": "Old password is required."
                 },
                 "new-password": {
-                    "required": "A new password is required.",
+                    "required": "New password is required.",
                     "max-length": "New password is too long.",
                     "min-length": "New password is too short."
                 },
                 "confirm-password": {
-                    "required": "The new password confirmation is required."
+                    "required": "New password confirmation is required."
                 }
             }
         },
@@ -258,12 +256,12 @@
                 "sign-up": {
                     "same-username": "There is a user with the same username.",
                     "same-email": "There is a user with the same email address.",
-                    "incorrect-password": "The password must include lower case letters, upper case letters and digits.",
+                    "incorrect-password": "Password must include lower case letters, upper case letters and digits.",
                     "email-error": "Error sending the email."
                 },
                 "sign-in": {
                     "username-email-or-password": "Invalid username, email or password.",
-                    "not-activated": "The user is not activated."
+                    "not-activated": "User is not activated."
                 },
                 "logout": {},
                 "check": {},
@@ -273,8 +271,8 @@
                 },
                 "update-user-password": {
                     "invalid-old-password": "Invalid old password.",
-                    "incorrect-password": "The new password must include lower case letters, upper case letters and digits.",
-                    "password-not-confirmed": "The password is not confirmed."
+                    "incorrect-password": "New password must include lower case letters, upper case letters and digits.",
+                    "password-not-confirmed": "Password is not confirmed."
                 },
                 "update-user-email": {
                     "current-address": "This is your current email address.",
@@ -292,13 +290,12 @@
                 },
                 "accept-password-resetting": {
                     "user-not-found": "User not found.",
-                    "link": "The link is expired or unavailable."
+                    "link": "Link is expired or unavailable."
                 },
                 "reset-password": {
-                    "password-not-confirmed": "The password is not confirmed.",
-                    "incorrect-password": "The new password must include lower case letters, upper case letters and digits.",
+                    "incorrect-password": "New password must include lower case letters, upper case letters and digits.",
                     "user-not-found": "User not found.",
-                    "link": "The link is expired or unavailable."
+                    "link": "Link is expired or unavailable."
                 },
                 "confirm-email": {}
             },
@@ -309,16 +306,16 @@
                 },
                 "update-marker": {
                     "marker-not-found": "Marker not found.",
-                    "not-owner": "The user is not the owner of the marker.",
+                    "not-owner": "User is not the owner of the marker.",
                     "past-event-time": "You can not set past time for an event as you have given the permission to delete past events automatically."
                 },
                 "delete-marker": {
                     "marker-not-found": "Marker not found.",
-                    "not-owner": "The user is not the owner of the marker."
+                    "not-owner": "User is not the owner of the marker."
                 },
                 "get-marker": {
                     "marker-not-found": "Marker not found.",
-                    "not-owner": "The user is not the owner of the marker."
+                    "not-owner": "User is not the owner of the marker."
                 },
                 "get-markers-by-bounds": {},
                 "get-markers-by-auth-user": {}

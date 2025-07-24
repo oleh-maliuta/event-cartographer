@@ -1,13 +1,13 @@
 import React from "react";
 import cl from "./.module.css";
-import { API_PORT, HOST } from "../../constants";
+import { API_PORT, HOST } from "../../utils/constants";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import { useTheme } from '../../hooks/useTheme';
+import MemoLink from "../../components/MemoLink/MemoLink";
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
@@ -142,9 +142,9 @@ const SignUpLayout = () => {
                     text={t('sign-up.create-account')}
                     loading={submitting} />
                 <div className={cl.sign_in_link_cont}>
-                    <Link className={cl.sign_in_link} to='/sign-in'>
+                    <MemoLink className={cl.sign_in_link} to='/sign-in'>
                         {t('sign-up.sign-in-link')}
-                    </Link>
+                    </MemoLink>
                 </div>
             </Panel>
         </div>

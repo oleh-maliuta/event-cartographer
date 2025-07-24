@@ -288,9 +288,10 @@ namespace EventCartographer.Server.Controllers
         [HttpPost("reset-password-permission")]
         public async Task<IActionResult> SendResetPasswordPermission(
             [FromHeader] string? language,
-            [FromBody] SendResetPasswordPermissionRequest request)
+            [FromForm] SendResetPasswordPermissionRequest request)
         {
-            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+            User? user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Name == request.UsernameOrEmail || x.Email == request.UsernameOrEmail);
 
             if (user == null)
             {
@@ -390,13 +391,8 @@ namespace EventCartographer.Server.Controllers
 
         [HttpPut("reset-password")]
         public async Task<IActionResult> ResetPassword(
-            [FromBody] ResetPasswordRequest request)
+            [FromForm] ResetPasswordRequest request)
         {
-            if (request.NewPassword != request.ConfirmNewPassword)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.password-not-confirmed"));
-            }
-
             if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));

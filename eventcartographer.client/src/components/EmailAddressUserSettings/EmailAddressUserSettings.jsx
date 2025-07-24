@@ -1,7 +1,7 @@
 import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
-import { API_PORT, HOST } from '../../constants';
+import { API_PORT, HOST } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
