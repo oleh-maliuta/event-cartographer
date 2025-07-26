@@ -1,6 +1,8 @@
 using EventCartographer.Server.Services.Background;
 using EventCartographer.Server.Services.Email;
 using EventCartographer.Server.Services.EntityFramework;
+using EventCartographer.Server.Services.Localization;
+using EventCartographer.Server.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,7 +42,15 @@ namespace EventCartographer.Server
                 e.Password = builder.Configuration["Email:Password"]!;
                 e.Host = builder.Configuration["Email:Host"]!;
                 e.Port = int.Parse(builder.Configuration["Email:Port"]!);
-                e.EmailTemplatesFolder = builder.Configuration["Email:EmailTemplatesFolder"]!;
+                e.EmailTemplatesPath = builder.Configuration
+                    .GetSection("Email:EmailTemplatesPath").Get<string[]>()!;
+            });
+
+            builder.Services.AddLocalizationService(l =>
+            {
+                l.DefaultLanguage = builder.Configuration["Localization:DefaultLanguage"]!;
+                l.StringsPath = builder.Configuration
+                    .GetSection("Localization:StringsPath").Get<string[]>()!;
             });
 
             WebApplication app = builder.Build();

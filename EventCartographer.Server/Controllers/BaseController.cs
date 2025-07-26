@@ -39,5 +39,27 @@ namespace EventCartographer.Server.Controllers
         {
             DB = db;
         }
+
+        protected ContentResult MessageContentResult(
+            bool isSuccess,
+            string title,
+            string message)
+        {
+            string headerStyle = isSuccess ? "\"color: #00BA00\"" : "\"color: #DD0000\"";
+            string messageStyle = "\"font-weight: bold; font-size: 1.3rem;\"";
+            string charsetMeta = "<meta charset=\"utf-8\" />";
+            return Content($@"
+                <html>
+                    <head>
+                        {charsetMeta}
+                        <title>{title}</title>
+                    </head>
+                    <body>
+                        <h1 style={headerStyle}>{title}</h1>
+                        <p style={messageStyle}>{message}</p>
+                    </body>
+                </html>
+            ", "text/html");
+        }
     }
 }

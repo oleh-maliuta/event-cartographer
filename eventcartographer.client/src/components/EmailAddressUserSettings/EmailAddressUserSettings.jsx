@@ -20,13 +20,12 @@ const EmailAddressUserSettings = React.memo(() => {
     async function updateUserEmailRequest() {
         setUpdatingEmail(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/email`, {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/email?locale=${i18n.language}`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json",
-                "Language": i18n.language
             },
             body: JSON.stringify({
                 password: passwordInputRef.current.value || null,

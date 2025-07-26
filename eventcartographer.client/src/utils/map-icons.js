@@ -1,11 +1,11 @@
 import { Icon } from 'leaflet';
-import newMarkerPng from './assets/new-marker.png';
-import lowImpMarkerPng from './assets/low-imp-marker.png';
-import mediumImpMarkerPng from './assets/medium-imp-marker.png';
-import highImpMarkerPng from './assets/high-imp-marker.png';
-import pastLowImpMarkerPng from './assets/past-low-imp-marker.png';
-import pastMediumImpMarkerPng from './assets/past-medium-imp-marker.png';
-import pastHighImpMarkerPng from './assets/past-high-imp-marker.png';
+import newMarkerPng from '../assets/new-marker.png';
+import lowImpMarkerPng from '../assets/low-imp-marker.png';
+import mediumImpMarkerPng from '../assets/medium-imp-marker.png';
+import highImpMarkerPng from '../assets/high-imp-marker.png';
+import pastLowImpMarkerPng from '../assets/past-low-imp-marker.png';
+import pastMediumImpMarkerPng from '../assets/past-medium-imp-marker.png';
+import pastHighImpMarkerPng from '../assets/past-high-imp-marker.png';
 
 export const newMarkerIcon = new Icon({
     iconUrl: newMarkerPng,

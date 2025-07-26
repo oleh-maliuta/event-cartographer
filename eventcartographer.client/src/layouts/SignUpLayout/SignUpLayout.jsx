@@ -44,13 +44,10 @@ const SignUpLayout = () => {
         setMessages([]);
         setSubmitting(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up`, {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up?locale=${i18n.language}`, {
             method: "POST",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Language": i18n.language
-            },
             body: new FormData(e.target)
         });
         const json = await response.json();

@@ -8,15 +8,16 @@ namespace EventCartographer.Server.Services.Email
 	public class EmailService : IEmailService
 	{
 		private readonly EmailServiceConfigurationMetadata configuration;
-
-		private string EmailTemplatesFolder => Path.IsPathRooted(configuration.EmailTemplatesFolder) ?
-			configuration.EmailTemplatesFolder :
-			Path.Combine(Directory.GetCurrentDirectory(), configuration.EmailTemplatesFolder);
+		private readonly string EmailTemplatesPath;
 
 		public EmailService(IOptions<EmailServiceConfigurationMetadata> configuration)
 		{
 			this.configuration = configuration.Value;
-		}
+			string combinedPath = Path.Combine(configuration.Value.EmailTemplatesPath);
+            EmailTemplatesPath = Path.IsPathRooted(combinedPath)
+				? combinedPath
+				: Path.Combine(Directory.GetCurrentDirectory(), combinedPath);
+        }
 
 		public async Task SendEmailAsync(
 			string email,
@@ -38,7 +39,7 @@ namespace EventCartographer.Server.Services.Email
 			string language = "en",
 			string? subject = null)
 		{
-			string templatePath = Path.Combine(EmailTemplatesFolder, language, templateName);
+			string templatePath = Path.Combine(EmailTemplatesPath, language, templateName);
 			if (!File.Exists(templatePath))
 			{
 				throw new FileNotFoundException($"Template {templateName} not found");

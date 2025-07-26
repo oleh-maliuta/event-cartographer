@@ -4,7 +4,7 @@ import SignInLayout from "./layouts/SignInLayout/SignInLayout";
 import MainLayout from "./layouts/MainLayout/MainLayout";
 import UserSettingsLayout from "./layouts/UserSettingsLayout/UserSettingsLayout";
 import React from "react";
-import { HOST, API_PORT, CLIENT_PORT } from "./constants";
+import { HOST, API_PORT, CLIENT_PORT } from "./utils/constants";
 import ResetPasswordLayout from "./layouts/ResetPasswordLayout/ResetPasswordLayout";
 import { ThemeProvider } from "./providers/ThemeProvider";
 

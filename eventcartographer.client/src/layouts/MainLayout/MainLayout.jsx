@@ -2,7 +2,7 @@ import React from "react";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import { API_PORT, CLIENT_PORT, HOST } from '../../utils/constants';
-import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, pastLowImpMarkerIcon, pastMediumImpMarkerIcon, pastHighImpMarkerIcon } from "../../map-icons";
+import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, pastLowImpMarkerIcon, pastMediumImpMarkerIcon, pastHighImpMarkerIcon } from "../../utils/map-icons";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';

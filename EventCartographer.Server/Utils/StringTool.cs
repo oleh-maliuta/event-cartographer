@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Server.Tools
+﻿namespace EventCartographer.Server.Utils
 {
     public static class StringTool
     {

@@ -6,6 +6,7 @@ using EventCartographer.Server.Requests.Queries;
 using EventCartographer.Server.Attributes;
 using EventCartographer.Server.Services.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using EventCartographer.Server.Utils;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -20,10 +21,9 @@ namespace EventCartographer.Server.Controllers
         public async Task<IActionResult> AddMarker(
             [FromBody] AddMarkerRequest request)
         {
-            const int maxMarkerAmount = 500;
             User user = AuthorizedUser;
 
-            if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= maxMarkerAmount)
+            if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= Constants.MAX_MARKER_COUNT_FOR_USER)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
             }
