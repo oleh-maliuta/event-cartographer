@@ -191,7 +191,7 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("password")]
         public async Task<IActionResult> UpdateUserPassword(
-            [FromBody] UpdateUserPasswordRequest request)
+            [FromForm] UpdateUserPasswordRequest request)
         {
             User? user = AuthorizedUser;
 
@@ -205,11 +205,6 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.incorrect-password"));
             }
 
-            if (request.NewPassword != request.ConfirmPassword)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.password-not-confirmed"));
-            }
-
             user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
             user.LastActivityAt = DateTime.UtcNow;
 
@@ -221,7 +216,7 @@ namespace EventCartographer.Server.Controllers
         [HttpPut("email")]
         public async Task<IActionResult> UpdateUserEmail(
             [FromQuery] string? locale,
-            [FromBody] UpdateUserEmailRequest request)
+            [FromForm] UpdateUserEmailRequest request)
         {
             User user = AuthorizedUser;
 
@@ -275,7 +270,7 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("delete")]
         public async Task<IActionResult> DeleteUser(
-            [FromBody] DeleteUserRequest request)
+            [FromForm] DeleteUserRequest request)
         {
             User? user = AuthorizedUser;
 

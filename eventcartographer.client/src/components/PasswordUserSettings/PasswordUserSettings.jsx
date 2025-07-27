@@ -12,27 +12,19 @@ const PasswordUserSettings = React.memo(() => {
     const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [updatingPassword, setUpdatingPassword] = React.useState(false);
 
-    const oldPasswordInputRef = React.useRef(null);
     const newPasswordInputRef = React.useRef(null);
     const confirmPasswordInputRef = React.useRef(null);
 
     const { theme } = useTheme();
 
-    async function updateUserPasswordRequest() {
+    async function updateUserPasswordRequest(e) {
         setUpdatingPassword(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/password`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                oldPassword: oldPasswordInputRef.current.value || null,
-                newPassword: newPasswordInputRef.current.value || null,
-                confirmPassword: confirmPasswordInputRef.current.value || null
-            })
+            body: new FormData(e.target)
         });
         const json = await response.json();
 
@@ -64,25 +56,39 @@ const PasswordUserSettings = React.memo(() => {
     }, []);
 
     return (
-        <div className={`${cl.element} ${cl[theme]}`}>
+        <form className={`${cl.element} ${cl[theme]}`}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (updatingPassword) return;
+                if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
+                    setMessages({ state: 'error', list: [t('settings.password.password-not-confirmed')] });
+                    return;
+                }
+                updateUserPasswordRequest(e);
+            }}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.password.header')}
                 </h3>
                 <input className={`${cl.element__input}`}
+                    name='oldPassword'
                     type="password"
                     placeholder={t('settings.password.old-password-input')}
                     maxLength="200"
-                    ref={oldPasswordInputRef} />
+                    required />
                 <input className={`${cl.element__input}`}
+                    name='newPassword'
                     type="password"
                     placeholder={t('settings.password.new-password-input')}
+                    minLength='6'
                     maxLength="200"
+                    required
                     ref={newPasswordInputRef} />
                 <input className={`${cl.element__input}`}
                     type="password"
                     placeholder={t('settings.password.confirm-new-password-input')}
                     maxLength="200"
+                    required
                     ref={confirmPasswordInputRef} />
             </div>
             <BlockMessage
@@ -91,11 +97,7 @@ const PasswordUserSettings = React.memo(() => {
                 messages={messages.list} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
-                    onClick={() => {
-                        if (!updatingPassword) {
-                            updateUserPasswordRequest();
-                        }
-                    }}>
+                    type='submit'>
                     {
                         updatingPassword ?
                             <LoadingAnimation
@@ -110,7 +112,7 @@ const PasswordUserSettings = React.memo(() => {
                     }
                 </button>
             </div>
-        </div>
+        </form>
     );
 });
 

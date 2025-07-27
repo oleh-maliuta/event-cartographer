@@ -72,6 +72,7 @@
             "new-password-input": "New password",
             "confirm-new-password-input": "Confirm new password",
             "apply": "Apply",
+            "password-not-confirmed": "New password not confirmed.",
             "password-is-changed": "Password is changed."
         },
         "delete-account": {
@@ -245,9 +246,6 @@
                     "required": "New password is required.",
                     "max-length": "New password is too long.",
                     "min-length": "New password is too short."
-                },
-                "confirm-password": {
-                    "required": "New password confirmation is required."
                 }
             }
         },
@@ -271,8 +269,7 @@
                 },
                 "update-user-password": {
                     "invalid-old-password": "Invalid old password.",
-                    "incorrect-password": "New password must include lower case letters, upper case letters and digits.",
-                    "password-not-confirmed": "Password is not confirmed."
+                    "incorrect-password": "New password must include lower case letters, upper case letters and digits."
                 },
                 "update-user-email": {
                     "current-address": "This is your current email address.",

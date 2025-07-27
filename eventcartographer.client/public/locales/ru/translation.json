@@ -72,6 +72,7 @@
             "new-password-input": "Новый пароль",
             "confirm-new-password-input": "Подтверждение нового пароля",
             "apply": "Применить",
+            "password-not-confirmed": "Новый пароль не подтверждён.",
             "password-is-changed": "Пароль изменён."
         },
         "delete-account": {
@@ -245,9 +246,6 @@
                     "required": "Требуется новый пароль.",
                     "max-length": "Новый пароль слишком длинный.",
                     "min-length": "Новый пароль слишком короткий."
-                },
-                "confirm-password": {
-                    "required": "Требуется подтверждение нового пароля."
                 }
             }
         },
@@ -271,8 +269,7 @@
                 },
                 "update-user-password": {
                     "invalid-old-password": "Старый пароль неверный.",
-                    "incorrect-password": "Новый пароль должен включать строчные буквы, заглавные буквы и цифры.",
-                    "password-not-confirmed": "Пароль не подтверждён."
+                    "incorrect-password": "Новый пароль должен включать строчные буквы, заглавные буквы и цифры."
                 },
                 "update-user-email": {
                     "current-address": "Это ваш текущий адрес электронной почты.",

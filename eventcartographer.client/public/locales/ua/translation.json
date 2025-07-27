@@ -72,6 +72,7 @@
             "new-password-input": "Новий пароль",
             "confirm-new-password-input": "Підтвердження нового пароля",
             "apply": "Застосувати",
+            "password-not-confirmed": "Новий пароль не підтверджено.",
             "password-is-changed": "Пароль змінений."
         },
         "delete-account": {
@@ -245,9 +246,6 @@
                     "required": "Потрібен новий пароль.",
                     "max-length": "Новий пароль занадто довгий.",
                     "min-length": "Новий пароль занадто короткий."
-                },
-                "confirm-password": {
-                    "required": "Потрібне підтвердження нового пароля."
                 }
             }
         },
@@ -271,8 +269,7 @@
                 },
                 "update-user-password": {
                     "invalid-old-password": "Старий пароль неправильний.",
-                    "incorrect-password": "Новий пароль повинен містити малі літери, великі літери та цифри.",
-                    "password-not-confirmed": "Пароль не підтверджено."
+                    "incorrect-password": "Новий пароль повинен містити малі літери, великі літери та цифри."
                 },
                 "update-user-email": {
                     "current-address": "Це ваша поточна адреса електронної пошти.",

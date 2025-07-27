@@ -12,23 +12,16 @@ const DeleteUserAccountSettings = React.memo(() => {
     const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [deletingAccount, setDeletingAccount] = React.useState(false);
 
-    const confirmAccountDeletionInputRef = React.useRef(null);
-
     const { theme } = useTheme();
 
-    async function deleteAccountRequest() {
+    async function deleteAccountRequest(e) {
         setDeletingAccount(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/delete`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                password: confirmAccountDeletionInputRef.current.value || null,
-            })
+            body: new FormData(e.target)
         });
         const json = await response.json();
 
@@ -60,7 +53,12 @@ const DeleteUserAccountSettings = React.memo(() => {
     }, []);
 
     return (
-        <div className={`${cl.element} ${cl[theme]}`}>
+        <form className={`${cl.element} ${cl[theme]}`}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (deletingAccount) return;
+                deleteAccountRequest(e);
+            }}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.delete-account.header')}
@@ -69,10 +67,11 @@ const DeleteUserAccountSettings = React.memo(() => {
                     {t('settings.delete-account.description')}
                 </p>
                 <input className={`${cl.element__input}`}
+                    name='password'
                     type="password"
                     placeholder={t('settings.delete-account.password-input')}
                     maxLength="200"
-                    ref={confirmAccountDeletionInputRef} />
+                    required />
             </div>
             <BlockMessage
                 style={blockMessageStyle}
@@ -80,11 +79,7 @@ const DeleteUserAccountSettings = React.memo(() => {
                 messages={messages.list} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__delete_account}`}
-                    onClick={() => {
-                        if (!deletingAccount) {
-                            deleteAccountRequest();
-                        }
-                    }}>
+                    type='submit'>
                     {
                         deletingAccount ?
                             <LoadingAnimation
@@ -99,7 +94,7 @@ const DeleteUserAccountSettings = React.memo(() => {
                     }
                 </button>
             </div>
-        </div>
+        </form>
     );
 });
 

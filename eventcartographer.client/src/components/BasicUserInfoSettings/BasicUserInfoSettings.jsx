@@ -93,7 +93,12 @@ const BasicUserInfoSettings = React.memo(() => {
     }
 
     return (
-        <div className={`${cl.basic_info} ${cl[theme]}`}>
+        <form className={`${cl.basic_info} ${cl[theme]}`}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (savingChangesForUserInfo) return;
+                updateUserInfoRequest();
+            }}>
             <div className={`${cl.basic_info__header__cont}`}>
                 <h2 className={`${cl.basic_info__header}`}>
                     {t('settings.basic-info.header')}
@@ -106,8 +111,10 @@ const BasicUserInfoSettings = React.memo(() => {
                 <input className={cl.data_input__input}
                     type="text"
                     placeholder={t('settings.basic-info.username-input')}
+                    minLength='3'
                     maxLength="100"
                     defaultValue={userInfo.name}
+                    required
                     ref={usernameInputRef} />
             </div>
             <div className={cl.data_input}>
@@ -123,11 +130,7 @@ const BasicUserInfoSettings = React.memo(() => {
                 state={messages.state}
                 messages={messages.list} />
             <button className={cl.save_changes_button}
-                onClick={() => {
-                    if (!savingChangesForUserInfo) {
-                        updateUserInfoRequest();
-                    }
-                }}>
+                type='submit'>
                 {
                     savingChangesForUserInfo ?
                         <LoadingAnimation
@@ -144,7 +147,7 @@ const BasicUserInfoSettings = React.memo(() => {
             <div className={`${cl.normal_sep_line__cont}`}>
                 <div className={`${cl.normal_sep_line}`} />
             </div>
-        </div>
+        </form>
     );
 });
 

@@ -12,25 +12,16 @@ const EmailAddressUserSettings = React.memo(() => {
     const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [updatingEmail, setUpdatingEmail] = React.useState(false);
 
-    const passwordInputRef = React.useRef(null);
-    const newEmailInputRef = React.useRef(null);
-
     const { theme } = useTheme();
 
-    async function updateUserEmailRequest() {
+    async function updateUserEmailRequest(e) {
         setUpdatingEmail(true);
 
         const response = await fetch(`${HOST}:${API_PORT}/api/users/email?locale=${i18n.language}`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                password: passwordInputRef.current.value || null,
-                email: newEmailInputRef.current.value || null
-            })
+            body: new FormData(e.target)
         });
         const json = await response.json();
 
@@ -62,7 +53,12 @@ const EmailAddressUserSettings = React.memo(() => {
     }, []);
 
     return (
-        <div className={`${cl.element} ${cl[theme]}`}>
+        <form className={`${cl.element} ${cl[theme]}`}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (updatingEmail) return;
+                updateUserEmailRequest(e);
+            }}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.email-address.header')}
@@ -71,15 +67,17 @@ const EmailAddressUserSettings = React.memo(() => {
                     {t('settings.email-address.description')}
                 </p>
                 <input className={`${cl.element__input}`}
+                    name='password'
                     type="password"
                     placeholder={t('settings.email-address.password-input')}
                     maxLength="200"
-                    ref={passwordInputRef} />
+                    required />
                 <input className={`${cl.element__input}`}
+                    name='email'
                     type="email"
                     placeholder={t('settings.email-address.new-email-address-input')}
                     maxLength="320"
-                    ref={newEmailInputRef} />
+                    required />
             </div>
             <BlockMessage
                 style={blockMessageStyle}
@@ -87,11 +85,7 @@ const EmailAddressUserSettings = React.memo(() => {
                 messages={messages.list} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
-                    onClick={() => {
-                        if (!updatingEmail) {
-                            updateUserEmailRequest();
-                        }
-                    }}>
+                    type='submit'>
                     {
                         updatingEmail ?
                             <LoadingAnimation
@@ -106,7 +100,7 @@ const EmailAddressUserSettings = React.memo(() => {
                     }
                 </button>
             </div>
-        </div>
+        </form>
     );
 });
 
