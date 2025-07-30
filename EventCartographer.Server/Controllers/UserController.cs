@@ -41,6 +41,7 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-username"));
             }
 
+            request.Email = request.Email?.ToLower();
             if (await DB.Users.AnyAsync(x => x.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
@@ -51,7 +52,10 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
             }
 
-            string token = StringTool.RandomString(256);
+            string token = await StringTool.RandomTokenAsync(256, async id =>
+                await DB.ActivationCodes
+                .Include(x => x.User)
+                .AnyAsync(x => x.User.Email == request.Email));
 
             try
             {
@@ -97,8 +101,17 @@ namespace EventCartographer.Server.Controllers
         public async Task<IActionResult> SignIn(
             [FromForm] SignInRequest request)
         {
-            User? user = await DB.Users.SingleOrDefaultAsync(
-                x => x.Name == request.UsernameOrEmail || x.Email == request.UsernameOrEmail);
+            User? user;
+
+            if (request.UsernameOrEmail?.Contains('@') == true)
+            {
+                request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
+                user = await DB.Users.SingleOrDefaultAsync(
+                    x => x.Email == request.UsernameOrEmail);
+            } else {
+                user = await DB.Users.SingleOrDefaultAsync(
+                    x => x.Name == request.UsernameOrEmail);
+            }
 
             if (user == null)
             {
@@ -220,6 +233,12 @@ namespace EventCartographer.Server.Controllers
         {
             User user = AuthorizedUser;
 
+            if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action.StartsWith("change-email")).AnyAsync())
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.already-exists"));
+            }
+
+            request.Email = request.Email?.ToLower();
             if (user.Email == request.Email)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
@@ -235,7 +254,8 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
             }
 
-            string token = StringTool.RandomString(256);
+            string token = await StringTool.RandomTokenAsync(256, async id =>
+                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
 
             try
             {
@@ -270,6 +290,7 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("delete")]
         public async Task<IActionResult> DeleteUser(
+            [FromQuery] string? locale,
             [FromForm] DeleteUserRequest request)
         {
             User? user = AuthorizedUser;
@@ -279,8 +300,39 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.invalid-password"));
             }
 
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            DB.Users.Remove(user);
+            if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action == "delete-user").AnyAsync())
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.already-exists"));
+            }
+
+            string token = await StringTool.RandomTokenAsync(256, async id =>
+                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+
+            try
+            {
+                await _emailService.SendEmailUseTemplateAsync(
+                    email: user.Email,
+                    templateName: "delete_account_confirm.html",
+                    parameters: new Dictionary<string, string>
+                    {
+                        { "username", user.Name },
+                        { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(user.Email)}?token={token}&locale={locale}" }
+                    },
+                    locale ?? "en");
+            }
+            catch (Exception)
+            {
+                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
+            }
+
+            await DB.ActivationCodes.AddAsync(new()
+            {
+                UserId = user.Id!,
+                User = user,
+                Code = token,
+                Action = "delete-user",
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            });
 
             await DB.SaveChangesAsync();
             return Ok(new BaseResponse.SuccessResponse(null));
@@ -291,8 +343,19 @@ namespace EventCartographer.Server.Controllers
             [FromQuery] string? locale,
             [FromForm] SendResetPasswordPermissionRequest request)
         {
-            User? user = await DB.Users.SingleOrDefaultAsync(
-                x => x.Name == request.UsernameOrEmail || x.Email == request.UsernameOrEmail);
+            User? user;
+
+            if (request.UsernameOrEmail?.Contains('@') == true)
+            {
+                request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
+                user = await DB.Users.SingleOrDefaultAsync(
+                    x => x.Email == request.UsernameOrEmail);
+            }
+            else
+            {
+                user = await DB.Users.SingleOrDefaultAsync(
+                    x => x.Name == request.UsernameOrEmail);
+            }
 
             if (user == null)
             {
@@ -308,7 +371,8 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
             }
 
-            string token = StringTool.RandomString(256);
+            string token = await StringTool.RandomTokenAsync(256, async id =>
+                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
 
             try
             {
@@ -453,7 +517,7 @@ namespace EventCartographer.Server.Controllers
             [FromQuery(Name = "token")] string? token)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(
-                x => x.Email == WebUtility.UrlDecode(email));
+                x => x.Email == WebUtility.UrlDecode(email).ToLower());
 
             if (user == null)
             {
@@ -485,19 +549,26 @@ namespace EventCartographer.Server.Controllers
             }
 
             string[] actionInfo = activationCode.Action.Split(',');
-            string message;
+            string messageCode;
 
             switch (actionInfo[0])
             {
                 case "confirm-registration":
                     user.IsActivated = true;
+                    user.LastActivityAt = DateTime.UtcNow;
+                    messageCode = "registration-completed";
                     DB.ActivationCodes.Remove(activationCode);
-                    message = _localizationService.GetString("registration-completed", locale ?? "en");
                     break;
                 case "change-email":
-                    user.Email = actionInfo[1];
+                    user.Email = actionInfo[1].ToLower();
+                    user.LastActivityAt = DateTime.UtcNow;
+                    messageCode = "email-confirmed";
                     DB.ActivationCodes.Remove(activationCode);
-                    message = _localizationService.GetString("email-confirmed", locale ?? "en");
+                    break;
+                case "delete-user":
+                    messageCode = "account-deleted";
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    DB.Users.Remove(user);
                     break;
                 default:
                     return MessageContentResult(
@@ -506,13 +577,11 @@ namespace EventCartographer.Server.Controllers
                         _localizationService.GetString("unknown-action", locale ?? "en"));
             }
 
-            user.LastActivityAt = DateTime.UtcNow;
-
             await DB.SaveChangesAsync();
             return MessageContentResult(
                 true,
                 _localizationService.GetString("success", locale ?? "en"),
-                _localizationService.GetString(message, locale ?? "en"));
+                _localizationService.GetString(messageCode, locale ?? "en"));
         }
     }
 }

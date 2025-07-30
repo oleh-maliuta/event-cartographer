@@ -1,13 +1,13 @@
 import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
-import { API_PORT, CLIENT_PORT, HOST } from '../../utils/constants';
+import { API_PORT, HOST } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
 const DeleteUserAccountSettings = React.memo(() => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [messages, setMessages] = React.useState({ state: 'success', list: [] });
     const [deletingAccount, setDeletingAccount] = React.useState(false);
@@ -17,7 +17,7 @@ const DeleteUserAccountSettings = React.memo(() => {
     async function deleteAccountRequest(e) {
         setDeletingAccount(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/delete`, {
+        const response = await fetch(`${HOST}:${API_PORT}/api/users/delete?locale=${i18n.language}`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
@@ -26,7 +26,7 @@ const DeleteUserAccountSettings = React.memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            window.location.replace(`${HOST}:${CLIENT_PORT}/sign-in`);
+            setMessages({ state: 'success', list: [t('settings.delete-account.email-is-sent')] })
         } else if (!response.ok) {
             if (json.message) {
                 setMessages({ state: 'error', list: [t(json.message)] });

@@ -3,6 +3,7 @@
   "fail": "Fail",
   "registration-completed": "Registration has been successfully completed! Now you are able to sign in to the account.",
   "email-confirned": "Your new email address has been successfully confirmed!",
+  "account-deleted": "Your account has been successfully deleted!",
   "link-issue": "The link is expired or unavailable.",
   "unknown-action": "Unknown action.",
   "user-not-found": "User not found."

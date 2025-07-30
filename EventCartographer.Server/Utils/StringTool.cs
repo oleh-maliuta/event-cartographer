@@ -2,12 +2,22 @@
 {
     public static class StringTool
     {
-        public static string RandomString(int length)
+        private static readonly string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+        private static readonly Random _random = new();
+
+        public static async Task<string> RandomTokenAsync(
+            int length,
+            Func<string, Task<bool>> existsInDatabase)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            Random random = new();
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            string token;
+
+            do {
+                token = new string([..
+                    Enumerable.Repeat(chars, length)
+                    .Select(x => x[_random.Next(x.Length)])]);
+            } while (await existsInDatabase(token));
+
+            return token;
         }
     }
 }
