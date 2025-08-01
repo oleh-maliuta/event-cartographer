@@ -439,7 +439,12 @@ const MainLayout = () => {
         const isForAdding = currentMarkerMenu === 'add';
 
         return (
-            <>
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                if (updatingMarkerList) return;
+                if (isForAdding) { addMarkerRequest(); }
+                else { editMarkerRequest(); }
+            }}>
                 <div className={cl.editing_marker_coordinates}>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_latitude}`}>
                         <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>
@@ -449,6 +454,7 @@ const MainLayout = () => {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
                             value={isForAdding ? newMarker.latitude : editingMarker.latitude}
                             type='number'
+                            required
                             ref={latitudeInputRef}
                             onChange={(e) => {
                                 if (isForAdding) {
@@ -475,6 +481,7 @@ const MainLayout = () => {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
                             value={isForAdding ? newMarker.longitude : editingMarker.longitude}
                             type='number'
+                            required
                             ref={longitudeInputRef}
                             onChange={(e) => {
                                 if (isForAdding) {
@@ -503,6 +510,7 @@ const MainLayout = () => {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
                             defaultValue={isForAdding ? undefined : getDateTimeLocalFormat(getLocalTime(editingMarker.startsAt))}
+                            required
                             ref={startsAtInputRef} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
@@ -512,6 +520,7 @@ const MainLayout = () => {
                         <select
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
                             defaultValue={isForAdding ? undefined : editingMarker.importance}
+                            required
                             ref={importanceInputRef}>
                             <option className={cl.editing_marker_importance_input__low_value} value='low'>
                                 {t('map.low-importance-value')}
@@ -534,6 +543,7 @@ const MainLayout = () => {
                         type='text'
                         maxLength='100'
                         defaultValue={isForAdding ? undefined : editingMarker.title}
+                        required
                         ref={titleInputRef} />
                 </div>
                 <div className={`${cl.editing_marker_description}`}>
@@ -562,11 +572,7 @@ const MainLayout = () => {
                                 {t('map.cancel-marker-adding')}
                             </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_add_button}`}
-                                onClick={() => {
-                                    if (!updatingMarkerList) {
-                                        addMarkerRequest();
-                                    }
-                                }}>
+                                type="submit">
                                 {
                                     updatingMarkerList ?
                                         <LoadingAnimation
@@ -592,11 +598,7 @@ const MainLayout = () => {
                                 {t('map.go-to-the-list')}
                             </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_edit_button}`}
-                                onClick={() => {
-                                    if (!updatingMarkerList) {
-                                        editMarkerRequest();
-                                    }
-                                }}>
+                                type="submit">
                                 {
                                     updatingMarkerList ?
                                         <LoadingAnimation
@@ -612,7 +614,7 @@ const MainLayout = () => {
                             </button>
                         </div>
                 }
-            </>
+            </form>
         );
     }
 

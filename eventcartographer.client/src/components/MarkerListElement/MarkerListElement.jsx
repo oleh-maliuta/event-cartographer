@@ -11,7 +11,7 @@ const MarkerListElement = React.memo(({
 }) => {
     const { theme } = useTheme();
 
-    function eventPassed(startsAt) {
+    function isPastEvent(startsAt) {
         const processedDateTime = new Date(startsAt);
         processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
         return processedDateTime < new Date();
@@ -73,7 +73,7 @@ const MarkerListElement = React.memo(({
                 </span>
             </div>
             <div className={`${cl.marker_list_element__starts_at__cont}`}>
-                <span className={`${cl.marker_list_element__starts_at} ${eventPassed(marker.startsAt) ? cl.passed : ''}`}>
+                <span className={`${cl.marker_list_element__starts_at} ${isPastEvent(marker.startsAt) ? cl.passed : ''}`}>
                     {getLocalTime(marker.startsAt).toLocaleString()}
                 </span>
             </div>

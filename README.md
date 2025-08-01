@@ -38,7 +38,7 @@
 ## Usage
 
 1. Install **Microsoft Visual Studio** (2022 version recommended) with all plugins necessary for working with ASP.NET projects.
-2. Install **Node JS** 20.15.0 version.
+2. Install **Node JS**.
 3. Open the project in **Microsoft Visual Studio**.
 4. Open [EventCartographer.Server/appsettings.json](EventCartographer.Server/appsettings.json) file then add an email address and a password for the email address account to the required fields. This data will be used for the email service to send messages to the users.
 5. If you want to change the web client host from `localhost`, you need to change `WebClientHost` constant in [EventCartographer.Server/Constants.cs](EventCartographer.Server/Constants.cs).
