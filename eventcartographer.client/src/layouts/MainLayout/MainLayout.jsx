@@ -457,21 +457,9 @@ const MainLayout = () => {
                             required
                             ref={latitudeInputRef}
                             onChange={(e) => {
-                                if (isForAdding) {
-                                    setNewMarker(p => {
-                                        let newP = { ...p };
-                                        newP.latitude = e.target.value;
-                                        return newP;
-                                    });
-                                } else {
-                                    setEditingMarker(p => {
-                                        let newP = { ...p };
-                                        newP.latitude = e.target.value;
-                                        return newP;
-                                    });
-                                }
-                            }}
-                        />
+                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                                onChangeAction(p => { return { ...p, latitude: e.target.value }; });
+                            }} />
                     </div>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_longitude}`}>
                         <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
@@ -484,21 +472,9 @@ const MainLayout = () => {
                             required
                             ref={longitudeInputRef}
                             onChange={(e) => {
-                                if (isForAdding) {
-                                    setNewMarker(p => {
-                                        let newP = { ...p };
-                                        newP.longitude = e.target.value;
-                                        return newP;
-                                    });
-                                } else {
-                                    setEditingMarker(p => {
-                                        let newP = { ...p };
-                                        newP.longitude = e.target.value;
-                                        return newP;
-                                    });
-                                }
-                            }}
-                        />
+                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                                onChangeAction(p => { return { ...p, longitude: e.target.value }; });
+                            }} />
                     </div>
                 </div>
                 <div className={cl.editing_marker_time_and_importance}>
@@ -509,9 +485,13 @@ const MainLayout = () => {
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
-                            defaultValue={isForAdding ? undefined : getDateTimeLocalFormat(getLocalTime(editingMarker.startsAt))}
+                            value={getDateTimeLocalFormat(getLocalTime(isForAdding ? newMarker.startsAt : editingMarker.startsAt)) || ''}
                             required
-                            ref={startsAtInputRef} />
+                            ref={startsAtInputRef}
+                            onChange={(e) => {
+                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                                onChangeAction(p => { return { ...p, startsAt: getUtcTime(e.target.value) || '' }; });
+                            }} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
                         <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
@@ -519,9 +499,13 @@ const MainLayout = () => {
                         </p>
                         <select
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
-                            defaultValue={isForAdding ? undefined : editingMarker.importance}
+                            value={isForAdding ? newMarker.importance : editingMarker.importance}
                             required
-                            ref={importanceInputRef}>
+                            ref={importanceInputRef}
+                            onChange={(e) => {
+                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                                onChangeAction(p => { return { ...p, importance: e.target.value }; });
+                            }}>
                             <option className={cl.editing_marker_importance_input__low_value} value='low'>
                                 {t('map.low-importance-value')}
                             </option>
@@ -542,9 +526,13 @@ const MainLayout = () => {
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
                         type='text'
                         maxLength='100'
-                        defaultValue={isForAdding ? undefined : editingMarker.title}
+                        value={isForAdding ? newMarker.title || '' : editingMarker.title}
                         required
-                        ref={titleInputRef} />
+                        ref={titleInputRef}
+                        onChange={(e) => {
+                            const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                            onChangeAction(p => { return { ...p, title: e.target.value }; });
+                        }} />
                 </div>
                 <div className={`${cl.editing_marker_description}`}>
                     <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}}`}>
@@ -553,8 +541,12 @@ const MainLayout = () => {
                     <textarea
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
                         maxLength='5000'
-                        defaultValue={isForAdding ? undefined : editingMarker.description}
-                        ref={descriptionInputRef}></textarea>
+                        value={isForAdding ? newMarker.description || '' : editingMarker.description || ''}
+                        ref={descriptionInputRef}
+                        onChange={(e) => {
+                            const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
+                            onChangeAction(p => { return { ...p, description: e.target.value }; });
+                        }}></textarea>
                 </div>
                 <BlockMessage
                     style={markerEditingBlockMessageStyle}
@@ -810,6 +802,21 @@ const MainLayout = () => {
                             <p className={`${cl.marker_popup__starts_at} ${eventIsPast(el.startsAt) ? cl.passed : ''}`}>
                                 {getLocalTime(el.startsAt).toLocaleString()}
                             </p>
+                            <div className={cl.marker_popup__actions}>
+                                <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
+                                    onClick={() => {
+                                        setMarkerPanelVisibility(true);
+                                        editMarker(el);
+                                    }}>
+                                    <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="edit" />
+                                </button>
+                                <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
+                                    onClick={() => { prepareToRemoveMarker(el); }}>
+                                    <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="delete" />
+                                </button>
+                            </div>
                         </div>
                     </Popup>
                 </Marker>
@@ -817,7 +824,7 @@ const MainLayout = () => {
         });
 
         return result;
-    }, [newMarker, markersForMap, t, getImportanceIcon]);
+    }, [newMarker, markersForMap, t, getImportanceIcon, editMarker, prepareToRemoveMarker]);
 
     React.useEffect(() => {
         loadUserInfo();

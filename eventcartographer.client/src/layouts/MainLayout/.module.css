@@ -102,11 +102,13 @@
 }
 
 .marker_popup__cont {
+    container-type: normal;
+    container-name: marker_popup__cont;
     overflow: hidden;
 }
 
 .marker_popup__main {
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
     padding-right: 3px;
     scrollbar-color: gray transparent;
@@ -131,6 +133,54 @@
         color: red;
         font-weight: bold;
     }
+}
+
+.marker_popup__actions {
+    display: flex;
+    justify-content: end;
+}
+
+.marker_popup__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border: none;
+}
+
+.marker_popup__edit_button {
+    background-color: rgb(255, 162, 0);
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: rgb(191, 121, 0);
+    }
+}
+
+.marker_popup__delete_button {
+    background-color: rgb(212, 0, 0);
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: rgb(136, 0, 0);
+    }
+}
+
+.marker_popup__button__img {
+    width: 70%;
+    height: 70%;
+}
+
+.marker_popup__edit_button__img {
+    content: url(../../assets/edit.png);
+}
+
+.marker_popup__delete_button__img {
+    content: url(../../assets/delete.png);
 }
 
 .right_side_menu {

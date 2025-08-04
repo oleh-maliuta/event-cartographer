@@ -33,23 +33,17 @@ const MarkerListElement = React.memo(({
             <div className={`${cl.marker_list_element__importance} ${cl[marker.importance]}`} />
             <div className={`${cl.marker_list_element__buttons}`}>
                 <button className={`${cl.marker_list_element__navigate_button} ${cl.marker_list_element__button}`}
-                    onClick={() => {
-                        navigate(marker);
-                    }}>
+                    onClick={() => { navigate(marker); }}>
                     <img className={`${cl.marker_list_element__navigate_button__img} ${cl.marker_list_element__button__img}`}
                         alt="navigate" />
                 </button>
                 <button className={`${cl.marker_list_element__edit_button} ${cl.marker_list_element__button}`}
-                    onClick={() => {
-                        edit(marker);
-                    }}>
+                    onClick={() => { edit(marker); }}>
                     <img className={`${cl.marker_list_element__edit_button__img} ${cl.marker_list_element__button__img}`}
                         alt="edit" />
                 </button>
                 <button className={`${cl.marker_list_element__delete_button} ${cl.marker_list_element__button}`}
-                    onClick={() => {
-                        remove(marker);
-                    }}>
+                    onClick={() => { remove(marker); }}>
                     <img className={`${cl.marker_list_element__delete_button__img} ${cl.marker_list_element__button__img}`}
                         alt="delete" />
                 </button>
