@@ -847,6 +847,7 @@ const MainLayout = () => {
                     <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
                 </div>
                 <button className={`${cl.right_side_menu__marker_menu_button}`}
+                    type="button"
                     onClick={() => {
                         if (!isMarkerPanelVisible && currentMarkerMenu === null) {
                             setMarkerMenu('list');
@@ -857,11 +858,13 @@ const MainLayout = () => {
                         alt='marker menu' />
                 </button>
                 <button className={`${cl.right_side_menu__settings_button}`}
+                    type="button"
                     onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}/settings`}>
                     <img className={`${cl.right_side_menu__settings_button__img}`}
                         alt='settings' />
                 </button>
                 <button className={cl.right_side_menu__log_out_button}
+                    type="button"
                     onClick={() => {
                         if (!loggingOut) {
                             logOutRequest();
@@ -894,11 +897,23 @@ const MainLayout = () => {
                 }
             </div>
             <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
+                <button className={`${cl.marker_panel__marker_menu_button}`}
+                    type="button"
+                    onClick={() => {
+                        if (!isMarkerPanelVisible && currentMarkerMenu === null) {
+                            setMarkerMenu('list');
+                        }
+                        setMarkerPanelVisibility(p => !p);
+                    }}>
+                    <img className={`${cl.marker_panel__marker_menu_button__img}`}
+                        alt='marker menu' />
+                </button>
                 <div className={`${cl.marker_panel__top_menu}`}>
                     <button className={
                         `${cl.marker_panel__top_menu__option} 
                             ${newMarker === null ? cl.unavailable : ''} 
                             ${currentMarkerMenu === 'add' ? cl.current : ''}`}
+                        type="button"
                         onClick={() => {
                             if (currentMarkerMenu === 'list') {
                                 setMarkerListMessages([]);
@@ -914,6 +929,7 @@ const MainLayout = () => {
                         className={
                             `${cl.marker_panel__top_menu__option} 
                             ${['list', 'edit'].includes(currentMarkerMenu) ? cl.current : ''}`}
+                        type="button"
                         onClick={() => {
                             if (currentMarkerMenu === 'add') {
                                 setEditMarkerMessages([]);

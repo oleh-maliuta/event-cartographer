@@ -187,7 +187,7 @@
     position: absolute;
     top: 20px;
     right: calc(390px + 5vw + 20px);
-    transition: ease 0.4s;
+    transition: ease 0.3s;
 
     &.hided {
         right: 10px;
@@ -316,7 +316,7 @@
     overflow-y: scroll;
     padding-left: 10px;
     padding-bottom: 10px;
-    transition: ease 0.4s;
+    transition: ease 0.3s;
 
     &::-webkit-scrollbar {
         display: none;
@@ -325,6 +325,41 @@
     &.hided {
         right: calc((410px + 5vw) * -1);
     }
+
+    @media screen and (width < 480px) {
+        &:not(.hided) {
+            width: calc(100% - 10px);
+        }
+    }
+}
+
+.marker_panel__marker_menu_button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color: var(--marker-panel-button-color);
+    border: none;
+    margin-top: 10px;
+
+    &:hover {
+        background-color: var(--marker-panel-button-hover-color);
+    }
+
+    @media screen and (width >= 480px) {
+        display: none;
+    }
+}
+
+.marker_panel__marker_menu_button__img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    content: url(../../assets/menu.png);
+    filter: var(--marker-panel-button-image-filter);
 }
 
 .marker_panel__top_menu {
@@ -432,6 +467,7 @@
 
 .marker_list_sort_and_filter_cont {
     display: flex;
+    flex-wrap: wrap;
     margin-top: 10px;
 }
 
@@ -596,6 +632,10 @@
     grid-template-columns: 1fr 1fr;
     grid-gap: 8px;
     margin-top: 7px;
+
+    @media screen and (width < 400px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .marker_list_loading {

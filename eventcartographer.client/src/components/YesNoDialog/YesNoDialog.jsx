@@ -53,11 +53,13 @@ const YesNoDialog = React.memo(({
             <div className={`${cl.yes_no_dialog__control}`}>
                 <div className={`${cl.yes_no_dialog__control__buttons}`}>
                     <button className={`${cl.yes_no_dialog__control__buttons__no}`}
+                        type="button"
                         disabled={processing}
                         onClick={noButtonClick}>
                         {t('yes-no-dialog.no-button')}
                     </button>
                     <button className={`${cl.yes_no_dialog__control__buttons__yes}`}
+                        type="button"
                         disabled={processing}
                         onClick={yesButtonClick}>
                         {t('yes-no-dialog.yes-button')}
