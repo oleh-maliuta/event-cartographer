@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="event-cartographer.client/event-cartographer.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="event-cartographer.Server/event-cartographer.Server.csproj" />
+</Solution>

@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "MWjo1q3kznM=",
+  "success": true,
+  "projectFilePath": "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\event-cartographer.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\olehm\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.6\\microsoft.aspnetcore.openapi.10.0.6.nupkg.sha512",
+    "C:\\Users\\olehm\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\10.0.7\\microsoft.aspnetcore.spaproxy.10.0.7.nupkg.sha512",
+    "C:\\Users\\olehm\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\olehm\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.23.0\\microsoft.visualstudio.azure.containers.tools.targets.1.23.0.nupkg.sha512"
+  ],
+  "logs": []
+}
