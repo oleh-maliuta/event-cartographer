@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\event-cartographer.Server.csproj": {}
+    "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\event-cartographer.Server.csproj": {}
   },
   "projects": {
-    "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\event-cartographer.Server.csproj": {
+    "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\event-cartographer.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\event-cartographer.Server.csproj",
+        "projectUniqueName": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\event-cartographer.Server.csproj",
         "projectName": "event-cartographer.Server",
-        "projectPath": "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\event-cartographer.Server.csproj",
+        "projectPath": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\event-cartographer.Server.csproj",
         "packagesPath": "C:\\Users\\olehm\\.nuget\\packages\\",
-        "outputPath": "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\obj\\",
+        "outputPath": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -60,9 +60,33 @@
               "target": "Package",
               "version": "[10.*-*, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.23.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.1.7, )"
             }
           },
           "imports": [
@@ -84,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

@@ -10,8 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "i18next": "^26.0.8",
+    "i18next-http-backend": "^3.0.6",
+    "leaflet": "^1.9.4",
+    "prop-types": "^15.8.1",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "react-i18next": "^17.0.6",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("event-cartographer.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64e182cbe0b2983ab0ce1bcf4a9b6d9f1ba6ae0e")]
 [assembly: System.Reflection.AssemblyProductAttribute("event-cartographer.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("event-cartographer.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,330 @@
+{
+    "general": {
+        "server-error": "Помилка сервера."
+    },
+    "sign-in": {
+        "panel-header": "Вхід",
+        "username-input": "Ім'я користувача або пошта",
+        "password-input": "Пароль",
+        "submit": "Відправити",
+        "sign-up-link": "Зареєструватися",
+        "forgot-password": "Забули пароль?",
+        "reset-password-modal-window": {
+            "header": "Скидання пароля",
+            "description": "Введіть ім'я користувача або пошту вашого облікового запису, щоб надіслати електронний лист з дозволом на перезапис пароля.",
+            "username-or-email-input": "Ім'я користувача або пошта",
+            "cancel": "Скасувати",
+            "send-mail": "Відправити лист",
+            "email-is-sent": "Лист відправлено."
+        }
+    },
+    "sign-up": {
+        "panel-header": "Реєстрація",
+        "username-input": "Ім'я користувача",
+        "email-address-input": "Адреса електронної пошти",
+        "password-input": "Пароль",
+        "confirm-password-input": "Підтвердження пароля",
+        "create-account": "Створити обліковий запис",
+        "password-not-confirmed": "Пароль не підтверджено.",
+        "sign-in-link": "Вхід",
+        "email-is-sent": "На вашу адресу електронної пошти надіслано листа для підтвердження."
+    },
+    "reset-password": {
+        "panel-header": "Скидання пароля",
+        "password-input": "Пароль",
+        "confirm-password-input": "Підтвердження пароля",
+        "submit": "Відправити",
+        "password-not-confirmed": "Пароль не підтверджено.",
+        "password-is-reset": "Пароль було перезаписано. Тепер ви можете використовувати його для входу."
+    },
+    "settings": {
+        "header": "Налаштування",
+        "security": "Безпека",
+        "basic-info": {
+            "header": "Основна інформація",
+            "username-input": "Ім'я користувача",
+            "permission-to-delete-past-events-input": "Автоматично видаляти минулі події",
+            "save-changes": "Зберегти зміни",
+            "changes-are-saved": "Зміни збережені."
+        },
+        "personalization": {
+            "header": "Персоналізація",
+            "language-input": "Мова",
+            "en-language-value": "English",
+            "ru-language-value": "Русский",
+            "ua-language-value": "Українська",
+            "theme-input": "Тема",
+            "device-theme-value": "Тема пристрою",
+            "light-theme-value": "Світла",
+            "dark-theme-value": "Темна"
+        },
+        "email-address": {
+            "header": "Змінити адресу електронної пошти",
+            "description": "Введіть свій пароль та нову адресу електронної пошти. Після цього ви отримаєте листа на свою нову адресу електронної пошти для його підтвердження.",
+            "password-input": "Пароль",
+            "new-email-address-input": "Нова адреса електронної пошти",
+            "apply": "Застосувати",
+            "email-is-sent": "Лист відправлено."
+        },
+        "password": {
+            "header": "Змінити пароль",
+            "old-password-input": "Старий пароль",
+            "new-password-input": "Новий пароль",
+            "confirm-new-password-input": "Підтвердження нового пароля",
+            "apply": "Застосувати",
+            "password-not-confirmed": "Новий пароль не підтверджено.",
+            "password-is-changed": "Пароль змінений."
+        },
+        "delete-account": {
+            "header": "Видалити обліковий запис",
+            "description": "Щоб видалити обліковий запис, вам потрібно ввести свій пароль нижче. Після цього ви отримаєте лист на свою адресу електронної пошти для підтвердження дії.",
+            "password-input": "Пароль",
+            "delete": "Видалити",
+            "email-is-sent": "Лист надіслано! Підтвердіть видалення."
+        }
+    },
+    "map": {
+        "search-markers-input": "Пошук",
+        "sorting-label": "Сортувати за:",
+        "sort-by-importance-value": "важливістю",
+        "sort-by-title-value": "заголовком",
+        "sort-by-time-value": "часом початку",
+        "importance-filter-title": "Важливість",
+        "low-importance-value": "Низька",
+        "medium-importance-value": "Середня",
+        "high-importance-value": "Висока",
+        "time-of-the-start-filter-title": "Час початку",
+        "marker-edit-latitude-label": "Шир.:",
+        "marker-edit-longitude-label": "Довг.:",
+        "marker-edit-starts-at-label": "Початок в:",
+        "marker-edit-importance-label": "Важливість:",
+        "marker-edit-title-label": "Заголовок:",
+        "marker-edit-description-label": "Опис:",
+        "add-marker": "Додати",
+        "cancel-marker-adding": "Відмінити",
+        "edit-marker": "Змінити",
+        "go-to-the-list": "Перейти до списку",
+        "remove-marker": {
+            "dialog-title": "Видалити маркер",
+            "dialog-description": "Ви впевнені, що хочете видалити цей маркер?"
+        }
+    },
+    "yes-no-dialog": {
+        "yes-button": "Так",
+        "no-button": "Ні"
+    },
+    "http": {
+        "request-errors": {
+            "accept-password-resetting": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                },
+                "token": {
+                    "required": "Потрібен токен."
+                }
+            },
+            "add-marker": {
+                "latitude": {
+                    "required": "Потрібно вказати значення широти."
+                },
+                "longitude": {
+                    "required": "Потрібно вказати значення довготи."
+                },
+                "importance": {
+                    "required": "Потрібно вказати важливість.",
+                    "importance-value": "Неправильне значення важливості."
+                },
+                "title": {
+                    "required": "Потрібен заголовок.",
+                    "max-length": "Заголовок занадто довгий.",
+                    "min-length": "Заголовок занадто короткий."
+                },
+                "description": {
+                    "max-length": "Опис занадто довгий."
+                },
+                "starts-at": {
+                    "required": "Необхідно вказати час початку події."
+                }
+            },
+            "delete-user": {
+                "password": {
+                    "required": "Потрібен пароль."
+                }
+            },
+            "reset-password": {
+                "username": {
+                    "required": "Потрібне ім'я користувача."
+                },
+                "new-password": {
+                    "required": "Потрібен новий пароль.",
+                    "max-length": "Новий пароль занадто довгий.",
+                    "min-length": "Новий пароль занадто короткий."
+                },
+                "token": {
+                    "required": "Потрібен токен."
+                }
+            },
+            "send-reset-password-permission": {
+                "username-or-email": {
+                    "required": "Потрібне ім'я користувача або електронна адреса."
+                }
+            },
+            "sign-in": {
+                "username-or-email": {
+                    "required": "Потрібне ім'я користувача або електронна адреса."
+                },
+                "password": {
+                    "required": "Потрібен пароль."
+                }
+            },
+            "sign-up": {
+                "username": {
+                    "required": "Потрібне ім'я користувача.",
+                    "max-length": "Ім'я користувача занадто довге.",
+                    "min-length": "Ім'я користувача занадто коротке.",
+                    "format": "Ім'я користувача не може містити '@'"
+                },
+                "email": {
+                    "required": "Потрібна електронна адреса.",
+                    "max-length": "Адреса електронної пошти занадто довга.",
+                    "email-address": "Адреса електронної пошти недійсна."
+                },
+                "password": {
+                    "required": "Потрібен пароль.",
+                    "max-length": "Пароль занадто довгий.",
+                    "min-length": "Пароль занадто короткий."
+                }
+            },
+            "update-marker": {
+                "latitude": {
+                    "required": "Потрібно вказати значення широти."
+                },
+                "longitude": {
+                    "required": "Потрібно вказати значення довготи."
+                },
+                "importance": {
+                    "required": "Потрібно вказати важливість.",
+                    "importance-value": "Неправильне значення важливості."
+                },
+                "title": {
+                    "required": "Потрібен заголовок.",
+                    "max-length": "Заголовок занадто довгий.",
+                    "min-length": "Заголовок занадто короткий."
+                },
+                "description": {
+                    "max-length": "Опис занадто довгий."
+                },
+                "starts-at": {
+                    "required": "Необхідно вказати час початку події."
+                }
+            },
+            "update-user-email": {
+                "password": {
+                    "required": "Потрібен пароль."
+                },
+                "email": {
+                    "required": "Потрібна нова електронна адреса.",
+                    "max-length": "Адреса електронної пошти занадто довга.",
+                    "min-length": "Адреса електронної пошти занадто коротка.",
+                    "email-address": "Адреса електронної пошти недійсна." 
+                }
+            },
+            "update-user-info": {
+                "username": {
+                    "required": "Потрібне ім'я користувача.",
+                    "max-length": "Ім'я користувача занадто довге.",
+                    "min-length": "Ім'я користувача занадто коротке."
+                },
+                "permission-to-delete-past-events": {
+                    "required": "Потрібне значення дозволу на видалення пройдених подій."
+                }
+            },
+            "update-user-password": {
+                "old-password": {
+                    "required": "Потрібен пароль."
+                },
+                "new-password": {
+                    "required": "Потрібен новий пароль.",
+                    "max-length": "Новий пароль занадто довгий.",
+                    "min-length": "Новий пароль занадто короткий."
+                }
+            }
+        },
+        "controller-errors": {
+            "user": {
+                "sign-up": {
+                    "same-username": "Користувач із таким самим ім'ям вже існує.",
+                    "same-email": "Користувач із такою ж адресою електронної пошти вже існує.",
+                    "incorrect-password": "Пароль повинен містити малі літери, великі літери та цифри.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "sign-in": {
+                    "username-email-or-password": "Неправильне ім'я користувача, пошта або пароль.",
+                    "not-activated": "Користувача не активовано."
+                },
+                "logout": {},
+                "check": {},
+                "self-info": {},
+                "update-user-info": {
+                    "same-username": "Користувач із таким самим ім'ям вже існує."
+                },
+                "update-user-password": {
+                    "invalid-old-password": "Старий пароль неправильний.",
+                    "incorrect-password": "Новий пароль повинен містити малі літери, великі літери та цифри."
+                },
+                "update-user-email": {
+                    "already-exists": "Цьому користувачеві вже надіслано листа!",
+                    "current-address": "Це ваша поточна адреса електронної пошти.",
+                    "same-email": "Користувач із такою ж адресою електронної пошти вже існує.",
+                    "invalid-password": "Невірний пароль.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "delete-user": {
+                    "invalid-password": "Невірний пароль.",
+                    "already-exists": "Цьому користувачеві вже надіслано листа!"
+                },
+                "send-reset-password-permission": {
+                    "user-not-found": "Користувач не знайдений.",
+                    "have-permission": "У вас вже є дозвіл.",
+                    "email-error": "Помилка надсилання листа."
+                },
+                "accept-password-resetting": {
+                    "user-not-found": "Користувач не знайдений.",
+                    "link": "Посилання застаріло або недоступне."
+                },
+                "reset-password": {
+                    "incorrect-password": "Новий пароль повинен містити малі літери, великі літери та цифри.",
+                    "user-not-found": "Користувач не знайдений.",
+                    "link": "Посилання застаріло або недоступне."
+                },
+                "confirm-email": {}
+            },
+            "marker": {
+                "add-marker": {
+                    "max-markers": "Цей обліковий запис розмістив максимальну кількість маркерів на карті.",
+                    "past-event-time": "Ви не можете встановити минулий час для події, оскільки ви дали дозвіл на автоматичне видалення минулих подій."
+                },
+                "update-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер.",
+                    "past-event-time": "Ви не можете встановити минулий час для події, оскільки ви дали дозвіл на автоматичне видалення минулих подій."
+                },
+                "delete-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер."
+                },
+                "get-marker": {
+                    "marker-not-found": "Маркер не знайдено.",
+                    "not-owner": "Користувачеві не належить цей маркер."
+                },
+                "get-markers-by-bounds": {},
+                "get-markers-by-auth-user": {}
+            }
+        },
+        "attribute-errors": {
+            "authorized": {
+                "unauthorized": "Не авторизован."
+            }
+        }
+    }
+}

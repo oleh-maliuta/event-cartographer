@@ -1,0 +1,38 @@
+.map_container {
+    --popup-background-color: #ffffff;
+    --map-unloaded-background-color: #ffffff;
+    --map-filter: none;
+}
+
+.map_container.dark {
+    --popup-background-color: #000000;
+    --map-unloaded-background-color: #000000;
+    --map-filter: invert(100%) hue-rotate(180deg);
+}
+
+.map_container {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.map {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--map-unloaded-background-color);
+}
+
+.map_tile_layer {
+    filter: var(--map-filter);
+}
+
+.marker_popup .leaflet-popup-content-wrapper {
+    background-color: var(--popup-background-color);
+}
+
+.marker_popup .leaflet-popup-tip {
+    background-color: var(--popup-background-color);
+}

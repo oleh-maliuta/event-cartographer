@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:53504",
 "RedirectUrl": "",
 "LaunchCommand": "npm run dev",
-"WorkingDirectory": "D:\\my_projects\\event-cartographer\\event-cartographer.Server\\..\\event-cartographer.client",
+"WorkingDirectory": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\..\\event-cartographer.client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }
