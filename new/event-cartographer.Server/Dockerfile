@@ -17,18 +17,26 @@ RUN apt-get -y install nodejs
 
 
 FROM with-node AS build
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Development
 WORKDIR /src
 COPY ["event-cartographer.Server/event-cartographer.Server.csproj", "event-cartographer.Server/"]
 COPY ["event-cartographer.client/event-cartographer.client.esproj", "event-cartographer.client/"]
 RUN dotnet restore "./event-cartographer.Server/event-cartographer.Server.csproj"
 COPY . .
+
+# Build React client
+WORKDIR "/src/event-cartographer.client"
+RUN npm install
+RUN npm run build
+RUN mkdir -p "/src/event-cartographer.Server/wwwroot"
+RUN cp -r dist/* "/src/event-cartographer.Server/wwwroot/" || true
+
 WORKDIR "/src/event-cartographer.Server"
 RUN dotnet build "./event-cartographer.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Development
 RUN dotnet publish "./event-cartographer.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)

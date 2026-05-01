@@ -5,6 +5,9 @@ using EventCartographer.Server.Services.Localization;
 using EventCartographer.Server.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace EventCartographer.Server
 {
@@ -13,6 +16,16 @@ namespace EventCartographer.Server
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(8080);
+                options.ListenAnyIP(8081, listenOptions =>
+                {
+                    listenOptions.UseHttps(CreateDevelopmentCertificate());
+                });
+            });
+
 
             builder.Services.AddDbContext<DbApp>(options =>
             {
@@ -87,6 +100,32 @@ namespace EventCartographer.Server
             app.MapDefaultControllerRoute();
 
             app.Run();
+        }
+
+        private static X509Certificate2 CreateDevelopmentCertificate()
+        {
+            using RSA rsa = RSA.Create(2048);
+            var request = new CertificateRequest(
+                "CN=localhost",
+                rsa,
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1);
+
+            request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
+            request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment, false));
+            request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
+
+            var sanBuilder = new SubjectAlternativeNameBuilder();
+            sanBuilder.AddDnsName("localhost");
+            sanBuilder.AddIpAddress(IPAddress.Loopback);
+            sanBuilder.AddIpAddress(IPAddress.IPv6Loopback);
+            request.CertificateExtensions.Add(sanBuilder.Build());
+
+            var certificate = request.CreateSelfSigned(
+                DateTimeOffset.UtcNow.AddDays(-1),
+                DateTimeOffset.UtcNow.AddYears(1));
+
+            return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
         }
     }
 }
