@@ -1,5 +1,5 @@
 import cl from './.module.css';
-import { CLIENT_PORT, HOST } from "../../utils/constants";
+import { useNavigate } from 'react-router-dom';
 import BasicUserInfoSettings from "../../components/BasicUserInfoSettings/BasicUserInfoSettings";
 import EmailAddressUserSettings from "../../components/EmailAddressUserSettings/EmailAddressUserSettings";
 import PasswordUserSettings from "../../components/PasswordUserSettings/PasswordUserSettings";
@@ -7,9 +7,12 @@ import DeleteUserAccountSettings from "../../components/DeleteUserAccountSetting
 import { useTranslation } from 'react-i18next';
 import PersonalizationSettings from '../../components/PersonalizationSettings/PersonalizationSettings';
 import { useTheme } from '../../hooks/useTheme';
+import MemoLink from '../../components/MemoLink/MemoLink';
 
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
+
+    const navigate = useNavigate();
 
     const { theme } = useTheme();
 
@@ -21,11 +24,11 @@ const UserSettingsLayout = () => {
                         {t('settings.header')}
                     </h1>
                     <div className={cl.panel__page_header__control}>
-                        <button className={cl.panel__page_header__map_button}
-                            onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}`}>
+                        <MemoLink className={cl.panel__page_header__map_button}
+                            onClick={() => navigate('/')}>
                             <img className={cl.panel__page_header__map_button__img}
                                 alt="map" />
-                        </button>
+                        </MemoLink>
                     </div>
                 </div>
                 <div className={`${cl.panel__page_header__sep_line__cont}`}>

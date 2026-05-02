@@ -1,6 +1,5 @@
 import React from 'react';
 import cl from './.module.css';
-import { API_PORT, CLIENT_PORT, HOST } from '../../utils/constants';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
@@ -9,6 +8,7 @@ import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPassw
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
+import { useNavigate } from 'react-router-dom';
 
 const SignInLayout = () => {
     const { t } = useTranslation();
@@ -34,11 +34,13 @@ const SignInLayout = () => {
         return { marginTop: '35px' };
     }, []);
 
+    const navigate = useNavigate();
+
     const signInRequest = React.useCallback(async (e) => {
         setMessages([]);
         setSubmitting(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-in`, {
+        const response = await fetch('/api/users/sign-in', {
             method: "POST",
             mode: "cors",
             credentials: "include",
@@ -47,7 +49,7 @@ const SignInLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            window.location.href = `${HOST}:${CLIENT_PORT}`;
+            navigate('/');
         } else if (!response.ok) {
             if (json.message) {
                 setMessages([t(json.message)]);
@@ -69,7 +71,7 @@ const SignInLayout = () => {
         }
 
         setSubmitting(false);
-    }, [t]);
+    }, [t, navigate]);
 
     return (
         <div className={`${cl.main} ${cl[theme]}`}>

@@ -55,3 +55,13 @@ export const pastHighImpMarkerIcon = new Icon({
     iconAnchor: [13, 40],
     popupAnchor: [0, -30]
 });
+
+export default {
+    newMarkerIcon,
+    lowImpMarkerIcon,
+    mediumImpMarkerIcon,
+    highImpMarkerIcon,
+    pastLowImpMarkerIcon,
+    pastMediumImpMarkerIcon,
+    pastHighImpMarkerIcon,
+};

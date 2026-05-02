@@ -3,20 +3,40 @@
   "WorkspaceRootPath": "D:\\my_projects\\event-cartographer\\new\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\usersettingslayout\\usersettingslayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|solutionrelative:event-cartographer.client\\src\\layouts\\usersettingslayout\\usersettingslayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\signuplayout\\signuplayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|solutionrelative:event-cartographer.client\\src\\layouts\\signuplayout\\signuplayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\mainlayout\\mainlayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|solutionrelative:event-cartographer.client\\src\\layouts\\mainlayout\\mainlayout.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\usersettingslayout\\.module.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|solutionrelative:event-cartographer.client\\src\\layouts\\usersettingslayout\\.module.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{8BEA1016-4E79-C117-8164-31A3659F9AA5}|event-cartographer.client\\event-cartographer.client.esproj|solutionrelative:event-cartographer.client\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|d:\\my_projects\\event-cartographer\\new\\event-cartographer.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5593661A-5497-6CE4-28E6-8222E2D49EED}|event-cartographer.Server\\event-cartographer.Server.csproj|solutionrelative:event-cartographer.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,56 +46,118 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\appsettings.json",
-              "RelativeDocumentMoniker": "event-cartographer.Server\\appsettings.json",
-              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\appsettings.json",
-              "RelativeToolTip": "event-cartographer.Server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-30T21:30:33.304Z",
+              "DocumentIndex": 1,
+              "Title": "SignUpLayout.jsx",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\SignUpLayout\\SignUpLayout.jsx",
+              "RelativeDocumentMoniker": "event-cartographer.client\\src\\layouts\\SignUpLayout\\SignUpLayout.jsx",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\SignUpLayout\\SignUpLayout.jsx",
+              "RelativeToolTip": "event-cartographer.client\\src\\layouts\\SignUpLayout\\SignUpLayout.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-05-02T14:46:56.626Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Dockerfile",
-              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Dockerfile",
-              "RelativeDocumentMoniker": "event-cartographer.Server\\Dockerfile",
-              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Dockerfile",
-              "RelativeToolTip": "event-cartographer.Server\\Dockerfile",
+              "Title": ".module.css",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\UserSettingsLayout\\.module.css",
+              "RelativeDocumentMoniker": "event-cartographer.client\\src\\layouts\\UserSettingsLayout\\.module.css",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\UserSettingsLayout\\.module.css",
+              "RelativeToolTip": "event-cartographer.client\\src\\layouts\\UserSettingsLayout\\.module.css",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAF4AAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-02T14:43:26.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserSettingsLayout.jsx",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\UserSettingsLayout\\UserSettingsLayout.jsx",
+              "RelativeDocumentMoniker": "event-cartographer.client\\src\\layouts\\UserSettingsLayout\\UserSettingsLayout.jsx",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\UserSettingsLayout\\UserSettingsLayout.jsx",
+              "RelativeToolTip": "event-cartographer.client\\src\\layouts\\UserSettingsLayout\\UserSettingsLayout.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-05-02T14:36:46.178Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "App.jsx",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\App.jsx",
+              "RelativeDocumentMoniker": "event-cartographer.client\\src\\App.jsx",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\App.jsx",
+              "RelativeToolTip": "event-cartographer.client\\src\\App.jsx",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-30T21:25:38.409Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-05-02T14:34:24.393Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "MainLayout.jsx",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\MainLayout\\MainLayout.jsx",
+              "RelativeDocumentMoniker": "event-cartographer.client\\src\\layouts\\MainLayout\\MainLayout.jsx",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.client\\src\\layouts\\MainLayout\\MainLayout.jsx",
+              "RelativeToolTip": "event-cartographer.client\\src\\layouts\\MainLayout\\MainLayout.jsx",
+              "ViewState": "AgIAAGIAAAAAAAAAAAAAADUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2026-05-01T19:27:55.424Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\appsettings.json",
+              "RelativeDocumentMoniker": "event-cartographer.Server\\appsettings.json",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\appsettings.json",
+              "RelativeToolTip": "event-cartographer.Server\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-30T21:30:33.304Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Dockerfile",
+              "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Dockerfile",
+              "RelativeDocumentMoniker": "event-cartographer.Server\\Dockerfile",
+              "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Dockerfile",
+              "RelativeToolTip": "event-cartographer.Server\\Dockerfile",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACIAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-04-30T21:25:38.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "event-cartographer.Server\\Properties\\launchSettings.json",
               "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Properties\\launchSettings.json",
               "RelativeToolTip": "event-cartographer.Server\\Properties\\launchSettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-30T21:18:56.345Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-30T21:18:56.345Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Program.cs",
               "RelativeDocumentMoniker": "event-cartographer.Server\\Program.cs",
               "ToolTip": "D:\\my_projects\\event-cartographer\\new\\event-cartographer.Server\\Program.cs",
               "RelativeToolTip": "event-cartographer.Server\\Program.cs",
-              "ViewState": "AgIAACUAAAAAAAAAAAAgwFgAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-29T17:36:25.063Z",
               "EditorCaption": ""

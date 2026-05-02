@@ -1,7 +1,6 @@
 import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
-import { API_PORT, HOST } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
@@ -17,7 +16,7 @@ const EmailAddressUserSettings = React.memo(() => {
     async function updateUserEmailRequest(e) {
         setUpdatingEmail(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/email?locale=${i18n.language}`, {
+        const response = await fetch(`/api/users/email?locale=${i18n.language}`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",

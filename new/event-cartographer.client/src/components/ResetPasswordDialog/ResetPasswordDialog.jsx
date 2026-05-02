@@ -1,7 +1,6 @@
 import React from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
-import { API_PORT, HOST } from '../../utils/constants';
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
@@ -28,7 +27,7 @@ const ResetPasswordDialog = React.memo(({
     async function resetPasswordPermissionRequest(e) {
         setSendingEmail(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password-permission?locale=${i18n.language}`, {
+        const response = await fetch(`/api/users/reset-password-permission?locale=${i18n.language}`, {
             method: "POST",
             mode: "cors",
             credentials: "include",

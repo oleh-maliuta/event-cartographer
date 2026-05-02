@@ -1,8 +1,8 @@
-import React from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
-import { API_PORT, CLIENT_PORT, HOST } from '../../utils/constants';
-import { newMarkerIcon, lowImpMarkerIcon, mediumImpMarkerIcon, highImpMarkerIcon, pastLowImpMarkerIcon, pastMediumImpMarkerIcon, pastHighImpMarkerIcon } from "../../utils/map-icons";
+import mapIcons from "../../utils/map-icons";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
@@ -13,208 +13,97 @@ import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
+import { PageRoutes } from "../../utils/constants";
 
-const MainLayout = () => {
+function eventIsPast(startsAt) {
+    const processedDateTime = new Date(startsAt);
+    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
+    return processedDateTime < new Date();
+}
+
+function getLocalTime(dateTime) {
+    if (!dateTime) {
+        return null;
+    }
+
+    const processedDateTime = new Date(dateTime);
+    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
+    return processedDateTime;
+}
+
+function getUtcTime(dateTime) {
+    if (!dateTime) {
+        return null;
+    }
+
+    const processedDateTime = new Date(dateTime);
+    processedDateTime.setMinutes(processedDateTime.getMinutes() + processedDateTime.getTimezoneOffset());
+    return processedDateTime;
+}
+
+function getDateTimeLocalFormat(dateTime) {
+    if (!dateTime) {
+        return null;
+    }
+
+    const processedDateTime = new Date(dateTime);
+    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
+    return processedDateTime.toISOString().slice(0, 19);
+}
+
+const HomeLayout = () => {
     const { t } = useTranslation();
 
-    const [editMarkerMessages, setEditMarkerMessages] = React.useState([]);
-    const [markerListMessages, setMarkerListMessages] = React.useState([]);
+    const [editMarkerMessages, setEditMarkerMessages] = useState([]);
+    const [markerListMessages, setMarkerListMessages] = useState([]);
 
-    const [newMarker, setNewMarker] = React.useState(null);
-    const [editingMarker, setEditingMarker] = React.useState(null);
-    const [markerIdToRemove, setMarkerIdToRemove] = React.useState(null);
-    const [markerListPage, setMarkerListPage] = React.useState(1);
-    const [markerListPageCount, setMarkerListPageCount] = React.useState(0);
-    const [mapBounds, setMapBounds] = React.useState(null);
+    const [newMarker, setNewMarker] = useState(null);
+    const [editingMarker, setEditingMarker] = useState(null);
+    const [markerIdToRemove, setMarkerIdToRemove] = useState(null);
+    const [markerListPage, setMarkerListPage] = useState(1);
+    const [markerListPageCount, setMarkerListPageCount] = useState(0);
+    const [mapBounds, setMapBounds] = useState(null);
 
-    const [userInfo, setUserInfo] = React.useState(null);
-    const [markersForMap, setMarkersForMap] = React.useState(null);
-    const [markersForList, setMarkersForList] = React.useState(null);
-    const [currentMarkerMenu, setMarkerMenu] = React.useState(null);
-    const [isMarkerPanelVisible, setMarkerPanelVisibility] = React.useState(false);
-    const [isMarkerListFilterVisible, setMarkerListFilterVisibility] = React.useState(false);
+    const [userInfo, setUserInfo] = useState(null);
+    const [markersForMap, setMarkersForMap] = useState(null);
+    const [markersForList, setMarkersForList] = useState(null);
+    const [currentMarkerMenu, setMarkerMenu] = useState(null);
+    const [isMarkerPanelVisible, setMarkerPanelVisibility] = useState(false);
+    const [isMarkerListFilterVisible, setMarkerListFilterVisibility] = useState(false);
 
-    const [markersForMapLoading, setMarkersForMapLoading] = React.useState(false);
-    const [markersForListLoading, setMarkersForListLoading] = React.useState(false);
-    const [updatingMarkerList, setUpdatingMarkerList] = React.useState(false);
-    const [loggingOut, setLoggingOut] = React.useState(false);
+    const [markersForMapLoading, setMarkersForMapLoading] = useState(false);
+    const [markersForListLoading, setMarkersForListLoading] = useState(false);
+    const [updatingMarkerList, setUpdatingMarkerList] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
 
-    const [markerListSort, setMarkerListSort] = React.useState({ type: 'importance', asc: false });
-    const [markerListImportanceFilter, setMarkerListImportanceFilter] = React.useState([]);
-    const [markerListTimeOfStartFilter, setMarkerListTimeOfStartFilter] = React.useState({ min: undefined, max: undefined });
+    const [markerListSort, setMarkerListSort] = useState({ type: 'importance', asc: false });
+    const [markerListImportanceFilter, setMarkerListImportanceFilter] = useState([]);
+    const [markerListTimeOfStartFilter, setMarkerListTimeOfStartFilter] = useState({ min: undefined, max: undefined });
 
-    const [yesNoDialogIsOpened, setYesNoDialogIsOpened] = React.useState(false);
+    const [yesNoDialogIsOpened, setYesNoDialogIsOpened] = useState(false);
 
-    const mapRef = React.useRef(null);
+    const mapRef = useRef(null);
 
-    const markerSearchInputRef = React.useRef(null);
+    const [markerSearchQuery, setMarkerSearchQuery] = useState('');
 
-    const latitudeInputRef = React.useRef(null);
-    const longitudeInputRef = React.useRef(null);
-    const startsAtInputRef = React.useRef(null);
-    const importanceInputRef = React.useRef(null);
-    const titleInputRef = React.useRef(null);
-    const descriptionInputRef = React.useRef(null);
+    const navigate = useNavigate();
 
     const { theme } = useTheme();
-
-    function eventIsPast(startsAt) {
-        const processedDateTime = new Date(startsAt);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime < new Date();
-    }
-
-    function getLocalTime(dateTime) {
-        if (!dateTime) {
-            return null;
-        }
-
-        const processedDateTime = new Date(dateTime);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime;
-    }
-
-    function getUtcTime(dateTime) {
-        if (!dateTime) {
-            return null;
-        }
-
-        const processedDateTime = new Date(dateTime);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() + processedDateTime.getTimezoneOffset());
-        return processedDateTime;
-    }
-
-    function getDateTimeLocalFormat(dateTime) {
-        if (!dateTime) {
-            return null;
-        }
-
-        const processedDateTime = new Date(dateTime);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime.toISOString().slice(0, 19);
-    }
-
-    async function loadUserInfo() {
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
-            method: "GET",
-            mode: "cors",
-            credentials: "include"
-        });
-        const json = await response.json();
-
-        setUserInfo(json.data || undefined);
-    }
 
     async function logOutRequest() {
         setLoggingOut(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/logout`, {
+        const response = await fetch('/api/users/logout', {
             method: "GET",
             mode: "cors",
             credentials: "include"
         });
 
         if (response.ok) {
-            window.location.href = `${HOST}:${CLIENT_PORT}/sign-in`;
+            navigate(PageRoutes.SIGN_IN);
         }
 
         setLoggingOut(false);
-    }
-
-    async function addMarkerRequest() {
-        setUpdatingMarkerList(true);
-
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers`, {
-            method: "POST",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                latitude: Number(latitudeInputRef.current.value) || null,
-                longitude: Number(longitudeInputRef.current.value) || null,
-                startsAt: new Date(startsAtInputRef.current.value) || null,
-                importance: importanceInputRef.current.value || null,
-                title: titleInputRef.current.value || null,
-                description: descriptionInputRef.current.value || null
-            })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            loadMarkersForMap(mapBounds);
-            loadMarkersForList(1);
-            setMarkerMenu('list');
-            setNewMarker(null);
-            setEditMarkerMessages([]);
-        } else if (!response.ok) {
-            if (json.message) {
-                setEditMarkerMessages([t(json.message)]);
-            } else {
-                const errors = [];
-
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors.push(t(json.errors[prop][err]));
-                    }
-                }
-
-                setEditMarkerMessages(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            setEditMarkerMessages([t('general.server-error')]);
-        }
-
-        setUpdatingMarkerList(false);
-    }
-
-    async function editMarkerRequest() {
-        setUpdatingMarkerList(true);
-
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers/${editingMarker.id}`, {
-            method: "PUT",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                latitude: Number(latitudeInputRef.current.value) || null,
-                longitude: Number(longitudeInputRef.current.value) || null,
-                startsAt: new Date(startsAtInputRef.current.value) || null,
-                importance: importanceInputRef.current.value || null,
-                title: titleInputRef.current.value || null,
-                description: descriptionInputRef.current.value || null
-            })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            loadMarkersForMap(mapBounds);
-            loadMarkersForList(1);
-            setMarkerMenu('list');
-            setEditingMarker(null);
-            setEditMarkerMessages([]);
-        } else if (!response.ok) {
-            if (json.message) {
-                setEditMarkerMessages([t(json.message)]);
-            } else {
-                const errors = [];
-
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors.push(t(json.errors[prop][err]));
-                    }
-                }
-
-                setEditMarkerMessages(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            setEditMarkerMessages([t('general.server-error')]);
-        }
-
-        setUpdatingMarkerList(false);
     }
 
     function renderMarkerList() {
@@ -243,7 +132,8 @@ const MainLayout = () => {
                             className={`${cl.marker_list_search__input}`}
                             type='text'
                             placeholder={t('map.search-markers-input')}
-                            ref={markerSearchInputRef} />
+                            value={markerSearchQuery}
+                            onChange={(e) => setMarkerSearchQuery(e.target.value)} />
                         <button className={`${cl.marker_list__apply_button}`}
                             onClick={() => {
                                 if (!markersForListLoading) {
@@ -412,7 +302,7 @@ const MainLayout = () => {
                     </div>
                 </div>
                 <BlockMessage
-                    style={markerListBlockMessageStyle}
+                    style={{ marginTop: '8px', width: 'calc(100% - 16px)' }}
                     state='error'
                     messages={markerListMessages} />
                 {
@@ -455,7 +345,6 @@ const MainLayout = () => {
                             value={isForAdding ? newMarker.latitude : editingMarker.latitude}
                             type='number'
                             required
-                            ref={latitudeInputRef}
                             onChange={(e) => {
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 onChangeAction(p => { return { ...p, latitude: e.target.value }; });
@@ -470,7 +359,6 @@ const MainLayout = () => {
                             value={isForAdding ? newMarker.longitude : editingMarker.longitude}
                             type='number'
                             required
-                            ref={longitudeInputRef}
                             onChange={(e) => {
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 onChangeAction(p => { return { ...p, longitude: e.target.value }; });
@@ -487,7 +375,6 @@ const MainLayout = () => {
                             type='datetime-local'
                             value={getDateTimeLocalFormat(getLocalTime(isForAdding ? newMarker.startsAt : editingMarker.startsAt)) || ''}
                             required
-                            ref={startsAtInputRef}
                             onChange={(e) => {
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 onChangeAction(p => { return { ...p, startsAt: getUtcTime(e.target.value) || '' }; });
@@ -501,7 +388,6 @@ const MainLayout = () => {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
                             value={isForAdding ? newMarker.importance : editingMarker.importance}
                             required
-                            ref={importanceInputRef}
                             onChange={(e) => {
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 onChangeAction(p => { return { ...p, importance: e.target.value }; });
@@ -528,7 +414,6 @@ const MainLayout = () => {
                         maxLength='100'
                         value={isForAdding ? newMarker.title || '' : editingMarker.title}
                         required
-                        ref={titleInputRef}
                         onChange={(e) => {
                             const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                             onChangeAction(p => { return { ...p, title: e.target.value }; });
@@ -542,14 +427,13 @@ const MainLayout = () => {
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
                         maxLength='5000'
                         value={isForAdding ? newMarker.description || '' : editingMarker.description || ''}
-                        ref={descriptionInputRef}
                         onChange={(e) => {
                             const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                             onChangeAction(p => { return { ...p, description: e.target.value }; });
                         }}></textarea>
                 </div>
                 <BlockMessage
-                    style={markerEditingBlockMessageStyle}
+                    style={{ marginTop: '8px', width: 'calc(100% - 22px)' }}
                     state='error'
                     messages={editMarkerMessages} />
                 {
@@ -610,21 +494,14 @@ const MainLayout = () => {
         );
     }
 
-    const markerEditingBlockMessageStyle = React.useMemo(() => {
-        return { marginTop: '8px', width: 'calc(100% - 22px)' };
-    }, []);
-    const markerListBlockMessageStyle = React.useMemo(() => {
-        return { marginTop: '8px', width: 'calc(100% - 16px)' };
-    }, []);
-
-    const loadMarkersForList = React.useCallback(async (page) => {
+    const loadMarkersForList = useCallback(async (page) => {
         setMarkersForListLoading(true);
         setMarkerListMessages([]);
 
-        let url = `${HOST}:${API_PORT}/api/markers/search`;
+        let url = '/api/markers/search';
         url += '?page_size=10';
         url += `&page=${page || '1'}`;
-        url += `&q=${markerSearchInputRef.current?.value || ''}`;
+        url += `&q=${markerSearchQuery || ''}`;
         url += `&sort_type=${markerListSort.type}`;
         url += `&sort_by_asc=${markerListSort.asc}`;
         url += `&min_time=${getDateTimeLocalFormat(getUtcTime(markerListTimeOfStartFilter.min)) ?? ''}`;
@@ -645,12 +522,12 @@ const MainLayout = () => {
         setMarkerListPage(page || 1);
         setMarkerListPageCount(json.data.pageCount || 0);
         setMarkersForListLoading(false);
-    }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type]);
+    }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type, markerSearchQuery]);
 
-    const loadMarkersForMap = React.useCallback(async (bounds) => {
+    const loadMarkersForMap = useCallback(async (bounds) => {
         setMarkersForMapLoading(true);
 
-        let url = `${HOST}:${API_PORT}/api/markers/map`;
+        let url = '/api/markers/map';
         url += `?n_e_lat=${bounds.getNorthEast().lat}`;
         url += `&n_e_long=${bounds.getNorthEast().lng}`;
         url += `&s_w_lat=${bounds.getSouthWest().lat}`;
@@ -668,8 +545,104 @@ const MainLayout = () => {
         setMarkersForMapLoading(false);
     }, []);
 
-    const removeMarkerRequest = React.useCallback(async (markerId) => {
-        const response = await fetch(`${HOST}:${API_PORT}/api/markers/${markerId}`, {
+    async function addMarkerRequest() {
+        setUpdatingMarkerList(true);
+
+        const response = await fetch('/api/markers', {
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                latitude: Number(newMarker.latitude) || null,
+                longitude: Number(newMarker.longitude) || null,
+                startsAt: newMarker.startsAt || null,
+                importance: newMarker.importance || null,
+                title: newMarker.title || null,
+                description: newMarker.description || null
+            })
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            loadMarkersForMap(mapBounds);
+            loadMarkersForList(1);
+            setMarkerMenu('list');
+            setNewMarker(null);
+            setEditMarkerMessages([]);
+        } else if (!response.ok) {
+            if (json.message) {
+                setEditMarkerMessages([t(json.message)]);
+            } else {
+                const errors = [];
+
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors.push(t(json.errors[prop][err]));
+                    }
+                }
+
+                setEditMarkerMessages(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
+            setEditMarkerMessages([t('general.server-error')]);
+        }
+
+        setUpdatingMarkerList(false);
+    }
+
+    async function editMarkerRequest() {
+        setUpdatingMarkerList(true);
+
+        const response = await fetch(`/api/markers/${editingMarker.id}`, {
+            method: "PUT",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                latitude: Number(editingMarker.latitude) || null,
+                longitude: Number(editingMarker.longitude) || null,
+                startsAt: editingMarker.startsAt || null,
+                importance: editingMarker.importance || null,
+                title: editingMarker.title || null,
+                description: editingMarker.description || null
+            })
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            loadMarkersForMap(mapBounds);
+            loadMarkersForList(1);
+            setMarkerMenu('list');
+            setEditingMarker(null);
+            setEditMarkerMessages([]);
+        } else if (!response.ok) {
+            if (json.message) {
+                setEditMarkerMessages([t(json.message)]);
+            } else {
+                const errors = [];
+
+                for (const prop in json.errors) {
+                    for (const err in json.errors[prop]) {
+                        errors.push(t(json.errors[prop][err]));
+                    }
+                }
+
+                setEditMarkerMessages(errors);
+            }
+        } else if (response.status >= 500 && response.status <= 599) {
+            setEditMarkerMessages([t('general.server-error')]);
+        }
+
+        setUpdatingMarkerList(false);
+    }
+
+    async function removeMarkerRequest(markerId) {
+        const response = await fetch(`/api/markers/${markerId}`, {
             method: "DELETE",
             mode: "cors",
             credentials: "include"
@@ -696,55 +669,55 @@ const MainLayout = () => {
         } else if (response.status >= 500 && response.status <= 599) {
             setMarkerListMessages([t('general.server-error')]);
         }
-    }, [loadMarkersForList, markersForList, t]);
+    }
 
-    const prepareToRemoveMarker = React.useCallback((marker) => {
+    function prepareToRemoveMarker(marker) {
         setMarkerIdToRemove(marker.id);
         setYesNoDialogIsOpened(true);
-    }, []);
+    }
 
-    const removeMarker = React.useCallback(() => {
+    function removeMarker() {
         removeMarkerRequest(markerIdToRemove);
         setMarkerIdToRemove(null);
         setYesNoDialogIsOpened(false);
-    }, [markerIdToRemove, removeMarkerRequest]);
+    }
 
-    const cancelMarkerRemoving = React.useCallback(() => {
+    function cancelMarkerRemoving() {
         setMarkerIdToRemove(null);
         setYesNoDialogIsOpened(false);
-    }, []);
+    }
 
-    const getImportanceIcon = React.useCallback((importance, startsAt) => {
+    const getImportanceIcon = useCallback((importance, startsAt) => {
         const past = eventIsPast(startsAt);
 
         switch (importance) {
             case 'low':
-                return past ? pastLowImpMarkerIcon : lowImpMarkerIcon;
+                return past ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
             case 'medium':
-                return past ? pastMediumImpMarkerIcon : mediumImpMarkerIcon;
+                return past ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
             case 'high':
-                return past ? pastHighImpMarkerIcon : highImpMarkerIcon;
+                return past ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
             default:
                 return undefined;
         }
     }, []);
 
-    const navigateToMarker = React.useCallback((marker) => {
+    const navigateToMarker = useCallback((marker) => {
         mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
     }, []);
 
-    const editMarker = React.useCallback((marker) => {
+    const editMarker = useCallback((marker) => {
         setMarkerMenu('edit');
         setEditingMarker(marker);
         setMarkerListMessages([]);
     }, []);
 
-    const mapLoadEvent = React.useCallback((map) => {
+    function mapLoadEvent(map) {
         loadMarkersForMap(map.getBounds());
         setMapBounds(map.getBounds());
-    }, [loadMarkersForMap]);
+    }
 
-    const mapClickEvent = React.useCallback((e) => {
+    function mapClickEvent(e) {
         setNewMarker({
             latitude: e.latlng.lat,
             longitude: e.latlng.lng
@@ -752,9 +725,9 @@ const MainLayout = () => {
 
         setMarkerMenu('add');
         setMarkerPanelVisibility(true);
-    }, []);
+    }
 
-    const mapMoveendEvent = React.useCallback(() => {
+    function mapMoveendEvent() {
         const bounds = mapRef.current?.getBounds();
 
         if (!bounds) {
@@ -763,9 +736,9 @@ const MainLayout = () => {
 
         loadMarkersForMap(bounds);
         setMapBounds(bounds);
-    }, [loadMarkersForMap]);
+    }
 
-    const renderMarkersOnMap = React.useCallback(() => {
+    function renderMarkersOnMap() {
         const result = [];
 
         if (newMarker !== null) {
@@ -773,7 +746,7 @@ const MainLayout = () => {
                 <Marker
                     key='new'
                     position={[newMarker.latitude, newMarker.longitude]}
-                    icon={newMarkerIcon}>
+                    icon={mapIcons.newMarkerIcon}>
                     <Popup className="marker_popup">
                         <button className={`${cl.marker_popup__cancel_button}`}
                             onClick={(e) => {
@@ -824,13 +797,23 @@ const MainLayout = () => {
         });
 
         return result;
-    }, [newMarker, markersForMap, t, getImportanceIcon, editMarker, prepareToRemoveMarker]);
+    }
 
-    React.useEffect(() => {
-        loadUserInfo();
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const response = await fetch('/api/users/self', {
+                method: "GET",
+                mode: "cors",
+                credentials: "include"
+            });
+            const json = await response.json();
+            setUserInfo(json.data || undefined);
+        };
+
+        fetchUserInfo();
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadMarkersForList(1);
     }, [loadMarkersForList]);
 
@@ -859,7 +842,7 @@ const MainLayout = () => {
                 </button>
                 <button className={`${cl.right_side_menu__settings_button}`}
                     type="button"
-                    onClick={() => window.location.href = `${HOST}:${CLIENT_PORT}/settings`}>
+                    onClick={() => navigate(PageRoutes.USER_SETTINGS)}>
                     <img className={`${cl.right_side_menu__settings_button__img}`}
                         alt='settings' />
                 </button>
@@ -953,4 +936,4 @@ const MainLayout = () => {
     );
 };
 
-export default MainLayout;
+export default HomeLayout;

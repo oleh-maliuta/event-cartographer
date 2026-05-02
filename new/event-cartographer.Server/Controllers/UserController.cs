@@ -71,7 +71,7 @@ namespace EventCartographer.Server.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
+                return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
             }
 
             User user = (await DB.Users.AddAsync(new()

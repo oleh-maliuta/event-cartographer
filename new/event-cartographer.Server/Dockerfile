@@ -43,4 +43,5 @@ RUN dotnet publish "./event-cartographer.Server.csproj" -c $BUILD_CONFIGURATION 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=publish /src/event-cartographer.Server/Locales ./Locales
 ENTRYPOINT ["dotnet", "event-cartographer.Server.dll"]

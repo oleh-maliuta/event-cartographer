@@ -1,5 +1,4 @@
 import React from 'react';
-import { API_PORT, HOST } from '../../utils/constants';
 import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
@@ -40,7 +39,7 @@ const ResetPasswordLayout = () => {
         formData.append('username', searchParams.get('user') || null);
         formData.append('token', searchParams.get('token') || null);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/reset-password`, {
+        const response = await fetch('/api/users/reset-password', {
             method: "PUT",
             mode: "cors",
             credentials: "include",

@@ -87,13 +87,13 @@ namespace EventCartographer.Server
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
             app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthorization();
-            app.UseAuthentication();
             app.UseCors(builder =>
                 builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod().WithOrigins($"https://{Constants.WebClientHost}"));
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
             app.MapFallbackToFile("/index.html");

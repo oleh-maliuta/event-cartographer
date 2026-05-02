@@ -1,6 +1,5 @@
 import React from "react";
 import cl from "./.module.css";
-import { API_PORT, HOST } from "../../utils/constants";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
 import PanelButton from "../../components/PanelButton/PanelButton";
@@ -44,7 +43,7 @@ const SignUpLayout = () => {
         setMessages([]);
         setSubmitting(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/sign-up?locale=${i18n.language}`, {
+        const response = await fetch(`/api/users/sign-up?locale=${i18n.language}`, {
             method: "POST",
             mode: "cors",
             credentials: "include",

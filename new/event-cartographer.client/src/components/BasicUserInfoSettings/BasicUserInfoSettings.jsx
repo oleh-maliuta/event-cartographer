@@ -1,7 +1,6 @@
 import React from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
-import { API_PORT, HOST } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
@@ -20,7 +19,7 @@ const BasicUserInfoSettings = React.memo(() => {
     const { theme } = useTheme();
 
     async function loadUserInfo() {
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/self`, {
+        const response = await fetch(`/api/users/self`, {
             method: "GET",
             mode: "cors",
             credentials: "include"
@@ -37,7 +36,7 @@ const BasicUserInfoSettings = React.memo(() => {
     async function updateUserInfoRequest() {
         setSavingChangesForUserInfo(true);
 
-        const response = await fetch(`${HOST}:${API_PORT}/api/users/info`, {
+        const response = await fetch(`/api/users/info`, {
             method: "PUT",
             mode: "cors",
             credentials: "include",
