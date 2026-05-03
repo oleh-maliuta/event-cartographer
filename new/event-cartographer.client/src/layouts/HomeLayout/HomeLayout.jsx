@@ -712,12 +712,12 @@ const HomeLayout = () => {
         setMarkerListMessages([]);
     }, []);
 
-    function mapLoadEvent(map) {
+    const mapLoadEvent = useCallback((map) => {
         loadMarkersForMap(map.getBounds());
         setMapBounds(map.getBounds());
-    }
+    }, [loadMarkersForMap]);
 
-    function mapClickEvent(e) {
+    const mapClickEvent = useCallback((e) => {
         setNewMarker({
             latitude: e.latlng.lat,
             longitude: e.latlng.lng
@@ -725,9 +725,9 @@ const HomeLayout = () => {
 
         setMarkerMenu('add');
         setMarkerPanelVisibility(true);
-    }
+    }, []);
 
-    function mapMoveendEvent() {
+    const mapMoveendEvent = useCallback(() => {
         const bounds = mapRef.current?.getBounds();
 
         if (!bounds) {
@@ -736,9 +736,9 @@ const HomeLayout = () => {
 
         loadMarkersForMap(bounds);
         setMapBounds(bounds);
-    }
+    }, [loadMarkersForMap]);
 
-    function renderMarkersOnMap() {
+    const renderMarkersOnMap = useCallback(() => {
         const result = [];
 
         if (newMarker !== null) {
@@ -797,7 +797,7 @@ const HomeLayout = () => {
         });
 
         return result;
-    }
+    }, [newMarker, markersForMap, t, getImportanceIcon, editMarker]);
 
     useEffect(() => {
         const fetchUserInfo = async () => {

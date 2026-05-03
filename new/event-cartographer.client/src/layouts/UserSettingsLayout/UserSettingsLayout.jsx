@@ -1,5 +1,4 @@
 import cl from './.module.css';
-import { useNavigate } from 'react-router-dom';
 import BasicUserInfoSettings from "../../components/BasicUserInfoSettings/BasicUserInfoSettings";
 import EmailAddressUserSettings from "../../components/EmailAddressUserSettings/EmailAddressUserSettings";
 import PasswordUserSettings from "../../components/PasswordUserSettings/PasswordUserSettings";
@@ -12,8 +11,6 @@ import MemoLink from '../../components/MemoLink/MemoLink';
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
 
-    const navigate = useNavigate();
-
     const { theme } = useTheme();
 
     return (
@@ -24,8 +21,7 @@ const UserSettingsLayout = () => {
                         {t('settings.header')}
                     </h1>
                     <div className={cl.panel__page_header__control}>
-                        <MemoLink className={cl.panel__page_header__map_button}
-                            onClick={() => navigate('/')}>
+                        <MemoLink className={cl.panel__page_header__map_button} to='/'>
                             <img className={cl.panel__page_header__map_button__img}
                                 alt="map" />
                         </MemoLink>

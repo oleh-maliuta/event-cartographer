@@ -72,12 +72,14 @@ namespace EventCartographer.Server
             {
                 DbApp db = scope.ServiceProvider.GetRequiredService<DbApp>();
 
-                if (!db.Database.CanConnect())
+                try
                 {
-                    throw new NotImplementedException("Can not connect to the DB!");
+                    db.Database.Migrate();
                 }
-
-                db.Database.Migrate();
+                catch (Exception ex)
+                {
+                    throw new NotImplementedException($"Can not connect to the DB! Error: {ex.Message}", ex);
+                }
             }
 
             if (app.Environment.IsDevelopment())
