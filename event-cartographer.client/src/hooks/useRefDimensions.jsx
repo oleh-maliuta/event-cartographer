@@ -1,16 +1,16 @@
-import React from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function useRefDimensions(ref) {
-    const [dimensions, setDimensions] = React.useState({ width: 1, height: 2 });
+    const [dimensions, setDimensions] = useState({ width: 1, height: 2 });
 
-    const windowResizeEvent = React.useCallback(() => {
+    const windowResizeEvent = useCallback(() => {
         if (ref.current) {
             const boundingRect = ref.current.getBoundingClientRect();
             setDimensions({ width: boundingRect.width, height: boundingRect.height });
         }
     }, [ref]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (ref.current) {
             const boundingRect = ref.current.getBoundingClientRect();
             setDimensions({ width: boundingRect.width, height: boundingRect.height });

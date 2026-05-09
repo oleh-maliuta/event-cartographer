@@ -3,10 +3,11 @@ import SignUpLayout from "./layouts/SignUpLayout/SignUpLayout";
 import SignInLayout from "./layouts/SignInLayout/SignInLayout";
 import HomeLayout from "./layouts/HomeLayout/HomeLayout";
 import UserSettingsLayout from "./layouts/UserSettingsLayout/UserSettingsLayout";
-import React from "react";
+import { useEffect } from "react";
 import ResetPasswordLayout from "./layouts/ResetPasswordLayout/ResetPasswordLayout";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { PageRoutes } from "./utils/constants";
+import { TimeZoneProvider } from "./providers/TimeZoneProvider";
 
 const App = () => {
     async function authCheck() {
@@ -27,21 +28,23 @@ const App = () => {
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         authCheck();
     }, []);
 
     return (
         <ThemeProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path={PageRoutes.SIGN_UP} element={<SignUpLayout />} />
-                    <Route path={PageRoutes.SIGN_IN} element={<SignInLayout />} />
-                    <Route path={PageRoutes.RESET_PASSWORD} element={<ResetPasswordLayout />} />
-                    <Route path={PageRoutes.HOME} element={<HomeLayout />} />
-                    <Route path={PageRoutes.USER_SETTINGS} element={<UserSettingsLayout />} />
-                </Routes>
-            </BrowserRouter>
+            <TimeZoneProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path={PageRoutes.SIGN_UP} element={<SignUpLayout />} />
+                        <Route path={PageRoutes.SIGN_IN} element={<SignInLayout />} />
+                        <Route path={PageRoutes.RESET_PASSWORD} element={<ResetPasswordLayout />} />
+                        <Route path={PageRoutes.HOME} element={<HomeLayout />} />
+                        <Route path={PageRoutes.USER_SETTINGS} element={<UserSettingsLayout />} />
+                    </Routes>
+                </BrowserRouter>
+            </TimeZoneProvider>
         </ThemeProvider>
     );
 }

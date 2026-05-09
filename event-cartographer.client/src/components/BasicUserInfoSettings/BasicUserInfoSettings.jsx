@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useRef, useEffect, useMemo, memo } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -6,15 +6,15 @@ import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
-const BasicUserInfoSettings = React.memo(() => {
+const BasicUserInfoSettings = memo(() => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
-    const [savingChangesForUserInfo, setSavingChangesForUserInfo] = React.useState(false);
-    const [userInfo, setUserInfo] = React.useState(null);
-    const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = React.useState(null);
+    const [messages, setMessages] = useState({ state: 'success', list: [] });
+    const [savingChangesForUserInfo, setSavingChangesForUserInfo] = useState(false);
+    const [userInfo, setUserInfo] = useState(null);
+    const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = useState(null);
 
-    const usernameInputRef = React.useRef(null);
+    const usernameInputRef = useRef(null);
 
     const { theme } = useTheme();
 
@@ -73,11 +73,11 @@ const BasicUserInfoSettings = React.memo(() => {
         setSavingChangesForUserInfo(false);
     }
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '10px', width: 'calc(100% - 6px)' };
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadUserInfo();
     }, []);
 

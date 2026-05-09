@@ -1,9 +1,9 @@
-import React from "react";
+import { memo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
 
-const MarkerListElement = React.memo(({
+const MarkerListElement = memo(({
     marker,
     navigate,
     edit,

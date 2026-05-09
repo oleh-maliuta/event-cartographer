@@ -49,6 +49,8 @@
         },
         "personalization": {
             "header": "Персоналізація",
+            "time-zone-input": "Часовий пояс",
+            "auto-time-zone": "Авто",
             "language-input": "Мова",
             "en-language-value": "English",
             "ru-language-value": "Русский",
@@ -90,6 +92,7 @@
         "sort-by-title-value": "заголовком",
         "sort-by-time-value": "часом початку",
         "importance-filter-title": "Важливість",
+        "no-importance-value": "...",
         "low-importance-value": "Низька",
         "medium-importance-value": "Середня",
         "high-importance-value": "Висока",

@@ -1,15 +1,15 @@
-import React from 'react';
+import { useState, useMemo, memo } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
-const EmailAddressUserSettings = React.memo(() => {
+const EmailAddressUserSettings = memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
-    const [updatingEmail, setUpdatingEmail] = React.useState(false);
+    const [messages, setMessages] = useState({ state: 'success', list: [] });
+    const [updatingEmail, setUpdatingEmail] = useState(false);
 
     const { theme } = useTheme();
 
@@ -47,7 +47,7 @@ const EmailAddressUserSettings = React.memo(() => {
         setUpdatingEmail(false);
     }
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '8px', width: 'calc(100% - 6px)' };
     }, []);
 

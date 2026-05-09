@@ -1,8 +1,8 @@
-import React from 'react';
+import { memo } from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 
-const LoadingAnimation = React.memo(({
+const LoadingAnimation = memo(({
     size = '120px',
     curveWidth = '16px',
     curveColor1 = '#00a193',

@@ -14,12 +14,7 @@ import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
 import { PageRoutes } from "../../utils/constants";
-
-function eventIsPast(startsAt) {
-    const processedDateTime = new Date(startsAt);
-    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-    return processedDateTime < new Date();
-}
+import { Temporal } from "@js-temporal/polyfill";
 
 function getLocalTime(dateTime) {
     if (!dateTime) {
@@ -392,14 +387,17 @@ const HomeLayout = () => {
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 onChangeAction(p => { return { ...p, importance: e.target.value }; });
                             }}>
-                            <option className={cl.editing_marker_importance_input__low_value} value='low'>
-                                {t('map.low-importance-value')}
+                            <option className={cl.editing_marker_importance_input__no_value} value=''>
+                                {t('map.no-importance-value')}
+                            </option>
+                            <option className={cl.editing_marker_importance_input__high_value} value='high'>
+                                {t('map.high-importance-value')}
                             </option>
                             <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
                                 {t('map.medium-importance-value')}
                             </option>
-                            <option className={cl.editing_marker_importance_input__high_value} value='high'>
-                                {t('map.high-importance-value')}
+                            <option className={cl.editing_marker_importance_input__low_value} value='low'>
+                                {t('map.low-importance-value')}
                             </option>
                         </select>
                     </div>
@@ -688,15 +686,18 @@ const HomeLayout = () => {
     }
 
     const getImportanceIcon = useCallback((importance, startsAt) => {
-        const past = eventIsPast(startsAt);
+        const isPast = Temporal.Instant.compare(
+            Temporal.Instant.from(startsAt + 'Z'),
+            Temporal.Now.instant()
+        ) < 0;
 
         switch (importance) {
             case 'low':
-                return past ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
+                return isPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
             case 'medium':
-                return past ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
+                return isPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
             case 'high':
-                return past ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
+                return isPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
             default:
                 return undefined;
         }
@@ -761,6 +762,11 @@ const HomeLayout = () => {
         }
 
         markersForMap?.forEach(el => {
+            const isPast = Temporal.Instant.compare(
+                Temporal.Instant.from(el.startsAt + 'Z'),
+                Temporal.Now.instant()
+            ) < 0;
+
             result.push(
                 <Marker
                     key={el.id}
@@ -772,7 +778,7 @@ const HomeLayout = () => {
                                 <h2 className={cl.marker_popup__title}>{el.title}</h2>
                                 <p className={cl.marker_popup__description}>{el.description}</p>
                             </div>
-                            <p className={`${cl.marker_popup__starts_at} ${eventIsPast(el.startsAt) ? cl.passed : ''}`}>
+                            <p className={`${cl.marker_popup__starts_at} ${isPast ? cl.passed : ''}`}>
                                 {getLocalTime(el.startsAt).toLocaleString()}
                             </p>
                             <div className={cl.marker_popup__actions}>

@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using EventCartographer.Server.Services.Email;
-using System.Net;
 using EventCartographer.Server.Attributes;
 using EventCartographer.Server.Services.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using EventCartographer.Server.Utils;
 using EventCartographer.Server.Services.Localization;
+using EventCartographer.Server.Requests.Queries;
 
 namespace EventCartographer.Server.Controllers
 {
@@ -33,7 +33,7 @@ namespace EventCartographer.Server.Controllers
 
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(
-            [FromQuery] string? locale,
+            [FromQuery] LocaleQuery query,
             [FromForm] SignUpRequest request)
         {
             if (await DB.Users.AnyAsync(x => x.Name == request.Username))
@@ -41,7 +41,6 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-username"));
             }
 
-            request.Email = request.Email?.ToLower();
             if (await DB.Users.AnyAsync(x => x.Email == request.Email))
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
@@ -59,15 +58,30 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
+                var emailURL = new UriBuilder
+                {
+                    Scheme = HttpContext.Request.Scheme,
+                    Host = HttpContext.Request.Host.Host,
+                    Port = HttpContext.Request.Host.Port ?? -1,
+                    Path = "api/users/confirm-email",
+                };
+
+                using (var content = new FormUrlEncodedContent([
+                    new("email", request.Email!),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
                 await _emailService.SendEmailUseTemplateAsync(
                     email: request.Email!,
                     templateName: "registration_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
                         { "username", request.Username! },
-                        { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(request.Email)}?token={token}&locale={locale}" }
+                        { "link", emailURL.ToString() }
                     },
-                    locale ?? "en");
+                    query.Locale!
+                );
             }
             catch (Exception)
             {
@@ -108,7 +122,9 @@ namespace EventCartographer.Server.Controllers
                 request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
                 user = await DB.Users.SingleOrDefaultAsync(
                     x => x.Email == request.UsernameOrEmail);
-            } else {
+            }
+            else
+            {
                 user = await DB.Users.SingleOrDefaultAsync(
                     x => x.Name == request.UsernameOrEmail);
             }
@@ -228,7 +244,7 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("email")]
         public async Task<IActionResult> UpdateUserEmail(
-            [FromQuery] string? locale,
+            [FromQuery] LocaleQuery query,
             [FromForm] UpdateUserEmailRequest request)
         {
             User user = AuthorizedUser;
@@ -238,7 +254,6 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.already-exists"));
             }
 
-            request.Email = request.Email?.ToLower();
             if (user.Email == request.Email)
             {
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
@@ -259,19 +274,33 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
+                var emailURL = new UriBuilder
+                {
+                    Scheme = HttpContext.Request.Scheme,
+                    Host = HttpContext.Request.Host.Host,
+                    Port = HttpContext.Request.Host.Port ?? -1,
+                    Path = "api/users/confirm-email",
+                };
+
+                using (var content = new FormUrlEncodedContent([
+                    new("email", user.Email),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
                 await _emailService.SendEmailUseTemplateAsync(
                     email: request.Email!,
                     templateName: "change_email_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
                         { "username", user.Name },
-                        { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(user.Email)}?token={token}&locale={locale}" }
+                        { "link", emailURL.ToString() }
                     },
-                    locale ?? "en");
+                    query.Locale!);
             }
             catch (Exception)
             {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
+                return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
             }
 
             await DB.ActivationCodes.AddAsync(new()
@@ -290,7 +319,7 @@ namespace EventCartographer.Server.Controllers
         [Authorized]
         [HttpPut("delete")]
         public async Task<IActionResult> DeleteUser(
-            [FromQuery] string? locale,
+            [FromQuery] LocaleQuery query,
             [FromForm] DeleteUserRequest request)
         {
             User? user = AuthorizedUser;
@@ -310,15 +339,29 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
+                var emailURL = new UriBuilder
+                {
+                    Scheme = HttpContext.Request.Scheme,
+                    Host = HttpContext.Request.Host.Host,
+                    Port = HttpContext.Request.Host.Port ?? -1,
+                    Path = "api/users/confirm-email",
+                };
+
+                using (var content = new FormUrlEncodedContent([
+                    new("email", user.Email),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
                 await _emailService.SendEmailUseTemplateAsync(
                     email: user.Email,
                     templateName: "delete_account_confirm.html",
                     parameters: new Dictionary<string, string>
                     {
                         { "username", user.Name },
-                        { "link", $"https://{HttpContext.Request.Host}/api/users/confirm-email/{WebUtility.UrlEncode(user.Email)}?token={token}&locale={locale}" }
+                        { "link", emailURL.ToString() }
                     },
-                    locale ?? "en");
+                    query.Locale!);
             }
             catch (Exception)
             {
@@ -340,7 +383,7 @@ namespace EventCartographer.Server.Controllers
 
         [HttpPost("reset-password-permission")]
         public async Task<IActionResult> SendResetPasswordPermission(
-            [FromQuery] string? locale,
+            [FromQuery] LocaleQuery query,
             [FromForm] SendResetPasswordPermissionRequest request)
         {
             User? user;
@@ -376,6 +419,14 @@ namespace EventCartographer.Server.Controllers
 
             try
             {
+                var emailURL = new UriBuilder
+                {
+                    Scheme = HttpContext.Request.Scheme,
+                    Host = HttpContext.Request.Host.Host,
+                    Port = HttpContext.Request.Host.Port ?? -1,
+                    Path = "api/users/accept-reset-password",
+                };
+
                 await _emailService.SendEmailUseTemplateAsync(
                     email: user.Email,
                     templateName: "reset_password_permission.html",
@@ -383,9 +434,9 @@ namespace EventCartographer.Server.Controllers
                     {
                         { "username", user.Name },
                         { "token", token },
-                        { "link", $"https://{HttpContext.Request.Host}/api/users/accept-reset-password" }
+                        { "link", emailURL.ToString() }
                     },
-                    locale ?? "en");
+                    query.Locale!);
             }
             catch (Exception)
             {
@@ -440,9 +491,18 @@ namespace EventCartographer.Server.Controllers
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
             }
 
-            string linkToResetPassword = $"https://{Constants.WebClientHost}/reset-password" +
-                $"?user={WebUtility.UrlEncode(user.Name)}" +
-                $"&token={activationCode.Code}";
+            var linkToResetPassword = new UriBuilder
+            {
+                Scheme = HttpContext.Request.Scheme,
+                Host = HttpContext.Request.Host.Host,
+                Port = HttpContext.Request.Host.Port ?? -1,
+                Path = "reset-password",
+            };
+
+            using (var content = new FormUrlEncodedContent([
+                new("user", user.Name),
+                new("token", activationCode.Code),
+            ])) { linkToResetPassword.Query = await content.ReadAsStringAsync(); }
 
             if (actionInfo.Length < 2)
             {
@@ -451,11 +511,11 @@ namespace EventCartographer.Server.Controllers
             else
             {
                 await DB.SaveChangesAsync();
-                return Redirect(linkToResetPassword);
+                return Redirect(linkToResetPassword.ToString());
             }
 
             await DB.SaveChangesAsync();
-            return Redirect(linkToResetPassword);
+            return Redirect(linkToResetPassword.ToString());
         }
 
         [HttpPut("reset-password")]
@@ -510,32 +570,30 @@ namespace EventCartographer.Server.Controllers
             return Ok(new BaseResponse.SuccessResponse(null));
         }
 
-        [HttpGet("confirm-email/{email}")]
+        [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmail(
-            [FromRoute] string email,
-            [FromQuery(Name = "locale")] string? locale,
-            [FromQuery(Name = "token")] string? token)
+            [FromQuery] ConfirmEmailQuery query)
         {
             User? user = await DB.Users.SingleOrDefaultAsync(
-                x => x.Email == WebUtility.UrlDecode(email).ToLower());
+                x => x.Email == query.Email!);
 
             if (user == null)
             {
                 return MessageContentResult(
                     false,
-                    _localizationService.GetString("fail", locale ?? "en"),
-                    _localizationService.GetString("user-not-found", locale ?? "en"));
+                    _localizationService.GetString("fail", query.Locale ?? "en"),
+                    _localizationService.GetString("user-not-found", query.Locale ?? "en"));
             }
 
             ActivationCode? activationCode = await DB.ActivationCodes
-                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == token);
+                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == query.Token);
 
             if (activationCode == null)
             {
                 return MessageContentResult(
                     false,
-                    _localizationService.GetString("fail", locale ?? "en"),
-                    _localizationService.GetString("link-issue", locale ?? "en"));
+                    _localizationService.GetString("fail", query.Locale ?? "en"),
+                    _localizationService.GetString("link-issue", query.Locale ?? "en"));
             }
 
             if (DateTime.UtcNow > activationCode.ExpiresAt)
@@ -544,8 +602,8 @@ namespace EventCartographer.Server.Controllers
                 await DB.SaveChangesAsync();
                 return MessageContentResult(
                     false,
-                    _localizationService.GetString("fail", locale ?? "en"),
-                    _localizationService.GetString("link-issue", locale ?? "en"));
+                    _localizationService.GetString("fail", query.Locale ?? "en"),
+                    _localizationService.GetString("link-issue", query.Locale ?? "en"));
             }
 
             string[] actionInfo = activationCode.Action.Split(',');
@@ -560,7 +618,7 @@ namespace EventCartographer.Server.Controllers
                     DB.ActivationCodes.Remove(activationCode);
                     break;
                 case "change-email":
-                    user.Email = actionInfo[1].ToLower();
+                    user.Email = actionInfo[1];
                     user.LastActivityAt = DateTime.UtcNow;
                     messageCode = "email-confirmed";
                     DB.ActivationCodes.Remove(activationCode);
@@ -573,15 +631,15 @@ namespace EventCartographer.Server.Controllers
                 default:
                     return MessageContentResult(
                         false,
-                        _localizationService.GetString("fail", locale ?? "en"),
-                        _localizationService.GetString("unknown-action", locale ?? "en"));
+                        _localizationService.GetString("fail", query.Locale ?? "en"),
+                        _localizationService.GetString("unknown-action", query.Locale ?? "en"));
             }
 
             await DB.SaveChangesAsync();
             return MessageContentResult(
                 true,
-                _localizationService.GetString("success", locale ?? "en"),
-                _localizationService.GetString(messageCode, locale ?? "en"));
+                _localizationService.GetString("success", query.Locale ?? "en"),
+                _localizationService.GetString(messageCode, query.Locale ?? "en"));
         }
     }
 }

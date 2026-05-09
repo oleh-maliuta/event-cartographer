@@ -1,8 +1,8 @@
-import React from "react";
+import { useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import { useMap, useMapEvents } from "react-leaflet";
 
-const MapEventHandler = React.memo(({
+const MapEventHandler = memo(({
     load,
     click,
     moveend
@@ -18,7 +18,7 @@ const MapEventHandler = React.memo(({
         }
     })
 
-    React.useEffect(() => {
+    useEffect(() => {
         load(map);
     }, [load, map]);
 

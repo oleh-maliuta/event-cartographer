@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import cl from "./.module.css";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
@@ -11,35 +11,35 @@ import MemoLink from "../../components/MemoLink/MemoLink";
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
-    const [messageState, setMessageState] = React.useState('success');
-    const [messages, setMessages] = React.useState([]);
-    const [submitting, setSubmitting] = React.useState(false);
+    const [messageState, setMessageState] = useState('success');
+    const [messages, setMessages] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
 
-    const passwordInputRef = React.useRef(null);
-    const confirmPasswordInputRef = React.useRef(null);
+    const passwordInputRef = useRef(null);
+    const confirmPasswordInputRef = useRef(null);
 
     const { theme } = useTheme();
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '20px', width: 'calc(100% - 6px)' };
     }, []);
-    const usernameInfoInputStyle = React.useMemo(() => {
+    const usernameInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const emailInfoInputStyle = React.useMemo(() => {
+    const emailInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const passwordInfoInputStyle = React.useMemo(() => {
+    const passwordInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const confirmPasswordInfoInputStyle = React.useMemo(() => {
+    const confirmPasswordInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const submitButtonStyle = React.useMemo(() => {
+    const submitButtonStyle = useMemo(() => {
         return { marginTop: '30px' };
     }, []);
 
-    const signUpRequest = React.useCallback(async (e) => {
+    const signUpRequest = useCallback(async (e) => {
         setMessages([]);
         setSubmitting(true);
 

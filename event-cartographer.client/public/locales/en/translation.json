@@ -49,6 +49,8 @@
         },
         "personalization": {
             "header": "Personalization",
+            "time-zone-input": "Time zone",
+            "auto-time-zone": "Auto",
             "language-input": "Language",
             "en-language-value": "English",
             "ru-language-value": "Русский",
@@ -90,6 +92,7 @@
         "sort-by-title-value": "title",
         "sort-by-time-value": "time of start",
         "importance-filter-title": "Importance",
+        "no-importance-value": "...",
         "low-importance-value": "Low",
         "medium-importance-value": "Medium",
         "high-importance-value": "High",

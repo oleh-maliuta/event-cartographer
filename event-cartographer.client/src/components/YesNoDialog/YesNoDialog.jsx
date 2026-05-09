@@ -1,10 +1,10 @@
-import React from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 
-const YesNoDialog = React.memo(({
+const YesNoDialog = memo(({
     dialogState,
     title,
     description,
@@ -13,9 +13,9 @@ const YesNoDialog = React.memo(({
 }) => {
     const { t } = useTranslation();
 
-    const [processing, setProcessing] = React.useState(false);
+    const [processing, setProcessing] = useState(false);
 
-    const dialogRef = React.useRef(null);
+    const dialogRef = useRef(null);
 
     const { theme } = useTheme();
 
@@ -31,7 +31,7 @@ const YesNoDialog = React.memo(({
         setProcessing(false);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (dialogState) {
             dialogRef.current.showModal();
         } else {

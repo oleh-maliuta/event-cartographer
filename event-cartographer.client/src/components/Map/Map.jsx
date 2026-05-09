@@ -1,16 +1,17 @@
-import React from "react";
+import { memo } from "react";
 import "./.css";
 import PropTypes from "prop-types";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MapEventHandler from "../MapEventHandler/MapEventHandler";
 import { useTheme } from '../../hooks/useTheme';
 
-const Map = React.memo(React.forwardRef(({
+const Map = memo(({
     load,
     click,
     moveend,
-    renderMarkers
-}, ref) => {
+    renderMarkers,
+    ref,
+}) => {
     const { theme } = useTheme();
 
     return (
@@ -30,13 +31,14 @@ const Map = React.memo(React.forwardRef(({
             </MapContainer>
         </div>
     );
-}));
+});
 
 Map.propTypes = {
     renderMarkers: PropTypes.func.isRequired,
     load: PropTypes.func,
     click: PropTypes.func,
-    moveend: PropTypes.func
+    moveend: PropTypes.func,
+    ref: PropTypes.object,
 };
 
 export default Map;

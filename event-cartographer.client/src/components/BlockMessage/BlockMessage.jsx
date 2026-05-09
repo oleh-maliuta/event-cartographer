@@ -1,9 +1,9 @@
-import React from "react";
+import { memo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
 
-const BlockMessage = React.memo(({
+const BlockMessage = memo(({
     style,
     state,
     messages

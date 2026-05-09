@@ -1,12 +1,12 @@
-import React from "react";
+import { useRef, memo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 
-const Switch = React.memo(({
+const Switch = memo(({
     value,
     setValue
 }) => {
-    const inputRef = React.useRef(null);
+    const inputRef = useRef(null);
 
     return (
         <div className={cl.switch}>

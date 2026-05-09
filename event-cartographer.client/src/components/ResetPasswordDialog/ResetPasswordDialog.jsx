@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useRef, useEffect, useMemo, memo } from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
@@ -6,21 +6,21 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
-const ResetPasswordDialog = React.memo(({
+const ResetPasswordDialog = memo(({
     dialogState,
     setDialogState
 }) => {
     const { t, i18n } = useTranslation();
 
-    const [messageState, setMessageState] = React.useState("success");
-    const [messages, setMessages] = React.useState([]);
-    const [sendingEmail, setSendingEmail] = React.useState(false);
+    const [messageState, setMessageState] = useState("success");
+    const [messages, setMessages] = useState([]);
+    const [sendingEmail, setSendingEmail] = useState(false);
 
-    const dialogRef = React.useRef(null);
+    const dialogRef = useRef(null);
 
     const { theme } = useTheme();
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '10px' };
     }, []);
 
@@ -60,7 +60,7 @@ const ResetPasswordDialog = React.memo(({
         setSendingEmail(false);
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (dialogState) {
             dialogRef.current.showModal();
         } else {
@@ -99,6 +99,7 @@ const ResetPasswordDialog = React.memo(({
                 <div className={`${cl.modal_window__control}`}>
                     <div className={`${cl.modal_window__control__buttons}`}>
                         <button className={`${cl.modal_window__control__buttons__cancel}`}
+                            type='button'
                             onClick={() => setDialogState(false)}>
                             {t('sign-in.reset-password-modal-window.cancel')}
                         </button>

@@ -10,6 +10,10 @@ namespace EventCartographer.Server.Requests
         [MaxLength(320, ErrorMessage = "http.request-errors.update-user-email.email.max-length")]
         [MinLength(1, ErrorMessage = "http.request-errors.update-user-email.email.min-length")]
         [EmailAddress(ErrorMessage = "http.request-errors.update-user-email.email.email-address")]
-        public string? Email { get; set; }
+        public string? Email
+        {
+            get;
+            set => field = value?.Trim().ToLower();
+        }
     }
 }

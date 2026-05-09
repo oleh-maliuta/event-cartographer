@@ -1,21 +1,20 @@
-import React from "react";
+import { memo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import { useTheme } from '../../hooks/useTheme';
 
-const PanelButton = React.memo(React.forwardRef(({
+const PanelButton = memo(({
     style,
     text,
-    loading
-}, ref) => {
+    loading,
+}) => {
     const { theme } = useTheme();
 
     return (
         <button className={`${cl.panel_button} ${cl[theme]}`}
             type="submit"
-            style={style}
-            ref={ref}>
+            style={style}>
             {
                 loading ?
                     <LoadingAnimation
@@ -27,13 +26,13 @@ const PanelButton = React.memo(React.forwardRef(({
             }
         </button>
     );
-}));
+});
 
 PanelButton.propTypes = {
     style: PropTypes.object,
     text: PropTypes.string,
     loading: PropTypes.bool,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
 };
 
 export default PanelButton;

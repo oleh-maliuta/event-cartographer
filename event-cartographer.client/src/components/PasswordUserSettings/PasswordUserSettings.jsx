@@ -1,18 +1,18 @@
-import React from 'react';
+import { useState, useRef, useMemo, memo } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
-const PasswordUserSettings = React.memo(() => {
+const PasswordUserSettings = memo(() => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
-    const [updatingPassword, setUpdatingPassword] = React.useState(false);
+    const [messages, setMessages] = useState({ state: 'success', list: [] });
+    const [updatingPassword, setUpdatingPassword] = useState(false);
 
-    const newPasswordInputRef = React.useRef(null);
-    const confirmPasswordInputRef = React.useRef(null);
+    const newPasswordInputRef = useRef(null);
+    const confirmPasswordInputRef = useRef(null);
 
     const { theme } = useTheme();
 
@@ -50,7 +50,7 @@ const PasswordUserSettings = React.memo(() => {
         setUpdatingPassword(false);
     }
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '8px', width: 'calc(100% - 6px)' };
     }, []);
 

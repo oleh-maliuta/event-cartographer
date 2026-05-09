@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import cl from './.module.css';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
@@ -13,30 +13,28 @@ import { useNavigate } from 'react-router-dom';
 const SignInLayout = () => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = React.useState([]);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [dialogOpened, setDialogOpened] = React.useState(false);
-
-    const panelButtonRef = React.useRef(null);
+    const [messages, setMessages] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [dialogOpened, setDialogOpened] = useState(false);
 
     const { theme } = useTheme();
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '15px', width: 'calc(100% - 6px)' };
     }, []);
-    const usernameInfoInputStyle = React.useMemo(() => {
+    const usernameInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const passwordInfoInputStyle = React.useMemo(() => {
+    const passwordInfoInputStyle = useMemo(() => {
         return { marginTop: '20px' };
     }, []);
-    const submitButtonStyle = React.useMemo(() => {
+    const submitButtonStyle = useMemo(() => {
         return { marginTop: '35px' };
     }, []);
 
     const navigate = useNavigate();
 
-    const signInRequest = React.useCallback(async (e) => {
+    const signInRequest = useCallback(async (e) => {
         setMessages([]);
         setSubmitting(true);
 
@@ -111,8 +109,7 @@ const SignInLayout = () => {
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-in.submit')}
-                    loading={submitting}
-                    ref={panelButtonRef} />
+                    loading={submitting} />
                 <div className={cl.sign_up_link_cont}>
                     <MemoLink className={cl.sign_up_link} to='/sign-up'>
                         {t('sign-in.sign-up-link')}

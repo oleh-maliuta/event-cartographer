@@ -1,9 +1,9 @@
-import React from "react";
+import { memo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
 
-const PanelInput = React.memo(React.forwardRef(({
+const PanelInput = memo(({
     containerStyle,
     labelStyle,
     inputStyle,
@@ -13,8 +13,9 @@ const PanelInput = React.memo(React.forwardRef(({
     placeholder,
     minLength,
     maxLength,
-    required
-}, ref) => {
+    required,
+    ref,
+}) => {
     const { theme } = useTheme();
 
     return (
@@ -35,7 +36,7 @@ const PanelInput = React.memo(React.forwardRef(({
                 ref={ref} />
         </div>
     );
-}));
+});
 
 PanelInput.propTypes = {
     containerStyle: PropTypes.object,
@@ -47,7 +48,8 @@ PanelInput.propTypes = {
     placeholder: PropTypes.string,
     minLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    required: PropTypes.bool
+    required: PropTypes.bool,
+    ref: PropTypes.object,
 };
 
 export default PanelInput;

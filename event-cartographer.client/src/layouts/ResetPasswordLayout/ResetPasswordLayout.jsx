@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useRef, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
@@ -10,28 +10,28 @@ const ResetPasswordLayout = () => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
 
-    const [messageState, setMessageState] = React.useState('success');
-    const [messages, setMessages] = React.useState([]);
-    const [submitting, setSubmitting] = React.useState(false);
-    const [isReset, setIsReset] = React.useState(false);
+    const [messageState, setMessageState] = useState('success');
+    const [messages, setMessages] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [isReset, setIsReset] = useState(false);
 
-    const passwordInputRef = React.useRef(null);
-    const confirmPasswordInputRef = React.useRef(null);
+    const passwordInputRef = useRef(null);
+    const confirmPasswordInputRef = useRef(null);
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '15px', width: 'calc(100% - 6px)' };
     }, []);
-    const passwordInfoInputStyle = React.useMemo(() => {
+    const passwordInfoInputStyle = useMemo(() => {
         return { marginTop: '15px' };
     }, []);
-    const confirmPasswordInfoInputStyle = React.useMemo(() => {
+    const confirmPasswordInfoInputStyle = useMemo(() => {
         return { marginTop: '20px' };
     }, []);
-    const submitButtonStyle = React.useMemo(() => {
+    const submitButtonStyle = useMemo(() => {
         return { marginTop: '35px' };
     }, []);
 
-    const resetPasswordRequest = React.useCallback(async (e) => {
+    const resetPasswordRequest = useCallback(async (e) => {
         setMessages([]);
         setSubmitting(true);
 

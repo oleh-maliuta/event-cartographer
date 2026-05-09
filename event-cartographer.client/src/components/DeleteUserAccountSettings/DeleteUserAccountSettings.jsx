@@ -1,15 +1,15 @@
-import React from 'react';
+import { useState, useMemo, memo } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 
-const DeleteUserAccountSettings = React.memo(() => {
+const DeleteUserAccountSettings = memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [messages, setMessages] = React.useState({ state: 'success', list: [] });
-    const [deletingAccount, setDeletingAccount] = React.useState(false);
+    const [messages, setMessages] = useState({ state: 'success', list: [] });
+    const [deletingAccount, setDeletingAccount] = useState(false);
 
     const { theme } = useTheme();
 
@@ -47,7 +47,7 @@ const DeleteUserAccountSettings = React.memo(() => {
         setDeletingAccount(false);
     }
 
-    const blockMessageStyle = React.useMemo(() => {
+    const blockMessageStyle = useMemo(() => {
         return { marginTop: '8px', width: 'calc(100% - 6px)' };
     }, []);
 

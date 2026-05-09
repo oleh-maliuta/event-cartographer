@@ -2,7 +2,6 @@ using EventCartographer.Server.Services.Background;
 using EventCartographer.Server.Services.Email;
 using EventCartographer.Server.Services.EntityFramework;
 using EventCartographer.Server.Services.Localization;
-using EventCartographer.Server.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -26,10 +25,9 @@ namespace EventCartographer.Server
                 });
             });
 
-
             builder.Services.AddDbContext<DbApp>(options =>
             {
-                options.UseSqlServer(builder.Configuration["EF:ConnectionString"]);
+                options.UseSqlServer(builder.Configuration["DB_CONNECTION_STRING"]!);
             });
 
             builder.Services.AddControllersWithViews();
@@ -50,11 +48,11 @@ namespace EventCartographer.Server
 
             builder.Services.AddEmailService(e =>
             {
-                e.Email = builder.Configuration["Email:EmailAddress"]!;
-                e.SenderName = builder.Configuration["Email:SenderName"]!;
-                e.Password = builder.Configuration["Email:Password"]!;
-                e.Host = builder.Configuration["Email:Host"]!;
-                e.Port = int.Parse(builder.Configuration["Email:Port"]!);
+                e.Email = builder.Configuration["EMAIL_SENDER_ADDRESS"]!;
+                e.SenderName = builder.Configuration["EMAIL_SENDER_NAME"]!;
+                e.Password = builder.Configuration["EMAIL_SENDER_PASSWORD"]!;
+                e.Host = builder.Configuration["EMAIL_HOST"]!;
+                e.Port = int.Parse(builder.Configuration["EMAIL_PORT"]!);
                 e.EmailTemplatesPath = builder.Configuration
                     .GetSection("Email:EmailTemplatesPath").Get<string[]>()!;
             });
@@ -92,8 +90,6 @@ namespace EventCartographer.Server
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors(builder =>
-                builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod().WithOrigins($"https://{Constants.WebClientHost}"));
             app.UseAuthentication();
             app.UseAuthorization();
 

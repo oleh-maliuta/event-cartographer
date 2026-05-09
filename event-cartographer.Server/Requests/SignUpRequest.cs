@@ -12,7 +12,11 @@ namespace EventCartographer.Server.Requests
         [Required(ErrorMessage = "http.request-errors.sign-up.email.required")]
         [MaxLength(320, ErrorMessage = "http.request-errors.sign-up.email.max-length")]
         [EmailAddress(ErrorMessage = "http.request-errors.sign-up.email.email-address")]
-        public string? Email { get; set; }
+        public string? Email
+        {
+            get;
+            set => field = value?.Trim().ToLower();
+        }
         [Required(ErrorMessage = "http.request-errors.sign-up.password.required")]
         [MaxLength(200, ErrorMessage = "http.request-errors.sign-up.password.max-length")]
         [MinLength(6, ErrorMessage = "http.request-errors.sign-up.password.min-length")]

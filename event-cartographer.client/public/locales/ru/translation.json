@@ -49,6 +49,8 @@
         },
         "personalization": {
             "header": "Персонализация",
+            "time-zone-input": "Часовой пояс",
+            "auto-time-zone": "Авто",
             "language-input": "Язык",
             "en-language-value": "English",
             "ru-language-value": "Русский",
@@ -90,6 +92,7 @@
         "sort-by-title-value": "заголовку",
         "sort-by-time-value": "времени начала",
         "importance-filter-title": "Важность",
+        "no-importance-value": "...",
         "low-importance-value": "Низкая",
         "medium-importance-value": "Средняя",
         "high-importance-value": "Высокая",

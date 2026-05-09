@@ -1,16 +1,16 @@
-import React from "react";
+import { useRef, memo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import useRefDimensions from "../../hooks/useRefDimensions";
 import { useTheme } from '../../hooks/useTheme';
 
-const Panel = React.memo(({
+const Panel = memo(({
     title,
     onSubmit,
     children
 }) => {
 
-    const panelRef = React.useRef(null);
+    const panelRef = useRef(null);
 
     const { theme } = useTheme();
     const panelDimensions = useRefDimensions(panelRef);

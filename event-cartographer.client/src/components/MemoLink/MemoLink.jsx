@@ -1,6 +1,6 @@
-import React from "react";
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
-const MemoLink = React.memo(Link);
+const MemoLink = memo(Link);
 
 export default MemoLink;

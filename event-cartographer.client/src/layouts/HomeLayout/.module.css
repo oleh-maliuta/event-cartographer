@@ -709,6 +709,11 @@
     width: calc(100% - 20px);
 }
 
+.editing_marker_importance_input__no_value {
+    background-color: #3b2e2e;
+    color: white;
+}
+
 .editing_marker_importance_input__low_value {
     background-color: green;
     color: white;
