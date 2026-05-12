@@ -129,7 +129,7 @@
     word-break: break-all;
     margin-top: 15px;
 
-    &.passed {
+    &.past {
         color: red;
         font-weight: bold;
     }

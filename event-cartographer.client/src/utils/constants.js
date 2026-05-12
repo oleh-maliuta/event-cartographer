@@ -20,3 +20,12 @@ export const PageRoutes = Object.freeze({
 });
 
 export const TIME_ZONES = getTimeZones();
+
+export const DEFAULT_DATE_TIME_FORMAT = Object.freeze({
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});

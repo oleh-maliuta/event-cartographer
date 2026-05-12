@@ -2,6 +2,9 @@ import { memo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
+import { convertUtcToLocalTime, isTimeInPast } from "../../utils/time";
+import { useTimeZone } from "../../hooks/useTimeZone";
+import { DEFAULT_DATE_TIME_FORMAT } from "../../utils/constants";
 
 const MarkerListElement = memo(({
     marker,
@@ -10,22 +13,7 @@ const MarkerListElement = memo(({
     remove
 }) => {
     const { theme } = useTheme();
-
-    function isPastEvent(startsAt) {
-        const processedDateTime = new Date(startsAt);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime < new Date();
-    }
-
-    function getLocalTime(dateTime) {
-        if (!dateTime) {
-            return null;
-        }
-
-        const processedDateTime = new Date(dateTime);
-        processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-        return processedDateTime;
-    }
+    const { timeZone } = useTimeZone();
 
     return (
         <div className={`${cl.marker_list_element} ${cl[theme]}`}
@@ -67,8 +55,8 @@ const MarkerListElement = memo(({
                 </span>
             </div>
             <div className={`${cl.marker_list_element__starts_at__cont}`}>
-                <span className={`${cl.marker_list_element__starts_at} ${isPastEvent(marker.startsAt) ? cl.passed : ''}`}>
-                    {getLocalTime(marker.startsAt).toLocaleString()}
+                <span className={`${cl.marker_list_element__starts_at} ${isTimeInPast(marker.startsAt) ? cl.past : ''}`}>
+                    {convertUtcToLocalTime(marker.startsAt, timeZone.name).toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT)}
                 </span>
             </div>
         </div>

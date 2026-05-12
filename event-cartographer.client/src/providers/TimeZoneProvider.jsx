@@ -5,6 +5,11 @@ import { getCurrentTimeZone, getTimeZoneInfo } from '../utils/time';
 
 const TimeZoneContext = createContext();
 
+/**
+ * A provider for managing the time zone state throughout the application.
+ * @param {Object{ children: import('react').ReactNode }} param0 
+ * @returns 
+ */
 const TimeZoneProvider = ({
     children
 }) => {

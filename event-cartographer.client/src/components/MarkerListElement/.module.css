@@ -173,7 +173,7 @@
 .marker_list_element__starts_at {
     color: var(--time-color);
 
-    &.passed {
+    &.past {
         color: red;
         font-weight: bold;
     }

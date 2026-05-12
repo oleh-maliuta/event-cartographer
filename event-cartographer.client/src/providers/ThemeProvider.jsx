@@ -4,6 +4,10 @@ import { LocalStorageKeys, ThemeValues } from '../utils/constants';
 
 const ThemeContext = createContext();
 
+/**
+ * A provider for managing the theme state throughout the application.
+ * @param {Object{ children: import('react').ReactNode }} param0
+ */
 const ThemeProvider = ({
     children
 }) => {

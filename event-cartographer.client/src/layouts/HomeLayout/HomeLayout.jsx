@@ -13,38 +13,9 @@ import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
-import { PageRoutes } from "../../utils/constants";
-import { Temporal } from "@js-temporal/polyfill";
-
-function getLocalTime(dateTime) {
-    if (!dateTime) {
-        return null;
-    }
-
-    const processedDateTime = new Date(dateTime);
-    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-    return processedDateTime;
-}
-
-function getUtcTime(dateTime) {
-    if (!dateTime) {
-        return null;
-    }
-
-    const processedDateTime = new Date(dateTime);
-    processedDateTime.setMinutes(processedDateTime.getMinutes() + processedDateTime.getTimezoneOffset());
-    return processedDateTime;
-}
-
-function getDateTimeLocalFormat(dateTime) {
-    if (!dateTime) {
-        return null;
-    }
-
-    const processedDateTime = new Date(dateTime);
-    processedDateTime.setMinutes(processedDateTime.getMinutes() - processedDateTime.getTimezoneOffset());
-    return processedDateTime.toISOString().slice(0, 19);
-}
+import { DEFAULT_DATE_TIME_FORMAT, PageRoutes } from "../../utils/constants";
+import { convertLocalTimeToUtc, convertUtcToLocalTime, isTimeInPast } from "../../utils/time";
+import { useTimeZone } from "../../hooks/useTimeZone";
 
 const HomeLayout = () => {
     const { t } = useTranslation();
@@ -84,6 +55,7 @@ const HomeLayout = () => {
     const navigate = useNavigate();
 
     const { theme } = useTheme();
+    const { timeZone } = useTimeZone();
 
     async function logOutRequest() {
         setLoggingOut(true);
@@ -118,6 +90,12 @@ const HomeLayout = () => {
 
             return result;
         }
+        const dateTimeLocalMin = markerListTimeOfStartFilter.min ?
+            convertUtcToLocalTime(markerListTimeOfStartFilter.min, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
+        const dateTimeLocalMax = markerListTimeOfStartFilter.max ?
+            convertUtcToLocalTime(markerListTimeOfStartFilter.max, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
 
         return (
             <>
@@ -269,7 +247,7 @@ const HomeLayout = () => {
                                     <input
                                         className={`${cl.marker_list_filter_panel_starts_at_min} ${cl.marker_list_filter_panel_starts_at_input}`}
                                         type='datetime-local'
-                                        value={getDateTimeLocalFormat(markerListTimeOfStartFilter.min) ?? ''}
+                                        value={dateTimeLocalMin}
                                         onChange={(e) => {
                                             setMarkerListTimeOfStartFilter(p => {
                                                 const newP = { ...p };
@@ -283,7 +261,7 @@ const HomeLayout = () => {
                                     <input
                                         className={`${cl.marker_list_filter_panel_starts_at_max} ${cl.marker_list_filter_panel_starts_at_input}`}
                                         type='datetime-local'
-                                        value={getDateTimeLocalFormat(markerListTimeOfStartFilter.max) ?? ''}
+                                        value={dateTimeLocalMax}
                                         onChange={(e) => {
                                             setMarkerListTimeOfStartFilter(p => {
                                                 const newP = { ...p };
@@ -322,6 +300,10 @@ const HomeLayout = () => {
 
     function renderMenuForMarkerEditing() {
         const isForAdding = currentMarkerMenu === 'add';
+        const dateTimeUtcValue = isForAdding ? newMarker?.startsAt : editingMarker?.startsAt;
+        const dateTimeLocalValue = dateTimeUtcValue
+            ? convertUtcToLocalTime(dateTimeUtcValue, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
 
         return (
             <form onSubmit={(e) => {
@@ -368,11 +350,14 @@ const HomeLayout = () => {
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
-                            value={getDateTimeLocalFormat(getLocalTime(isForAdding ? newMarker.startsAt : editingMarker.startsAt)) || ''}
+                            value={dateTimeLocalValue}
                             required
                             onChange={(e) => {
+                                console.log(e.target.value);
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                                onChangeAction(p => { return { ...p, startsAt: getUtcTime(e.target.value) || '' }; });
+                                const utcValue = e.target.value ?
+                                    convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
+                                onChangeAction(p => { return { ...p, startsAt: utcValue?.toString() }; });
                             }} />
                     </div>
                     <div className={`${cl.editing_marker_importance}`}>
@@ -438,6 +423,7 @@ const HomeLayout = () => {
                     isForAdding ?
                         <div className={`${cl.editing_marker_buttons}`}>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_cancel_button}`}
+                                type="button"
                                 onClick={() => {
                                     setNewMarker(null);
                                     setMarkerMenu('list');
@@ -464,6 +450,7 @@ const HomeLayout = () => {
                         :
                         <div className={`${cl.editing_marker_buttons}`}>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_go_back_button}`}
+                                type="button"
                                 onClick={() => {
                                     setEditingMarker(null);
                                     setMarkerMenu('list');
@@ -496,17 +483,19 @@ const HomeLayout = () => {
         setMarkersForListLoading(true);
         setMarkerListMessages([]);
 
-        let url = '/api/markers/search';
-        url += '?page_size=10';
-        url += `&page=${page || '1'}`;
-        url += `&q=${markerSearchQuery || ''}`;
-        url += `&sort_type=${markerListSort.type}`;
-        url += `&sort_by_asc=${markerListSort.asc}`;
-        url += `&min_time=${getDateTimeLocalFormat(getUtcTime(markerListTimeOfStartFilter.min)) ?? ''}`;
-        url += `&max_time=${getDateTimeLocalFormat(getUtcTime(markerListTimeOfStartFilter.max)) ?? ''}`;
+        const url = new URL('/api/markers/search', window.location.origin);
+        url.searchParams.append('page_size', '10');
+        url.searchParams.append('page', page || '1');
+        url.searchParams.append('q', markerSearchQuery);
+        url.searchParams.append('sort_type', markerListSort.type);
+        url.searchParams.append('sort_by_asc', markerListSort.asc);
+        url.searchParams.append('min_time', markerListTimeOfStartFilter.min
+            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.min).toString() : '');
+        url.searchParams.append('max_time', markerListTimeOfStartFilter.max
+            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.max).toString() : '');
 
         markerListImportanceFilter.forEach(el => {
-            url += `&imp=${el}`
+            url.searchParams.append('imp', el);
         });
 
         const response = await fetch(url, {
@@ -686,18 +675,15 @@ const HomeLayout = () => {
     }
 
     const getImportanceIcon = useCallback((importance, startsAt) => {
-        const isPast = Temporal.Instant.compare(
-            Temporal.Instant.from(startsAt + 'Z'),
-            Temporal.Now.instant()
-        ) < 0;
+        const isInPast = isTimeInPast(startsAt);
 
         switch (importance) {
             case 'low':
-                return isPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
+                return isInPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
             case 'medium':
-                return isPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
+                return isInPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
             case 'high':
-                return isPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
+                return isInPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
             default:
                 return undefined;
         }
@@ -762,10 +748,8 @@ const HomeLayout = () => {
         }
 
         markersForMap?.forEach(el => {
-            const isPast = Temporal.Instant.compare(
-                Temporal.Instant.from(el.startsAt + 'Z'),
-                Temporal.Now.instant()
-            ) < 0;
+            const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
 
             result.push(
                 <Marker
@@ -778,8 +762,8 @@ const HomeLayout = () => {
                                 <h2 className={cl.marker_popup__title}>{el.title}</h2>
                                 <p className={cl.marker_popup__description}>{el.description}</p>
                             </div>
-                            <p className={`${cl.marker_popup__starts_at} ${isPast ? cl.passed : ''}`}>
-                                {getLocalTime(el.startsAt).toLocaleString()}
+                            <p className={`${cl.marker_popup__starts_at} ${isTimeInPast(el.startsAt) ? cl.past : ''}`}>
+                                {dateTimeLocal}
                             </p>
                             <div className={cl.marker_popup__actions}>
                                 <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
@@ -803,7 +787,7 @@ const HomeLayout = () => {
         });
 
         return result;
-    }, [newMarker, markersForMap, t, getImportanceIcon, editMarker]);
+    }, [newMarker, markersForMap, t, getImportanceIcon, timeZone.name, editMarker]);
 
     useEffect(() => {
         const fetchUserInfo = async () => {

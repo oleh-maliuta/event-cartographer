@@ -1,8 +1,8 @@
 import { useRef, memo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
-import useRefDimensions from "../../hooks/useRefDimensions";
 import { useTheme } from '../../hooks/useTheme';
+import { useHeightCrampState } from "../../hooks/useHeightCrampState";
 
 const Panel = memo(({
     title,
@@ -13,11 +13,11 @@ const Panel = memo(({
     const panelRef = useRef(null);
 
     const { theme } = useTheme();
-    const panelDimensions = useRefDimensions(panelRef);
+    const isCramped = useHeightCrampState(panelRef);
 
     return (
         <div className={`${cl.panel__background} ${cl[theme]}`}>
-            <form className={`${cl.panel} ${panelDimensions.height > window.innerHeight ? cl.fixed : ''}`}
+            <form className={`${cl.panel} ${isCramped ? cl.fixed : ''}`}
                 ref={panelRef}
                 onSubmit={onSubmit}>
                 <div className={cl.panel__header}>
