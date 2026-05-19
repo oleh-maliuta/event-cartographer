@@ -104,9 +104,13 @@ const SignUpLayout = () => {
                     label={t('sign-up.username-input')}
                     type='text'
                     placeholder={t('sign-up.username-input')}
+                    pattern="^[^@]*$"
                     minLength='3'
                     maxLength='100'
-                    required />
+                    required
+                    valueMissingValidity={t(`sign-up.username_invalid.value_missing`)}
+                    tooShortValidity={t(`sign-up.username_invalid.too_short`)}
+                    patternValidity={t(`sign-up.username_invalid.pattern`)} />
                 <PanelInput
                     containerStyle={emailInfoInputStyle}
                     name='email'
@@ -114,17 +118,23 @@ const SignUpLayout = () => {
                     type='email'
                     placeholder={t('sign-up.email-address-input')}
                     maxLength='320'
-                    required />
+                    required
+                    valueMissingValidity={t(`sign-up.email_invalid.value_missing`)}
+                    typeMismatchValidity={t(`sign-up.email_invalid.type_mismatch`)} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
                     name='password'
                     label={t('sign-up.password-input')}
                     type='password'
                     placeholder={t('sign-up.password-input')}
+                    pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                     minLength='6'
                     maxLength='200'
                     required
-                    ref={passwordInputRef} />
+                    ref={passwordInputRef}
+                    valueMissingValidity={t(`sign-up.password_invalid.value_missing`)}
+                    tooShortValidity={t(`sign-up.password_invalid.too_short`)}
+                    patternValidity={t(`sign-up.password_invalid.pattern`)} />
                 <PanelInput
                     containerStyle={confirmPasswordInfoInputStyle}
                     label={t('sign-up.confirm-password-input')}
@@ -132,7 +142,8 @@ const SignUpLayout = () => {
                     placeholder={t('sign-up.confirm-password-input')}
                     maxLength='200'
                     required
-                    ref={confirmPasswordInputRef} />
+                    ref={confirmPasswordInputRef}
+                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)} />
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-up.create-account')}

@@ -100,10 +100,14 @@ const ResetPasswordLayout = () => {
                 label={t('reset-password.password-input')}
                 type='password'
                 placeholder={t('reset-password.password-input')}
+                pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                 minLength='6'
                 maxLength='200'
                 required
-                ref={passwordInputRef} />
+                ref={passwordInputRef}
+                valueMissingValidity={t(`reset-password.new_password_invalid.value_missing`)}
+                tooShortValidity={t(`reset-password.new_password_invalid.too_short`)}
+                patternValidity={t(`reset-password.new_password_invalid.pattern`)} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
                 label={t('reset-password.confirm-password-input')}
@@ -111,7 +115,8 @@ const ResetPasswordLayout = () => {
                 placeholder={t('reset-password.confirm-password-input')}
                 maxLength='200'
                 required
-                ref={confirmPasswordInputRef} />
+                ref={confirmPasswordInputRef}
+                valueMissingValidity={t(`reset-password.confirm_password_invalid.value_missing`)} />
             <PanelButton
                 style={submitButtonStyle}
                 text={t('reset-password.submit')}

@@ -11,17 +11,47 @@
 }
 
 .yes_no_dialog {
+    --modal_window__animation-duration: 0.3s;
+
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -30%);
     max-width: 500px;
     background-color: var(--dialog-color);
     border: none;
     border-radius: 10px;
+    opacity: 0;
+    transition: opacity var(--modal_window__animation-duration) ease-out,
+        transform var(--modal_window__animation-duration) ease-out,
+        overlay var(--modal_window__animation-duration) ease-out allow-discrete,
+        display var(--modal_window__animation-duration) ease-out allow-discrete;
 
     &::backdrop {
-        background-color: rgba(0, 0, 0, 0.65);
+        transition: display var(--modal_window__animation-duration) allow-discrete,
+            overlay var(--modal_window__animation-duration) allow-discrete,
+            background-color var(--modal_window__animation-duration);
+        background-color: hsl(0 0 0 / 0);
+    }
+
+    &[open] {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    &[open]::backdrop {
+        background-color: hsl(0 0 0 / 65%);
+    }
+
+    @starting-style {
+        &[open] {
+            opacity: 0;
+            transform: translate(-50%, -70%);
+        }
+
+        &[open]::backdrop {
+            background-color: hsl(0 0 0 / 0);
+        }
     }
 }
 

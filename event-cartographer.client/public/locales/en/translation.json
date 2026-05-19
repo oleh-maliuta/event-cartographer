@@ -4,11 +4,17 @@
     },
     "sign-in": {
         "panel-header": "Sign in",
-        "username-input": "Username or Email",
+        "username-or-email-input": "Username or Email",
         "password-input": "Password",
         "submit": "Submit",
         "sign-up-link": "Sign up",
         "forgot-password": "Forgot password?",
+        "username_or_email_invalid": {
+            "value_missing": "Username or Email is required."
+        },
+        "password_invalid": {
+            "value_missing": "Password is required."
+        },
         "reset-password-modal-window": {
             "header": "Reset password",
             "description": "Input username or email of your account to send a mail to give you the permission to reset the password.",
@@ -27,7 +33,24 @@
         "create-account": "Create account",
         "password-not-confirmed": "Password not confirmed.",
         "sign-in-link": "Sign in",
-        "email-is-sent": "Email is sent to confirm your email address."
+        "email-is-sent": "Email is sent to confirm your email address.",
+        "username_invalid": {
+            "value_missing": "Username is required.",
+            "too_short": "Username should contain at least 3 characters.",
+            "pattern": "Username can't contain '@' character."
+        },
+        "email_invalid": {
+            "value_missing": "Email is required.",
+            "type_mismatch": "Please enter a valid email (e.g., user@example.com)."
+        },
+        "password_invalid": {
+            "value_missing": "Password is required.",
+            "too_short": "Password should contain at least 6 characters.",
+            "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+        },
+        "confirm_password_invalid": {
+            "value_missing": "Password confirmation is required."
+        }
     },
     "reset-password": {
         "panel-header": "Reset password",
@@ -35,7 +58,15 @@
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
         "password-not-confirmed": "Password not confirmed.",
-        "password-is-reset": "Password is reset. Now you can use it to sign in."
+        "password-is-reset": "Password is reset. Now you can use it to sign in.",
+        "new_password_invalid": {
+            "value_missing": "Password is required.",
+            "too_short": "Password should contain at least 6 characters.",
+            "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+        },
+        "confirm_password_invalid": {
+            "value_missing": "Password confirmation is required."
+        }
     },
     "settings": {
         "header": "Settings",

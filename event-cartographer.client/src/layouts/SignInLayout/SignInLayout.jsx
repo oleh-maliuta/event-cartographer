@@ -87,11 +87,12 @@ const SignInLayout = () => {
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     name='usernameOrEmail'
-                    label={t('sign-in.username-input')}
+                    label={t('sign-in.username-or-email-input')}
                     type='text'
-                    placeholder={t('sign-in.username-input')}
+                    placeholder={t('sign-in.username-or-email-input')}
                     maxLength='100'
-                    required />
+                    required
+                    valueMissingValidity={t(`sign-in.username_or_email_invalid.value_missing`)} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
                     name='password'
@@ -99,7 +100,8 @@ const SignInLayout = () => {
                     type='password'
                     placeholder={t('sign-in.password-input')}
                     maxLength='200'
-                    required />
+                    required
+                    valueMissingValidity={t(`sign-in.password_invalid.value_missing`)} />
                 <div className={cl.forgot_password_link_cont}>
                     <span className={cl.forgot_password_link}
                         onClick={() => setDialogOpened(true)}>
