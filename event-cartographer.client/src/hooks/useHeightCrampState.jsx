@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 /**
  * A custom hook to determine if an element is cramped based on its height and the window height.
- * @param {import('react').RefObject<HTMLElement>} ref 
+ * @param {import('react').RefObject<HTMLElement>} ref - A React ref to the element being measured
  * @returns {boolean} true if the element is cramped, false otherwise
  */
 export const useHeightCrampState = (ref) => {

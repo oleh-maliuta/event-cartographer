@@ -1,45 +1,44 @@
 ﻿using EventCartographer.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventCartographer.Server.Services.EntityFramework
+namespace EventCartographer.Server.Services.EntityFramework;
+
+public class DbApp : DbContext
 {
-    public class DbApp : DbContext
+    public DbSet<ActivationCode> ActivationCodes { get; set; }
+    public DbSet<Marker> Markers { get; set; }
+    public DbSet<User> Users { get; set; }
+
+    public DbApp(DbContextOptions<DbApp> options) : base(options) { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<ActivationCode> ActivationCodes { get; set; }
-        public DbSet<Marker> Markers { get; set; }
-        public DbSet<User> Users { get; set; }
+        // column properties
 
-        public DbApp(DbContextOptions<DbApp> options) : base(options) { }
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Name)
+            .IsUnique();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // column properties
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Name)
-                .IsUnique();
+        // 1-to-many relationships
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.ActivationCodes)
+            .WithOne(ac => ac.User)
+            .HasForeignKey(ac => ac.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            // 1-to-many relationships
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Markers)
+            .WithOne(ac => ac.User)
+            .HasForeignKey(ac => ac.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.ActivationCodes)
-                .WithOne(ac => ac.User)
-                .HasForeignKey(ac => ac.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // other
 
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Markers)
-                .WithOne(ac => ac.User)
-                .HasForeignKey(ac => ac.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // other
-
-            base.OnModelCreating(modelBuilder);
-        }
+        base.OnModelCreating(modelBuilder);
     }
 }

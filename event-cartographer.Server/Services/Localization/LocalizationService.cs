@@ -1,37 +1,36 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace EventCartographer.Server.Services.Localization
+namespace EventCartographer.Server.Services.Localization;
+
+public class LocalizationService : ILocalizationService
 {
-    public class LocalizationService : ILocalizationService
+    private readonly LocalizationServiceConfigurationMetadata configuration;
+    private readonly string StringsPath;
+
+    public LocalizationService(IOptions<LocalizationServiceConfigurationMetadata> configuration)
     {
-        private readonly LocalizationServiceConfigurationMetadata configuration;
-        private readonly string StringsPath;
+        this.configuration = configuration.Value;
+        string combinedPath = Path.Combine(configuration.Value.StringsPath);
+        StringsPath = Path.IsPathRooted(combinedPath)
+            ? combinedPath
+            : Path.Combine(Directory.GetCurrentDirectory(), combinedPath);
+    }
 
-        public LocalizationService(IOptions<LocalizationServiceConfigurationMetadata> configuration)
+    public string GetString(string key, string languageCode = "en")
+    {
+        string path = Path.Combine(StringsPath, $"{languageCode}.json");
+        if (!File.Exists(path))
         {
-            this.configuration = configuration.Value;
-            string combinedPath = Path.Combine(configuration.Value.StringsPath);
-            StringsPath = Path.IsPathRooted(combinedPath)
-                ? combinedPath
-                : Path.Combine(Directory.GetCurrentDirectory(), combinedPath);
+            path = Path.Combine(StringsPath, $"{configuration.DefaultLanguage}.json");
         }
 
-        public string GetString(string key, string languageCode = "en")
+        string json = File.ReadAllText(path);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+        if (dict != null && dict.TryGetValue(key, out var value) && value != null)
         {
-            string path = Path.Combine(StringsPath, $"{languageCode}.json");
-            if (!File.Exists(path))
-            {
-                path = Path.Combine(StringsPath, $"{configuration.DefaultLanguage}.json");
-            }
-
-            string json = File.ReadAllText(path);
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-            if (dict != null && dict.TryGetValue(key, out var value) && value != null)
-            {
-                return value;
-            }
-            return key;
+            return value;
         }
+        return key;
     }
 }

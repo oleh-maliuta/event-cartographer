@@ -8,7 +8,6 @@ services:
         BUILD_CONFIGURATION: Release
         APP_UID: 1000
     ports:
-      - "8080:8080"
       - "8081:8081"
     env_file:
       - event-cartographer.Server/.env

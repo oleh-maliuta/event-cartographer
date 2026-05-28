@@ -1,5 +1,4 @@
 ﻿using EventCartographer.Server.Models;
-using EventCartographer.Server.Requests;
 using EventCartographer.Server.Responses;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
@@ -12,634 +11,628 @@ using Microsoft.EntityFrameworkCore;
 using EventCartographer.Server.Utils;
 using EventCartographer.Server.Services.Localization;
 using EventCartographer.Server.Requests.Queries;
+using EventCartographer.Server.Requests.Bodies;
 
-namespace EventCartographer.Server.Controllers
+namespace EventCartographer.Server.Controllers;
+
+[ApiController]
+[Route("api/users")]
+public class UserController(
+        DbApp db,
+        IEmailService emailService,
+        ILocalizationService localizationService) : BaseController(db)
 {
-    [ApiController]
-    [Route("api/users")]
-    public class UserController : BaseController
+    private readonly IEmailService _emailService = emailService;
+    private readonly ILocalizationService _localizationService = localizationService;
+
+    [HttpPost("sign-up")]
+    public async Task<IActionResult> SignUp(
+        [FromQuery] LocaleQuery query,
+        [FromForm] SignUpRequest request)
     {
-        private readonly IEmailService _emailService;
-        private readonly ILocalizationService _localizationService;
-
-        public UserController(
-            DbApp db,
-            IEmailService emailService,
-            ILocalizationService localizationService) : base(db)
+        if (await DB.Users.AnyAsync(x => x.Name == request.Username))
         {
-            _emailService = emailService;
-            _localizationService = localizationService;
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-username"));
         }
 
-        [HttpPost("sign-up")]
-        public async Task<IActionResult> SignUp(
-            [FromQuery] LocaleQuery query,
-            [FromForm] SignUpRequest request)
+        if (await DB.Users.AnyAsync(x => x.Email == request.Email))
         {
-            if (await DB.Users.AnyAsync(x => x.Name == request.Username))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-username"));
-            }
-
-            if (await DB.Users.AnyAsync(x => x.Email == request.Email))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
-            }
-
-            if (!PasswordTool.CheckFormat(request.Password ?? ""))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
-            }
-
-            string token = await StringTool.RandomTokenAsync(256, async id =>
-                await DB.ActivationCodes
-                .Include(x => x.User)
-                .AnyAsync(x => x.User.Email == request.Email));
-
-            try
-            {
-                var emailURL = new UriBuilder
-                {
-                    Scheme = HttpContext.Request.Scheme,
-                    Host = HttpContext.Request.Host.Host,
-                    Port = HttpContext.Request.Host.Port ?? -1,
-                    Path = "api/users/confirm-email",
-                };
-
-                using (var content = new FormUrlEncodedContent([
-                    new("email", request.Email!),
-                    new("token", token),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
-
-                await _emailService.SendEmailUseTemplateAsync(
-                    email: request.Email!,
-                    templateName: "registration_confirm.html",
-                    parameters: new Dictionary<string, string>
-                    {
-                        { "username", request.Username! },
-                        { "link", emailURL.ToString() }
-                    },
-                    query.Locale!
-                );
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
-            }
-
-            User user = (await DB.Users.AddAsync(new()
-            {
-                Name = request.Username!,
-                Email = request.Email!,
-                PasswordHash = PasswordTool.Hash(request.Password!),
-                PermissionToDeletePastEvents = false,
-                IsActivated = false,
-                LastActivityAt = DateTime.UtcNow
-            })).Entity;
-
-            await DB.ActivationCodes.AddAsync(new()
-            {
-                UserId = user.Id,
-                User = user,
-                Code = token,
-                Action = "confirm-registration",
-                ExpiresAt = DateTime.UtcNow.AddHours(12)
-            });
-
-            await DB.SaveChangesAsync();
-            return Ok(new UserResponse(user));
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.same-email"));
         }
 
-        [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn(
-            [FromForm] SignInRequest request)
+        if (!PasswordTool.CheckFormat(request.Password ?? ""))
         {
-            User? user;
-
-            if (request.UsernameOrEmail?.Contains('@') == true)
-            {
-                request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-                user = await DB.Users.SingleOrDefaultAsync(
-                    x => x.Email == request.UsernameOrEmail);
-            }
-            else
-            {
-                user = await DB.Users.SingleOrDefaultAsync(
-                    x => x.Name == request.UsernameOrEmail);
-            }
-
-            if (user == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
-            }
-
-            if (!user.IsActivated)
-            {
-                return Unauthorized(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.not-activated"));
-            }
-
-            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
-            }
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(new ClaimsIdentity(
-                [
-                    new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new(ClaimTypes.Name, user.Name)
-                ], CookieAuthenticationDefaults.AuthenticationScheme)),
-                new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(3)
-                }
-            );
-
-            user.LastActivityAt = DateTime.UtcNow;
-
-            await DB.SaveChangesAsync();
-            return Ok(new UserResponse(user));
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
         }
 
-        [HttpGet("logout")]
-        public async Task<IActionResult> Logout()
+        string token = await StringTool.RandomTokenAsync(256, async id =>
+            await DB.ActivationCodes
+            .Include(x => x.User)
+            .AnyAsync(x => x.User.Email == request.Email));
+
+        try
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok(new BaseResponse.SuccessResponse(null));
-        }
-
-        [HttpGet("check")]
-        public IActionResult Check()
-        {
-            if (User?.Identity?.IsAuthenticated == true)
-            {
-                return Ok(new BaseResponse.SuccessResponse(null));
-            }
-            return Unauthorized(new BaseResponse.ErrorResponse(null));
-        }
-
-        [Authorized]
-        [HttpGet("self")]
-        public IActionResult SelfInfo()
-        {
-            return Ok(new UserResponse(AuthorizedUser));
-        }
-
-        [Authorized]
-        [HttpPut("info")]
-        public async Task<IActionResult> UpdateUserInfo(
-            [FromBody] UpdateUserInfoRequest request)
-        {
-            User user = AuthorizedUser;
-
-            if (await DB.Users.AnyAsync(x => x.Name == request.Username && x.Id != user.Id))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-info.same-username"));
-            }
-
-            if (user.PermissionToDeletePastEvents != request.PermissionToDeletePastEvents)
-            {
-                Marker[] passedEvents = await DB.Markers
-                    .Where(x => x.UserId == user.Id && x.StartsAt < DateTime.UtcNow)
-                    .ToArrayAsync();
-
-                DB.Markers.RemoveRange(passedEvents);
-            }
-
-            user.Name = request.Username!;
-            user.PermissionToDeletePastEvents = request.PermissionToDeletePastEvents!.Value;
-            user.LastActivityAt = DateTime.UtcNow;
-
-            await DB.SaveChangesAsync();
-            return Ok(new UserResponse(user));
-        }
-
-        [Authorized]
-        [HttpPut("password")]
-        public async Task<IActionResult> UpdateUserPassword(
-            [FromForm] UpdateUserPasswordRequest request)
-        {
-            User? user = AuthorizedUser;
-
-            if (!PasswordTool.Validate(request.OldPassword!, user.PasswordHash))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.invalid-old-password"));
-            }
-
-            if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.incorrect-password"));
-            }
-
-            user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
-            user.LastActivityAt = DateTime.UtcNow;
-
-            await DB.SaveChangesAsync();
-            return Ok(new UserResponse(user));
-        }
-
-        [Authorized]
-        [HttpPut("email")]
-        public async Task<IActionResult> UpdateUserEmail(
-            [FromQuery] LocaleQuery query,
-            [FromForm] UpdateUserEmailRequest request)
-        {
-            User user = AuthorizedUser;
-
-            if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action.StartsWith("change-email")).AnyAsync())
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.already-exists"));
-            }
-
-            if (user.Email == request.Email)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
-            }
-
-            if (await DB.Users.AnyAsync(x => x.Email == request.Email))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.same-email"));
-            }
-
-            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
-            }
-
-            string token = await StringTool.RandomTokenAsync(256, async id =>
-                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
-
-            try
-            {
-                var emailURL = new UriBuilder
-                {
-                    Scheme = HttpContext.Request.Scheme,
-                    Host = HttpContext.Request.Host.Host,
-                    Port = HttpContext.Request.Host.Port ?? -1,
-                    Path = "api/users/confirm-email",
-                };
-
-                using (var content = new FormUrlEncodedContent([
-                    new("email", user.Email),
-                    new("token", token),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
-
-                await _emailService.SendEmailUseTemplateAsync(
-                    email: request.Email!,
-                    templateName: "change_email_confirm.html",
-                    parameters: new Dictionary<string, string>
-                    {
-                        { "username", user.Name },
-                        { "link", emailURL.ToString() }
-                    },
-                    query.Locale!);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
-            }
-
-            await DB.ActivationCodes.AddAsync(new()
-            {
-                UserId = user.Id!,
-                User = user,
-                Code = token,
-                Action = $"change-email,{request.Email}",
-                ExpiresAt = DateTime.UtcNow.AddHours(12)
-            });
-
-            await DB.SaveChangesAsync();
-            return Ok(new BaseResponse.SuccessResponse(null));
-        }
-
-        [Authorized]
-        [HttpPut("delete")]
-        public async Task<IActionResult> DeleteUser(
-            [FromQuery] LocaleQuery query,
-            [FromForm] DeleteUserRequest request)
-        {
-            User? user = AuthorizedUser;
-
-            if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.invalid-password"));
-            }
-
-            if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action == "delete-user").AnyAsync())
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.already-exists"));
-            }
-
-            string token = await StringTool.RandomTokenAsync(256, async id =>
-                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
-
-            try
-            {
-                var emailURL = new UriBuilder
-                {
-                    Scheme = HttpContext.Request.Scheme,
-                    Host = HttpContext.Request.Host.Host,
-                    Port = HttpContext.Request.Host.Port ?? -1,
-                    Path = "api/users/confirm-email",
-                };
-
-                using (var content = new FormUrlEncodedContent([
-                    new("email", user.Email),
-                    new("token", token),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
-
-                await _emailService.SendEmailUseTemplateAsync(
-                    email: user.Email,
-                    templateName: "delete_account_confirm.html",
-                    parameters: new Dictionary<string, string>
-                    {
-                        { "username", user.Name },
-                        { "link", emailURL.ToString() }
-                    },
-                    query.Locale!);
-            }
-            catch (Exception)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
-            }
-
-            await DB.ActivationCodes.AddAsync(new()
-            {
-                UserId = user.Id!,
-                User = user,
-                Code = token,
-                Action = "delete-user",
-                ExpiresAt = DateTime.UtcNow.AddHours(12)
-            });
-
-            await DB.SaveChangesAsync();
-            return Ok(new BaseResponse.SuccessResponse(null));
-        }
-
-        [HttpPost("reset-password-permission")]
-        public async Task<IActionResult> SendResetPasswordPermission(
-            [FromQuery] LocaleQuery query,
-            [FromForm] SendResetPasswordPermissionRequest request)
-        {
-            User? user;
-
-            if (request.UsernameOrEmail?.Contains('@') == true)
-            {
-                request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-                user = await DB.Users.SingleOrDefaultAsync(
-                    x => x.Email == request.UsernameOrEmail);
-            }
-            else
-            {
-                user = await DB.Users.SingleOrDefaultAsync(
-                    x => x.Name == request.UsernameOrEmail);
-            }
-
-            if (user == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.user-not-found"));
-            }
-
-            if (await DB.ActivationCodes
-                .AnyAsync(x =>
-                    x.UserId == user.Id &&
-                    x.Action.StartsWith("reset-password-permission") &&
-                    x.ExpiresAt > DateTime.UtcNow))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
-            }
-
-            string token = await StringTool.RandomTokenAsync(256, async id =>
-                await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
-
-            try
-            {
-                var emailURL = new UriBuilder
-                {
-                    Scheme = HttpContext.Request.Scheme,
-                    Host = HttpContext.Request.Host.Host,
-                    Port = HttpContext.Request.Host.Port ?? -1,
-                    Path = "api/users/accept-reset-password",
-                };
-
-                await _emailService.SendEmailUseTemplateAsync(
-                    email: user.Email,
-                    templateName: "reset_password_permission.html",
-                    parameters: new Dictionary<string, string>
-                    {
-                        { "username", user.Name },
-                        { "token", token },
-                        { "link", emailURL.ToString() }
-                    },
-                    query.Locale!);
-            }
-            catch (Exception)
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.email-error"));
-            }
-
-            DateTime resTime = DateTime.UtcNow;
-
-            await DB.ActivationCodes.AddAsync(new()
-            {
-                UserId = user.Id!,
-                User = user,
-                Code = token,
-                Action = "reset-password-permission",
-                ExpiresAt = resTime.AddHours(12)
-            });
-
-            await DB.SaveChangesAsync();
-            return Ok(new BaseResponse.SuccessResponse(null));
-        }
-
-        [HttpPost("accept-reset-password")]
-        public async Task<IActionResult> AcceptPasswordResetting(
-            [FromForm] AcceptPasswordResettingRequest request)
-        {
-            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
-
-            if (user == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.user-not-found"));
-            }
-
-            ActivationCode? activationCode = await DB.ActivationCodes
-                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
-
-            if (activationCode == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
-            }
-
-            if (DateTime.UtcNow > activationCode.ExpiresAt)
-            {
-                DB.ActivationCodes.Remove(activationCode);
-                await DB.SaveChangesAsync();
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
-            }
-
-            string[] actionInfo = activationCode.Action.Split(',');
-
-            if (actionInfo[0] != "reset-password-permission")
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
-            }
-
-            var linkToResetPassword = new UriBuilder
+            var emailURL = new UriBuilder
             {
                 Scheme = HttpContext.Request.Scheme,
                 Host = HttpContext.Request.Host.Host,
                 Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "reset-password",
+                Path = "api/users/confirm-email",
             };
 
             using (var content = new FormUrlEncodedContent([
-                new("user", user.Name),
+                new("email", request.Email!),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
+            await _emailService.SendEmailUseTemplateAsync(
+                email: request.Email!,
+                templateName: "registration_confirm.html",
+                parameters: new Dictionary<string, string>
+                {
+                        { "username", request.Username! },
+                        { "link", emailURL.ToString() }
+                },
+                query.Locale!
+            );
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
+        }
+
+        User user = (await DB.Users.AddAsync(new()
+        {
+            Name = request.Username!,
+            Email = request.Email!,
+            PasswordHash = PasswordTool.Hash(request.Password!),
+            PermissionToDeletePastEvents = false,
+            IsActivated = false,
+            LastActivityAt = DateTime.UtcNow
+        })).Entity;
+
+        await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id,
+            User = user,
+            Code = token,
+            Action = "confirm-registration",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        });
+
+        await DB.SaveChangesAsync();
+        return Ok(new UserResponse(user));
+    }
+
+    [HttpPost("sign-in")]
+    public async Task<IActionResult> SignIn(
+        [FromForm] SignInRequest request)
+    {
+        User? user;
+
+        if (request.UsernameOrEmail?.Contains('@') == true)
+        {
+            request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
+            user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Email == request.UsernameOrEmail);
+        }
+        else
+        {
+            user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Name == request.UsernameOrEmail);
+        }
+
+        if (user == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
+        }
+
+        if (!user.IsActivated)
+        {
+            return Unauthorized(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.not-activated"));
+        }
+
+        if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-in.username-email-or-password"));
+        }
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(new ClaimsIdentity(
+            [
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new(ClaimTypes.Name, user.Name)
+            ], CookieAuthenticationDefaults.AuthenticationScheme)),
+            new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(3)
+            }
+        );
+
+        user.LastActivityAt = DateTime.UtcNow;
+
+        await DB.SaveChangesAsync();
+        return Ok(new UserResponse(user));
+    }
+
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [HttpGet("check")]
+    public IActionResult Check()
+    {
+        if (User?.Identity?.IsAuthenticated == true)
+        {
+            return Ok(new BaseResponse.SuccessResponse(null));
+        }
+        return Unauthorized(new BaseResponse.ErrorResponse(null));
+    }
+
+    [Authorized]
+    [HttpGet("self")]
+    public IActionResult SelfInfo()
+    {
+        return Ok(new UserResponse(AuthorizedUser));
+    }
+
+    [Authorized]
+    [HttpPut("info")]
+    public async Task<IActionResult> UpdateUserInfo(
+        [FromBody] UpdateUserInfoRequest request)
+    {
+        User user = AuthorizedUser;
+
+        if (await DB.Users.AnyAsync(x => x.Name == request.Username && x.Id != user.Id))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-info.same-username"));
+        }
+
+        if (user.PermissionToDeletePastEvents != request.PermissionToDeletePastEvents)
+        {
+            Marker[] passedEvents = await DB.Markers
+                .Where(x => x.UserId == user.Id && x.StartsAt < DateTime.UtcNow)
+                .ToArrayAsync();
+
+            DB.Markers.RemoveRange(passedEvents);
+        }
+
+        user.Name = request.Username!;
+        user.PermissionToDeletePastEvents = request.PermissionToDeletePastEvents!.Value;
+        user.LastActivityAt = DateTime.UtcNow;
+
+        await DB.SaveChangesAsync();
+        return Ok(new UserResponse(user));
+    }
+
+    [Authorized]
+    [HttpPut("password")]
+    public async Task<IActionResult> UpdateUserPassword(
+        [FromForm] UpdateUserPasswordRequest request)
+    {
+        User? user = AuthorizedUser;
+
+        if (!PasswordTool.Validate(request.OldPassword!, user.PasswordHash))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.invalid-old-password"));
+        }
+
+        if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-password.incorrect-password"));
+        }
+
+        user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
+        user.LastActivityAt = DateTime.UtcNow;
+
+        await DB.SaveChangesAsync();
+        return Ok(new UserResponse(user));
+    }
+
+    [Authorized]
+    [HttpPut("email")]
+    public async Task<IActionResult> UpdateUserEmail(
+        [FromQuery] LocaleQuery query,
+        [FromForm] UpdateUserEmailRequest request)
+    {
+        User user = AuthorizedUser;
+
+        if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action.StartsWith("change-email")).AnyAsync())
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.already-exists"));
+        }
+
+        if (user.Email == request.Email)
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
+        }
+
+        if (await DB.Users.AnyAsync(x => x.Email == request.Email))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.same-email"));
+        }
+
+        if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
+        }
+
+        string token = await StringTool.RandomTokenAsync(256, async id =>
+            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+
+        try
+        {
+            var emailURL = new UriBuilder
+            {
+                Scheme = HttpContext.Request.Scheme,
+                Host = HttpContext.Request.Host.Host,
+                Port = HttpContext.Request.Host.Port ?? -1,
+                Path = "api/users/confirm-email",
+            };
+
+            using (var content = new FormUrlEncodedContent([
+                new("email", user.Email),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
+            await _emailService.SendEmailUseTemplateAsync(
+                email: request.Email!,
+                templateName: "change_email_confirm.html",
+                parameters: new Dictionary<string, string>
+                {
+                        { "username", user.Name },
+                        { "link", emailURL.ToString() }
+                },
+                query.Locale!);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
+        }
+
+        await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Code = token,
+            Action = $"change-email,{request.Email}",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        });
+
+        await DB.SaveChangesAsync();
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [Authorized]
+    [HttpPut("delete")]
+    public async Task<IActionResult> DeleteUser(
+        [FromQuery] LocaleQuery query,
+        [FromForm] DeleteUserRequest request)
+    {
+        User? user = AuthorizedUser;
+
+        if (!PasswordTool.Validate(request.Password!, user.PasswordHash))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.invalid-password"));
+        }
+
+        if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action == "delete-user").AnyAsync())
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.already-exists"));
+        }
+
+        string token = await StringTool.RandomTokenAsync(256, async id =>
+            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+
+        try
+        {
+            var emailURL = new UriBuilder
+            {
+                Scheme = HttpContext.Request.Scheme,
+                Host = HttpContext.Request.Host.Host,
+                Port = HttpContext.Request.Host.Port ?? -1,
+                Path = "api/users/confirm-email",
+            };
+
+            using (var content = new FormUrlEncodedContent([
+                new("email", user.Email),
+                    new("token", token),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
+            await _emailService.SendEmailUseTemplateAsync(
+                email: user.Email,
+                templateName: "delete_account_confirm.html",
+                parameters: new Dictionary<string, string>
+                {
+                        { "username", user.Name },
+                        { "link", emailURL.ToString() }
+                },
+                query.Locale!);
+        }
+        catch (Exception)
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
+        }
+
+        await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Code = token,
+            Action = "delete-user",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        });
+
+        await DB.SaveChangesAsync();
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [HttpPost("reset-password-permission")]
+    public async Task<IActionResult> SendResetPasswordPermission(
+        [FromQuery] LocaleQuery query,
+        [FromForm] SendResetPasswordPermissionRequest request)
+    {
+        User? user;
+
+        if (request.UsernameOrEmail?.Contains('@') == true)
+        {
+            request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
+            user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Email == request.UsernameOrEmail);
+        }
+        else
+        {
+            user = await DB.Users.SingleOrDefaultAsync(
+                x => x.Name == request.UsernameOrEmail);
+        }
+
+        if (user == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.user-not-found"));
+        }
+
+        if (await DB.ActivationCodes
+            .AnyAsync(x =>
+                x.UserId == user.Id &&
+                x.Action.StartsWith("reset-password-permission") &&
+                x.ExpiresAt > DateTime.UtcNow))
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
+        }
+
+        string token = await StringTool.RandomTokenAsync(256, async id =>
+            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+
+        try
+        {
+            var emailURL = new UriBuilder
+            {
+                Scheme = HttpContext.Request.Scheme,
+                Host = HttpContext.Request.Host.Host,
+                Port = HttpContext.Request.Host.Port ?? -1,
+                Path = "api/users/accept-reset-password",
+            };
+
+            await _emailService.SendEmailUseTemplateAsync(
+                email: user.Email,
+                templateName: "reset_password_permission.html",
+                parameters: new Dictionary<string, string>
+                {
+                        { "username", user.Name },
+                        { "token", token },
+                        { "link", emailURL.ToString() }
+                },
+                query.Locale!);
+        }
+        catch (Exception)
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.email-error"));
+        }
+
+        DateTime resTime = DateTime.UtcNow;
+
+        await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Code = token,
+            Action = "reset-password-permission",
+            ExpiresAt = resTime.AddHours(12)
+        });
+
+        await DB.SaveChangesAsync();
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [HttpPost("accept-reset-password")]
+    public async Task<IActionResult> AcceptPasswordResetting(
+        [FromForm] AcceptPasswordResettingRequest request)
+    {
+        User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+
+        if (user == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.user-not-found"));
+        }
+
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
+
+        if (activationCode == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
+        }
+
+        if (DateTime.UtcNow > activationCode.ExpiresAt)
+        {
+            DB.ActivationCodes.Remove(activationCode);
+            await DB.SaveChangesAsync();
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
+        }
+
+        string[] actionInfo = activationCode.Action.Split(',');
+
+        if (actionInfo[0] != "reset-password-permission")
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
+        }
+
+        var linkToResetPassword = new UriBuilder
+        {
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "reset-password",
+        };
+
+        using (var content = new FormUrlEncodedContent([
+            new("user", user.Name),
                 new("token", activationCode.Code),
             ])) { linkToResetPassword.Query = await content.ReadAsStringAsync(); }
 
-            if (actionInfo.Length < 2)
-            {
-                activationCode.Action += ",accepted";
-            }
-            else
-            {
-                await DB.SaveChangesAsync();
-                return Redirect(linkToResetPassword.ToString());
-            }
-
+        if (actionInfo.Length < 2)
+        {
+            activationCode.Action += ",accepted";
+        }
+        else
+        {
             await DB.SaveChangesAsync();
             return Redirect(linkToResetPassword.ToString());
         }
 
-        [HttpPut("reset-password")]
-        public async Task<IActionResult> ResetPassword(
-            [FromForm] ResetPasswordRequest request)
+        await DB.SaveChangesAsync();
+        return Redirect(linkToResetPassword.ToString());
+    }
+
+    [HttpPut("reset-password")]
+    public async Task<IActionResult> ResetPassword(
+        [FromForm] ResetPasswordRequest request)
+    {
+        if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
         {
-            if (!PasswordTool.CheckFormat(request.NewPassword ?? ""))
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));
-            }
-
-            User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
-
-            if (user == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.user-not-found"));
-            }
-
-            ActivationCode? activationCode = await DB.ActivationCodes
-                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
-
-            if (activationCode == null)
-            {
-                return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
-            }
-
-            if (DateTime.UtcNow > activationCode.ExpiresAt)
-            {
-                DB.ActivationCodes.Remove(activationCode);
-                await DB.SaveChangesAsync();
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
-            }
-
-            string[] actionInfo = activationCode.Action.Split(',');
-
-            if (actionInfo[0] != "reset-password-permission")
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
-            }
-
-            if (actionInfo.Length < 2 || actionInfo[1] != "accepted")
-            {
-                return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
-            }
-
-            user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
-            user.LastActivityAt = DateTime.UtcNow;
-
-            DB.ActivationCodes.Remove(activationCode);
-
-            await DB.SaveChangesAsync();
-            return Ok(new BaseResponse.SuccessResponse(null));
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));
         }
 
-        [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(
-            [FromQuery] ConfirmEmailQuery query)
+        User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+
+        if (user == null)
         {
-            User? user = await DB.Users.SingleOrDefaultAsync(
-                x => x.Email == query.Email!);
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.user-not-found"));
+        }
 
-            if (user == null)
-            {
-                return MessageContentResult(
-                    false,
-                    _localizationService.GetString("fail", query.Locale ?? "en"),
-                    _localizationService.GetString("user-not-found", query.Locale ?? "en"));
-            }
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
 
-            ActivationCode? activationCode = await DB.ActivationCodes
-                .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == query.Token);
+        if (activationCode == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
+        }
 
-            if (activationCode == null)
-            {
-                return MessageContentResult(
-                    false,
-                    _localizationService.GetString("fail", query.Locale ?? "en"),
-                    _localizationService.GetString("link-issue", query.Locale ?? "en"));
-            }
+        if (DateTime.UtcNow > activationCode.ExpiresAt)
+        {
+            DB.ActivationCodes.Remove(activationCode);
+            await DB.SaveChangesAsync();
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
+        }
 
-            if (DateTime.UtcNow > activationCode.ExpiresAt)
-            {
-                DB.ActivationCodes.Remove(activationCode);
-                await DB.SaveChangesAsync();
-                return MessageContentResult(
-                    false,
-                    _localizationService.GetString("fail", query.Locale ?? "en"),
-                    _localizationService.GetString("link-issue", query.Locale ?? "en"));
-            }
+        string[] actionInfo = activationCode.Action.Split(',');
 
-            string[] actionInfo = activationCode.Action.Split(',');
-            string messageCode;
+        if (actionInfo[0] != "reset-password-permission")
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
+        }
 
-            switch (actionInfo[0])
-            {
-                case "confirm-registration":
-                    user.IsActivated = true;
-                    user.LastActivityAt = DateTime.UtcNow;
-                    messageCode = "registration-completed";
-                    DB.ActivationCodes.Remove(activationCode);
-                    break;
-                case "change-email":
-                    user.Email = actionInfo[1];
-                    user.LastActivityAt = DateTime.UtcNow;
-                    messageCode = "email-confirmed";
-                    DB.ActivationCodes.Remove(activationCode);
-                    break;
-                case "delete-user":
-                    messageCode = "account-deleted";
-                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    DB.Users.Remove(user);
-                    break;
-                default:
-                    return MessageContentResult(
-                        false,
-                        _localizationService.GetString("fail", query.Locale ?? "en"),
-                        _localizationService.GetString("unknown-action", query.Locale ?? "en"));
-            }
+        if (actionInfo.Length < 2 || actionInfo[1] != "accepted")
+        {
+            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
+        }
 
+        user.PasswordHash = PasswordTool.Hash(request.NewPassword!);
+        user.LastActivityAt = DateTime.UtcNow;
+
+        DB.ActivationCodes.Remove(activationCode);
+
+        await DB.SaveChangesAsync();
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(
+        [FromQuery] ConfirmEmailQuery query)
+    {
+        User? user = await DB.Users.SingleOrDefaultAsync(
+            x => x.Email == query.Email!);
+
+        if (user == null)
+        {
+            return MessageContentResult(
+                false,
+                _localizationService.GetString("fail", query.Locale ?? "en"),
+                _localizationService.GetString("user-not-found", query.Locale ?? "en"));
+        }
+
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == query.Token);
+
+        if (activationCode == null)
+        {
+            return MessageContentResult(
+                false,
+                _localizationService.GetString("fail", query.Locale ?? "en"),
+                _localizationService.GetString("link-issue", query.Locale ?? "en"));
+        }
+
+        if (DateTime.UtcNow > activationCode.ExpiresAt)
+        {
+            DB.ActivationCodes.Remove(activationCode);
             await DB.SaveChangesAsync();
             return MessageContentResult(
-                true,
-                _localizationService.GetString("success", query.Locale ?? "en"),
-                _localizationService.GetString(messageCode, query.Locale ?? "en"));
+                false,
+                _localizationService.GetString("fail", query.Locale ?? "en"),
+                _localizationService.GetString("link-issue", query.Locale ?? "en"));
         }
+
+        string[] actionInfo = activationCode.Action.Split(',');
+        string messageCode;
+
+        switch (actionInfo[0])
+        {
+            case "confirm-registration":
+                user.IsActivated = true;
+                user.LastActivityAt = DateTime.UtcNow;
+                messageCode = "registration-completed";
+                DB.ActivationCodes.Remove(activationCode);
+                break;
+            case "change-email":
+                user.Email = actionInfo[1];
+                user.LastActivityAt = DateTime.UtcNow;
+                messageCode = "email-confirmed";
+                DB.ActivationCodes.Remove(activationCode);
+                break;
+            case "delete-user":
+                messageCode = "account-deleted";
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                DB.Users.Remove(user);
+                break;
+            default:
+                return MessageContentResult(
+                    false,
+                    _localizationService.GetString("fail", query.Locale ?? "en"),
+                    _localizationService.GetString("unknown-action", query.Locale ?? "en"));
+        }
+
+        await DB.SaveChangesAsync();
+        return MessageContentResult(
+            true,
+            _localizationService.GetString("success", query.Locale ?? "en"),
+            _localizationService.GetString(messageCode, query.Locale ?? "en"));
     }
 }

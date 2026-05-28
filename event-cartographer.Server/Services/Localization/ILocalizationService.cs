@@ -1,7 +1,6 @@
-﻿namespace EventCartographer.Server.Services.Localization
+﻿namespace EventCartographer.Server.Services.Localization;
+
+public interface ILocalizationService
 {
-    public interface ILocalizationService
-    {
-        string GetString(string key, string languageCode = "en");
-    }
+    string GetString(string key, string languageCode = "en");
 }

@@ -1,23 +1,23 @@
-﻿namespace EventCartographer.Server.Utils
+﻿namespace EventCartographer.Server.Utils;
+
+public static class StringTool
 {
-    public static class StringTool
+    private static readonly string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+    private static readonly Random _random = new();
+
+    public static async Task<string> RandomTokenAsync(
+        int length,
+        Func<string, Task<bool>> existsInDatabase)
     {
-        private static readonly string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        private static readonly Random _random = new();
+        string token;
 
-        public static async Task<string> RandomTokenAsync(
-            int length,
-            Func<string, Task<bool>> existsInDatabase)
+        do
         {
-            string token;
-
-            do {
-                token = new string([..
+            token = new string([..
                     Enumerable.Repeat(chars, length)
                     .Select(x => x[_random.Next(x.Length)])]);
-            } while (await existsInDatabase(token));
+        } while (await existsInDatabase(token));
 
-            return token;
-        }
+        return token;
     }
 }

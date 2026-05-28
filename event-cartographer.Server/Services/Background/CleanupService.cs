@@ -2,61 +2,60 @@
 using EventCartographer.Server.Services.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventCartographer.Server.Services.Background
+namespace EventCartographer.Server.Services.Background;
+
+public class CleanupService : BackgroundService
 {
-    public class CleanupService : BackgroundService
+    private readonly IServiceScopeFactory _factory;
+    private readonly ILogger<CleanupService> _logger;
+    private readonly TimeSpan _period = TimeSpan.FromHours(1);
+    private DbApp? _database;
+
+    public bool IsEnabled { get; set; }
+
+    public CleanupService(
+        ILogger<CleanupService> logger,
+        IServiceScopeFactory factory)
     {
-        private readonly IServiceScopeFactory _factory;
-        private readonly ILogger<CleanupService> _logger;
-        private readonly TimeSpan _period = TimeSpan.FromHours(1);
-        private DbApp? _database;
+        _logger = logger;
+        _factory = factory;
+    }
 
-        public bool IsEnabled { get; set; }
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await using var scope = _factory.CreateAsyncScope();
+        _database = scope.ServiceProvider.GetRequiredService<DbApp>();
 
-        public CleanupService(
-            ILogger<CleanupService> logger,
-            IServiceScopeFactory factory)
+        if (_database == null)
         {
-            _logger = logger;
-            _factory = factory;
+            _logger.LogError("Can not connect to the DB in Cleanup service!");
+            return;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            await using var scope = _factory.CreateAsyncScope();
-            _database = scope.ServiceProvider.GetRequiredService<DbApp>();
+            DateTime now = DateTime.UtcNow;
 
-            if (_database == null)
-            {
-                _logger.LogError("Can not connect to the DB in Cleanup service!");
-                return;
-            }
+            _logger.LogInformation("Cleanup service running at: {time}", now);
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                DateTime now = DateTime.UtcNow;
+            ActivationCode[] activationCodesToCleanup = await _database.ActivationCodes
+                .Where(x => now > x.ExpiresAt)
+                .ToArrayAsync(stoppingToken);
+            User[] usersToCleanup = await _database.Users
+                .Where(x => now > x.LastActivityAt.AddYears(3) || (!x.IsActivated && now > x.LastActivityAt.AddHours(12)))
+                .ToArrayAsync(stoppingToken);
 
-                _logger.LogInformation("Cleanup service running at: {time}", now);
+            _database.ActivationCodes.RemoveRange(activationCodesToCleanup);
+            _database.Users.RemoveRange(usersToCleanup);
 
-                ActivationCode[] activationCodesToCleanup = await _database.ActivationCodes
-                    .Where(x => now > x.ExpiresAt)
-                    .ToArrayAsync(stoppingToken);
-                User[] usersToCleanup = await _database.Users
-                    .Where(x => now > x.LastActivityAt.AddYears(3) || (!x.IsActivated && now > x.LastActivityAt.AddHours(12)))
-                    .ToArrayAsync(stoppingToken);
-
-                _database.ActivationCodes.RemoveRange(activationCodesToCleanup);
-                _database.Users.RemoveRange(usersToCleanup);
-
-                await _database.SaveChangesAsync(stoppingToken);
-                await Task.Delay(_period, stoppingToken);
-            }
+            await _database.SaveChangesAsync(stoppingToken);
+            await Task.Delay(_period, stoppingToken);
         }
+    }
 
-        public override Task StopAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation("Cleanup Service is stopping...");
-            return Task.CompletedTask;
-        }
+    public override Task StopAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Cleanup Service is stopping...");
+        return Task.CompletedTask;
     }
 }

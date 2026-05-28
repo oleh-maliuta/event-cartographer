@@ -4,7 +4,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
 EXPOSE 8081
 
 
@@ -23,13 +22,6 @@ COPY ["event-cartographer.Server/event-cartographer.Server.csproj", "event-carto
 COPY ["event-cartographer.client/event-cartographer.client.esproj", "event-cartographer.client/"]
 RUN dotnet restore "./event-cartographer.Server/event-cartographer.Server.csproj"
 COPY . .
-
-# Build React client
-WORKDIR "/src/event-cartographer.client"
-RUN npm install
-RUN npm run build
-RUN mkdir -p "/src/event-cartographer.Server/wwwroot"
-RUN cp -r dist/* "/src/event-cartographer.Server/wwwroot/" || true
 
 WORKDIR "/src/event-cartographer.Server"
 RUN dotnet build "./event-cartographer.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build

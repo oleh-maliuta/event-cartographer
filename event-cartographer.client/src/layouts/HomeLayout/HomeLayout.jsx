@@ -351,9 +351,9 @@ const HomeLayout = () => {
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
                             type='datetime-local'
                             value={dateTimeLocalValue}
+                            step="60"
                             required
                             onChange={(e) => {
-                                console.log(e.target.value);
                                 const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
                                 const utcValue = e.target.value ?
                                     convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
