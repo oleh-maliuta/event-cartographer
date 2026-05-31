@@ -691,12 +691,6 @@
     width: calc(100% - 85px);
 }
 
-.editing_marker_time_and_importance {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-top: 15px;
-}
-
 .editing_marker_starts_at_input {
     width: calc(100% - 20px);
 
@@ -727,6 +721,22 @@
 .editing_marker_importance_input__high_value {
     background-color: red;
     color: white;
+}
+
+.editing_marker_starts_at {
+    margin-top: 15px;
+}
+
+.editing_marker_starts_at_input {
+    width: calc(100% - 20px);
+}
+
+.editing_marker_importance {
+    margin-top: 15px;
+}
+
+.editing_marker_importance_input {
+    width: calc(100% - 15px);
 }
 
 .editing_marker_title {

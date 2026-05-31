@@ -300,10 +300,11 @@ const HomeLayout = () => {
 
     function renderMenuForMarkerEditing() {
         const isForAdding = currentMarkerMenu === 'add';
-        const dateTimeUtcValue = isForAdding ? newMarker?.startsAt : editingMarker?.startsAt;
-        const dateTimeLocalValue = dateTimeUtcValue
-            ? convertUtcToLocalTime(dateTimeUtcValue, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
+        const marker = isForAdding ? newMarker : editingMarker;
+        const setMarker = isForAdding ? setNewMarker : setEditingMarker;
+        const dateTimeLocalValue = marker?.startsAt
+            ? convertUtcToLocalTime(marker.startsAt, timeZone.name).toString()
+            : '';
 
         return (
             <form onSubmit={(e) => {
@@ -319,13 +320,10 @@ const HomeLayout = () => {
                         </p>
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
-                            value={isForAdding ? newMarker.latitude : editingMarker.latitude}
+                            value={marker?.latitude ?? ''}
                             type='number'
                             required
-                            onChange={(e) => {
-                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                                onChangeAction(p => { return { ...p, latitude: e.target.value }; });
-                            }} />
+                            onChange={(e) => setMarker(p => ({ ...p, latitude: e.target.value }))} />
                     </div>
                     <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_longitude}`}>
                         <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
@@ -333,87 +331,73 @@ const HomeLayout = () => {
                         </p>
                         <input
                             className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
-                            value={isForAdding ? newMarker.longitude : editingMarker.longitude}
+                            value={marker?.longitude ?? ''}
                             type='number'
                             required
-                            onChange={(e) => {
-                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                                onChangeAction(p => { return { ...p, longitude: e.target.value }; });
-                            }} />
+                            onChange={(e) => setMarker(p => ({ ...p, longitude: e.target.value }))} />
                     </div>
                 </div>
-                <div className={cl.editing_marker_time_and_importance}>
-                    <div className={`${cl.editing_marker_starts_at}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}}`}>
-                            {t('map.marker-edit-starts-at-label')}
-                        </p>
-                        <input
-                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
-                            type='datetime-local'
-                            value={dateTimeLocalValue}
-                            step="60"
-                            required
-                            onChange={(e) => {
-                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                                const utcValue = e.target.value ?
-                                    convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
-                                onChangeAction(p => { return { ...p, startsAt: utcValue?.toString() }; });
-                            }} />
-                    </div>
-                    <div className={`${cl.editing_marker_importance}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
-                            {t('map.marker-edit-importance-label')}
-                        </p>
-                        <select
-                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
-                            value={isForAdding ? newMarker.importance : editingMarker.importance}
-                            required
-                            onChange={(e) => {
-                                const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                                onChangeAction(p => { return { ...p, importance: e.target.value }; });
-                            }}>
-                            <option className={cl.editing_marker_importance_input__no_value} value=''>
-                                {t('map.no-importance-value')}
-                            </option>
-                            <option className={cl.editing_marker_importance_input__high_value} value='high'>
-                                {t('map.high-importance-value')}
-                            </option>
-                            <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
-                                {t('map.medium-importance-value')}
-                            </option>
-                            <option className={cl.editing_marker_importance_input__low_value} value='low'>
-                                {t('map.low-importance-value')}
-                            </option>
-                        </select>
-                    </div>
+                <div className={`${cl.editing_marker_starts_at}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}`}>
+                        {t('map.marker-edit-starts-at-label')}
+                    </p>
+                    <input
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
+                        type='datetime-local'
+                        value={dateTimeLocalValue}
+                        step="60"
+                        required
+                        onChange={(e) => {
+                            const utcValue = e.target.value ?
+                                convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
+                            setMarker(p => ({ ...p, startsAt: utcValue?.toString() }));
+                        }} />
+                </div>
+                <div className={`${cl.editing_marker_importance}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
+                        {t('map.marker-edit-importance-label')}
+                    </p>
+                    <select
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
+                        value={marker?.importance ?? ''}
+                        required
+                        onChange={(e) => setMarker(p => ({ ...p, importance: e.target.value }))}>
+                        <option className={cl.editing_marker_importance_input__no_value} value=''>
+                            {t('map.no-importance-value')}
+                        </option>
+                        <option className={cl.editing_marker_importance_input__high_value} value='high'>
+                            {t('map.high-importance-value')}
+                        </option>
+                        <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
+                            {t('map.medium-importance-value')}
+                        </option>
+                        <option className={cl.editing_marker_importance_input__low_value} value='low'>
+                            {t('map.low-importance-value')}
+                        </option>
+                    </select>
                 </div>
                 <div className={`${cl.editing_marker_title}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}`}>
                         {t('map.marker-edit-title-label')}
                     </p>
                     <input
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
                         type='text'
                         maxLength='100'
-                        value={isForAdding ? newMarker.title || '' : editingMarker.title}
+                        value={marker?.title ?? ''}
                         required
-                        onChange={(e) => {
-                            const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                            onChangeAction(p => { return { ...p, title: e.target.value }; });
-                        }} />
+                        onChange={(e) => setMarker(p => ({ ...p, title: e.target.value }))} />
                 </div>
                 <div className={`${cl.editing_marker_description}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}`}>
                         {t('map.marker-edit-description-label')}
                     </p>
                     <textarea
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
                         maxLength='5000'
-                        value={isForAdding ? newMarker.description || '' : editingMarker.description || ''}
-                        onChange={(e) => {
-                            const onChangeAction = isForAdding ? setNewMarker : setEditingMarker;
-                            onChangeAction(p => { return { ...p, description: e.target.value }; });
-                        }}></textarea>
+                        value={marker?.description ?? ''}
+                        onChange={(e) => setMarker(p => ({ ...p, description: e.target.value }))}
+                    ></textarea>
                 </div>
                 <BlockMessage
                     style={{ marginTop: '8px', width: 'calc(100% - 22px)' }}

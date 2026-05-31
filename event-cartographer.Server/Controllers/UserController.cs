@@ -61,7 +61,7 @@ public class UserController(
             };
 
             using (var content = new FormUrlEncodedContent([
-                new("email", request.Email!),
+                    new("email", request.Email!),
                     new("token", token),
                     new("locale", query.Locale),
                 ])) { emailURL.Query = await content.ReadAsStringAsync(); }
