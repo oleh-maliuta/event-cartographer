@@ -1,0 +1,180 @@
+.marker_list_element {
+    --background-color: #cfcfcf;
+    --header-color: #000000;
+    --description-color: #000000;
+    --coordinates-color: #000000;
+    --time-color: #000000;
+}
+
+.marker_list_element.dark {
+    --background-color: #3f3f3f;
+    --header-color: #ffffff;
+    --description-color: #ffffff;
+    --coordinates-color: #ffffff;
+    --time-color: #ffffff;
+}
+
+.marker_list_element {
+    position: relative;
+    padding-block: 10px;
+    padding-inline: 10px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+}
+
+.marker_list_element__importance {
+    height: 7px;
+    border-radius: 50px;
+
+    &.low {
+        background-color: #00a700;
+    }
+
+    &.medium {
+        background-color: #e6e600;
+    }
+
+    &.high {
+        background-color: #d40000;
+    }
+}
+
+.marker_list_element__buttons {
+    display: flex;
+    margin-top: 10px;
+}
+
+.marker_list_element__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border: none;
+}
+
+.marker_list_element__navigate_button {
+    background-color: rgb(66, 167, 255);
+    border-radius: 5px;
+
+    &:hover {
+        background-color: rgb(46, 115, 174);
+    }
+}
+
+.marker_list_element__edit_button {
+    background-color: rgb(255, 162, 0);
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: rgb(191, 121, 0);
+    }
+}
+
+.marker_list_element__delete_button {
+    background-color: rgb(212, 0, 0);
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: rgb(136, 0, 0);
+    }
+}
+
+.marker_list_element__button__img {
+    width: 70%;
+    height: 70%;
+}
+
+.marker_list_element__navigate_button__img {
+    content: url(../../assets/navigate.png);
+}
+
+.marker_list_element__edit_button__img {
+    content: url(../../assets/edit.png);
+}
+
+.marker_list_element__delete_button__img {
+    content: url(../../assets/delete.png);
+}
+
+.marker_list_element__title__cont {
+    position: relative;
+    margin-top: 10px;
+}
+
+.marker_list_element__title {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--header-color);
+    overflow-wrap: break-word;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.marker_list_element__description__cont {
+    position: relative;
+    margin-top: 10px;
+}
+
+.marker_list_element__description {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--description-color);
+    overflow-wrap: break-word;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.marker_list_element__coordinates__cont {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.marker_list_element__latitude {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--coordinates-color);
+    overflow-wrap: break-word;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.marker_list_element__longitude {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--coordinates-color);
+    overflow-wrap: break-word;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.marker_list_element__starts_at__cont {
+    margin-top: 10px;
+}
+
+.marker_list_element__starts_at {
+    color: var(--time-color);
+
+    &.past {
+        color: red;
+        font-weight: bold;
+    }
+}
