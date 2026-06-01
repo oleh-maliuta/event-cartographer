@@ -46,7 +46,7 @@ const HomeLayout = () => {
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = useState([]);
     const [markerListTimeOfStartFilter, setMarkerListTimeOfStartFilter] = useState({ min: undefined, max: undefined });
 
-    const [yesNoDialogIsOpened, setYesNoDialogIsOpened] = useState(false);
+    const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
 
     const mapRef = useRef(null);
 
@@ -638,18 +638,18 @@ const HomeLayout = () => {
 
     function prepareToRemoveMarker(marker) {
         setMarkerIdToRemove(marker.id);
-        setYesNoDialogIsOpened(true);
+        setIsYesNoDialogOpen(true);
     }
 
     function removeMarker() {
         removeMarkerRequest(markerIdToRemove);
         setMarkerIdToRemove(null);
-        setYesNoDialogIsOpened(false);
+        setIsYesNoDialogOpen(false);
     }
 
     function cancelMarkerRemoving() {
         setMarkerIdToRemove(null);
-        setYesNoDialogIsOpened(false);
+        setIsYesNoDialogOpen(false);
     }
 
     const getImportanceIcon = useCallback((importance, startsAt) => {
@@ -784,6 +784,13 @@ const HomeLayout = () => {
         loadMarkersForList(1);
     }, [loadMarkersForList]);
 
+    useEffect(() => {
+        const map = mapRef.current;
+        if (map) {
+            map.invalidateSize()
+        }
+    }, [isMarkerPanelVisible]);
+
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Map
@@ -791,7 +798,8 @@ const HomeLayout = () => {
                 click={mapClickEvent}
                 moveend={mapMoveendEvent}
                 renderMarkers={renderMarkersOnMap}
-                ref={mapRef} />
+                ref={mapRef}
+                containerClassName={isMarkerPanelVisible ? 'with_panel' : ''} />
             <div className={`${cl.right_side_menu} ${isMarkerPanelVisible ? '' : cl.hided}`}>
                 <div className={`${cl.right_side_menu__user_name__cont}`}>
                     <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
@@ -894,7 +902,7 @@ const HomeLayout = () => {
                 {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
             </div>
             <YesNoDialog
-                dialogState={yesNoDialogIsOpened}
+                dialogState={isYesNoDialogOpen}
                 title={t('map.remove-marker.dialog-title')}
                 description={t('map.remove-marker.dialog-description')}
                 onYesButtonClick={removeMarker}

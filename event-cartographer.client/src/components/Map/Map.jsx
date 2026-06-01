@@ -16,12 +16,13 @@ const Map = memo(({
     click,
     moveend,
     renderMarkers,
+    containerClassName,
     ref,
 }) => {
     const { theme } = useTheme();
 
     return (
-        <div className={`map_container ${theme}`}>
+        <div className={`map_container ${theme} ${containerClassName || ''}`.trim()}>
             <MapContainer className="map"
                 center={[35, 0]}
                 zoom={2}
@@ -47,6 +48,7 @@ Map.propTypes = {
     load: PropTypes.func,
     click: PropTypes.func,
     moveend: PropTypes.func,
+    containerClassName: PropTypes.string,
     ref: PropTypes.object,
 };
 

@@ -311,8 +311,6 @@
     right: 0px;
     width: calc(390px + 5vw);
     background-color: var(--marker-panel-background-color);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
     overflow-y: scroll;
     padding-left: 10px;
     padding-bottom: 10px;

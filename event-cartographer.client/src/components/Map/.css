@@ -16,10 +16,19 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
+
+    &.with_panel {
+        right: calc(390px + 5vw + 10px);
+    }
+
+    @media screen and (max-width: 480px) {
+        &.with_panel {
+            right: 0;
+        }
+    }
 }
 
 .map {
-    position: absolute;
     width: 100%;
     height: 100%;
     background-color: var(--map-unloaded-background-color);
