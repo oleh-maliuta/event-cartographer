@@ -18,7 +18,6 @@ const DeleteUserAccountSettings = memo(() => {
 
         const response = await fetch(`/api/users/delete?locale=${i18n.language}`, {
             method: "PUT",
-            mode: "cors",
             credentials: "include",
             body: new FormData(e.target)
         });

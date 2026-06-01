@@ -62,7 +62,6 @@ const HomeLayout = () => {
 
         const response = await fetch('/api/users/logout', {
             method: "GET",
-            mode: "cors",
             credentials: "include"
         });
 
@@ -484,7 +483,6 @@ const HomeLayout = () => {
 
         const response = await fetch(url, {
             method: "GET",
-            mode: "cors",
             credentials: "include"
         });
         const json = await response.json();
@@ -506,7 +504,6 @@ const HomeLayout = () => {
 
         const response = await fetch(url, {
             method: "GET",
-            mode: "cors",
             credentials: "include"
         });
         const json = await response.json();
@@ -521,7 +518,6 @@ const HomeLayout = () => {
 
         const response = await fetch('/api/markers', {
             method: "POST",
-            mode: "cors",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
@@ -569,7 +565,6 @@ const HomeLayout = () => {
 
         const response = await fetch(`/api/markers/${editingMarker.id}`, {
             method: "PUT",
-            mode: "cors",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
@@ -615,7 +610,6 @@ const HomeLayout = () => {
     async function removeMarkerRequest(markerId) {
         const response = await fetch(`/api/markers/${markerId}`, {
             method: "DELETE",
-            mode: "cors",
             credentials: "include"
         });
         const json = await response.json();
@@ -777,7 +771,6 @@ const HomeLayout = () => {
         const fetchUserInfo = async () => {
             const response = await fetch('/api/users/self', {
                 method: "GET",
-                mode: "cors",
                 credentials: "include"
             });
             const json = await response.json();

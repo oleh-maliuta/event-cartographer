@@ -20,6 +20,7 @@
 - Ability to allow the service to automatically remove markers that represent past events;
 - User settings that allow a user to edit basic info, theme, language, email address, password, and delete the user's account;
 - Ability to switch between light and dark themes;
+- Ability to switch the time zone;
 - Localization support for three languages:
   - English;
   - Russian;
@@ -27,23 +28,34 @@
 
 ## Technologies Used
 
-- Platform: [.NET 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8/overview);
-- Server framework: [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-8.0);
-- ORM: [Entity Framework Core 8](https://learn.microsoft.com/en-us/ef/core/);
+- Platform: [.NET 10](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10/overview);
+- Server framework: [ASP.NET Core 10](https://learn.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-10.0);
+- ORM: [Entity Framework Core 10](https://learn.microsoft.com/en-us/ef/core/);
 - Database: [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads?ocid=ORSEARCH_Bing&msockid=26c4c807566060851983dcd257726152);
-- Web client framework: [React JS 18](https://react.dev/);
+- Web client framework: [React JS 19](https://react.dev/);
 - Interactive map library: [Leaflet](https://leafletjs.com/);
 - Translation: [i18next](https://www.i18next.com/).
 
 ## Usage
 
-1. Install **Microsoft Visual Studio** (2022 version recommended) with all plugins necessary for working with ASP.NET projects.
+### For Production
+
+1. Run Docker.
+2. *(Back-end)* Clone the [`.env.example`](event-cartographer.Server/.env.example) file, rename it to `.env` and set all the variables.
+3. Create a container from the [`docker-compose.yml`](docker-compose.yml) file (using `docker-compose up --build` command for example).
+4. Ready to use. Open the website (`https://localhost:{port specified in Docker}`).
+
+### For Development
+
+1. Install **.NET**.
 2. Install **Node JS**.
-3. Open the project in **Microsoft Visual Studio**.
-4. Open [EventCartographer.Server/appsettings.json](EventCartographer.Server/appsettings.json) file then add an email address and a password for the email address account to the required fields. This data will be used for the email service to send messages to the users.
-5. If you want to change the web client host from `localhost`, you need to change `WebClientHost` constant in [EventCartographer.Server/Constants.cs](EventCartographer.Server/Constants.cs).
-6. Run the project.
-7. Enter the website.
+3. Open the project in **Microsoft Visual Studio** (2026 version recommended) or any other code editor.
+4. *(Back-end)* Clone the [`.env.example`](event-cartographer.Server/.env.example) file, rename it to `.env.dev` and set all the variables.
+5. *(Front-end)* Clone the [`.env.example`](event-cartographer.client/.env.example) file, rename it to `.env` and set all the variables.
+6. Make sure to have a MS SQL Server running.
+7. Run Back-end at the [`event-cartographer.Server`](event-cartographer.Server) directory using `dotnet watch run` command.
+8. Run Back-end at the [`event-cartographer.client`](event-cartographer.client) directory using `npm run dev` command.
+9. Ready to use. Open the website (`https://localhost:{client port}`) or Swagger (`https://localhost:{server port}/swagger/index.html`).
 
 ## License
 

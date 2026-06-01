@@ -9,25 +9,24 @@ import { ThemeProvider } from "./providers/ThemeProvider";
 import { PageRoutes } from "./utils/constants";
 import { TimeZoneProvider } from "./providers/TimeZoneProvider";
 
-const App = () => {
-    async function authCheck() {
-        const response = await fetch('/api/users/check', {
-            method: "GET",
-            mode: "cors",
-            credentials: "include"
-        });
+async function authCheck() {
+    const response = await fetch('/api/users/check', {
+        method: "GET",
+        credentials: "include"
+    });
 
-        if (!response.ok) {
-            if (
-                window.location.pathname !== PageRoutes.SIGN_IN &&
-                window.location.pathname !== PageRoutes.SIGN_UP &&
-                window.location.pathname !== PageRoutes.RESET_PASSWORD
-            ) {
-                window.location.replace(PageRoutes.SIGN_IN);
-            }
+    if (!response.ok) {
+        if (
+            window.location.pathname !== PageRoutes.SIGN_IN &&
+            window.location.pathname !== PageRoutes.SIGN_UP &&
+            window.location.pathname !== PageRoutes.RESET_PASSWORD
+        ) {
+            window.location.replace(PageRoutes.SIGN_IN);
         }
     }
+}
 
+const App = () => {
     useEffect(() => {
         authCheck();
     }, []);

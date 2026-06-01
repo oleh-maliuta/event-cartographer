@@ -21,7 +21,6 @@ const BasicUserInfoSettings = memo(() => {
     async function loadUserInfo() {
         const response = await fetch(`/api/users/self`, {
             method: "GET",
-            mode: "cors",
             credentials: "include"
         });
         const json = await response.json();
@@ -38,7 +37,6 @@ const BasicUserInfoSettings = memo(() => {
 
         const response = await fetch(`/api/users/info`, {
             method: "PUT",
-            mode: "cors",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"

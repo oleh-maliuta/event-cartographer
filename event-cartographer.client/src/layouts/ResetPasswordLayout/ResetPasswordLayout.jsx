@@ -41,7 +41,6 @@ const ResetPasswordLayout = () => {
 
         const response = await fetch('/api/users/reset-password', {
             method: "PUT",
-            mode: "cors",
             credentials: "include",
             body: formData
         });

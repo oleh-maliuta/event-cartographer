@@ -45,7 +45,6 @@ const SignUpLayout = () => {
 
         const response = await fetch(`/api/users/sign-up?locale=${i18n.language}`, {
             method: "POST",
-            mode: "cors",
             credentials: "include",
             body: new FormData(e.target)
         });

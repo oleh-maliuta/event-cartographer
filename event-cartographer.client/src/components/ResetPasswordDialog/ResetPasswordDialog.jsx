@@ -29,7 +29,6 @@ const ResetPasswordDialog = memo(({
 
         const response = await fetch(`/api/users/reset-password-permission?locale=${i18n.language}`, {
             method: "POST",
-            mode: "cors",
             credentials: "include",
             body: new FormData(e.target)
         });

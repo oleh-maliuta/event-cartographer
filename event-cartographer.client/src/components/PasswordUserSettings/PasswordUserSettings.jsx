@@ -21,7 +21,6 @@ const PasswordUserSettings = memo(() => {
 
         const response = await fetch(`/api/users/password`, {
             method: "PUT",
-            mode: "cors",
             credentials: "include",
             body: new FormData(e.target)
         });

@@ -40,7 +40,6 @@ const SignInLayout = () => {
 
         const response = await fetch('/api/users/sign-in', {
             method: "POST",
-            mode: "cors",
             credentials: "include",
             body: new FormData(e.target)
         });
