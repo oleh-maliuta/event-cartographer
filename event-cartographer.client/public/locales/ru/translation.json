@@ -116,7 +116,7 @@
             "email-is-sent": "Письмо отправлено! Подтвердите удаление."
         }
     },
-    "map": {
+    "home": {
         "search-markers-input": "Поиск",
         "sorting-label": "Сортировать по:",
         "sort-by-importance-value": "важности",
@@ -128,8 +128,8 @@
         "medium-importance-value": "Средняя",
         "high-importance-value": "Высокая",
         "time-of-the-start-filter-title": "Время начала",
-        "marker-edit-latitude-label": "Шир.:",
-        "marker-edit-longitude-label": "Долг.:",
+        "marker-edit-latitude-label": "Широта:",
+        "marker-edit-longitude-label": "Долгота:",
         "marker-edit-starts-at-label": "Начало в:",
         "marker-edit-importance-label": "Важность:",
         "marker-edit-title-label": "Заголовок:",

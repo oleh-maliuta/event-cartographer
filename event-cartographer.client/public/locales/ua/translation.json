@@ -116,7 +116,7 @@
             "email-is-sent": "Лист надіслано! Підтвердіть видалення."
         }
     },
-    "map": {
+    "home": {
         "search-markers-input": "Пошук",
         "sorting-label": "Сортувати за:",
         "sort-by-importance-value": "важливістю",
@@ -128,8 +128,8 @@
         "medium-importance-value": "Середня",
         "high-importance-value": "Висока",
         "time-of-the-start-filter-title": "Час початку",
-        "marker-edit-latitude-label": "Шир.:",
-        "marker-edit-longitude-label": "Довг.:",
+        "marker-edit-latitude-label": "Широта:",
+        "marker-edit-longitude-label": "Довгота:",
         "marker-edit-starts-at-label": "Початок в:",
         "marker-edit-importance-label": "Важливість:",
         "marker-edit-title-label": "Заголовок:",

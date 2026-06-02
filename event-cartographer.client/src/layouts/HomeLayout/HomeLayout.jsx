@@ -103,7 +103,7 @@ const HomeLayout = () => {
                         <input
                             className={`${cl.marker_list_search__input}`}
                             type='text'
-                            placeholder={t('map.search-markers-input')}
+                            placeholder={t('home.search-markers-input')}
                             value={markerSearchQuery}
                             onChange={(e) => setMarkerSearchQuery(e.target.value)} />
                         <button className={`${cl.marker_list__apply_button}`}
@@ -118,7 +118,7 @@ const HomeLayout = () => {
                     </div>
                     <div className={`${cl.marker_list_sort_and_filter_cont}`}>
                         <span className={`${cl.marker_list_sort_label}`}>
-                            {t('map.sorting-label')}
+                            {t('home.sorting-label')}
                         </span>
                         <select className={`${cl.marker_list_sort_input}`}
                             value={markerListSort.type}
@@ -130,13 +130,13 @@ const HomeLayout = () => {
                                 });
                             }}>
                             <option className={`${cl.marker_list_sort_input_option}`} value='importance'>
-                                {t('map.sort-by-importance-value')}
+                                {t('home.sort-by-importance-value')}
                             </option>
                             <option className={`${cl.marker_list_sort_input_option}`} value='title'>
-                                {t('map.sort-by-title-value')}
+                                {t('home.sort-by-title-value')}
                             </option>
                             <option className={`${cl.marker_list_sort_input_option}`} value='startsAt'>
-                                {t('map.sort-by-time-value')}
+                                {t('home.sort-by-time-value')}
                             </option>
                         </select>
                         <button className={`${cl.marker_list_sort_direction_button}`}
@@ -161,7 +161,7 @@ const HomeLayout = () => {
                         <div className={`${cl.marker_list_filter_panel}`}>
                             <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
                                 <h3 className={cl.marker_list_filter_panel__section_header}>
-                                    {t('map.importance-filter-title')}
+                                    {t('home.importance-filter-title')}
                                 </h3>
                                 <div className={`${cl.marker_list_filter_panel_importance}`}>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
@@ -185,7 +185,7 @@ const HomeLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_low} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('map.low-importance-value')}</span>
+                                        >{t('home.low-importance-value')}</span>
                                     </div>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                         <input
@@ -208,7 +208,7 @@ const HomeLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_medium} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('map.medium-importance-value')}</span>
+                                        >{t('home.medium-importance-value')}</span>
                                     </div>
                                     <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                         <input
@@ -231,7 +231,7 @@ const HomeLayout = () => {
                                             }} />
                                         <span
                                             className={`${cl.marker_list_filter_panel_importance_label_high} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('map.high-importance-value')}</span>
+                                        >{t('home.high-importance-value')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +240,7 @@ const HomeLayout = () => {
                             </div>
                             <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
                                 <h3 className={cl.marker_list_filter_panel__section_header}>
-                                    {t('map.time-of-the-start-filter-title')}
+                                    {t('home.time-of-the-start-filter-title')}
                                 </h3>
                                 <div className={`${cl.marker_list_filter_panel_starts_at}`}>
                                     <input
@@ -302,8 +302,7 @@ const HomeLayout = () => {
         const marker = isForAdding ? newMarker : editingMarker;
         const setMarker = isForAdding ? setNewMarker : setEditingMarker;
         const dateTimeLocalValue = marker?.startsAt
-            ? convertUtcToLocalTime(marker.startsAt, timeZone.name).toString()
-            : '';
+            ? convertUtcToLocalTime(marker.startsAt, timeZone.name).toString() : '';
 
         return (
             <form onSubmit={(e) => {
@@ -312,33 +311,31 @@ const HomeLayout = () => {
                 if (isForAdding) { addMarkerRequest(); }
                 else { editMarkerRequest(); }
             }}>
-                <div className={cl.editing_marker_coordinates}>
-                    <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_latitude}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>
-                            {t('map.marker-edit-latitude-label')}
-                        </p>
-                        <input
-                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
-                            value={marker?.latitude ?? ''}
-                            type='number'
-                            required
-                            onChange={(e) => setMarker(p => ({ ...p, latitude: e.target.value }))} />
-                    </div>
-                    <div className={`${cl.editing_marker_coordinate} ${cl.editing_marker_longitude}`}>
-                        <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
-                            {t('map.marker-edit-longitude-label')}
-                        </p>
-                        <input
-                            className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
-                            value={marker?.longitude ?? ''}
-                            type='number'
-                            required
-                            onChange={(e) => setMarker(p => ({ ...p, longitude: e.target.value }))} />
-                    </div>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_latitude}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>
+                        {t('home.marker-edit-latitude-label')}
+                    </p>
+                    <input
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
+                        type='number'
+                        value={marker?.latitude ?? ''}
+                        required
+                        onChange={(e) => setMarker(p => ({ ...p, latitude: e.target.value }))} />
                 </div>
-                <div className={`${cl.editing_marker_starts_at}`}>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_longitude}`}>
+                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
+                        {t('home.marker-edit-longitude-label')}
+                    </p>
+                    <input
+                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
+                        type='number'
+                        value={marker?.longitude ?? ''}
+                        required
+                        onChange={(e) => setMarker(p => ({ ...p, longitude: e.target.value }))} />
+                </div>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_starts_at}`}>
                     <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}`}>
-                        {t('map.marker-edit-starts-at-label')}
+                        {t('home.marker-edit-starts-at-label')}
                     </p>
                     <input
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
@@ -352,9 +349,9 @@ const HomeLayout = () => {
                             setMarker(p => ({ ...p, startsAt: utcValue?.toString() }));
                         }} />
                 </div>
-                <div className={`${cl.editing_marker_importance}`}>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_importance}`}>
                     <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
-                        {t('map.marker-edit-importance-label')}
+                        {t('home.marker-edit-importance-label')}
                     </p>
                     <select
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
@@ -362,22 +359,22 @@ const HomeLayout = () => {
                         required
                         onChange={(e) => setMarker(p => ({ ...p, importance: e.target.value }))}>
                         <option className={cl.editing_marker_importance_input__no_value} value=''>
-                            {t('map.no-importance-value')}
+                            {t('home.no-importance-value')}
                         </option>
                         <option className={cl.editing_marker_importance_input__high_value} value='high'>
-                            {t('map.high-importance-value')}
+                            {t('home.high-importance-value')}
                         </option>
                         <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
-                            {t('map.medium-importance-value')}
+                            {t('home.medium-importance-value')}
                         </option>
                         <option className={cl.editing_marker_importance_input__low_value} value='low'>
-                            {t('map.low-importance-value')}
+                            {t('home.low-importance-value')}
                         </option>
                     </select>
                 </div>
-                <div className={`${cl.editing_marker_title}`}>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_title}`}>
                     <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}`}>
-                        {t('map.marker-edit-title-label')}
+                        {t('home.marker-edit-title-label')}
                     </p>
                     <input
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
@@ -387,9 +384,9 @@ const HomeLayout = () => {
                         required
                         onChange={(e) => setMarker(p => ({ ...p, title: e.target.value }))} />
                 </div>
-                <div className={`${cl.editing_marker_description}`}>
+                <div className={`${cl.editing_marker_field} ${cl.editing_marker_description}`}>
                     <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}`}>
-                        {t('map.marker-edit-description-label')}
+                        {t('home.marker-edit-description-label')}
                     </p>
                     <textarea
                         className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
@@ -412,7 +409,7 @@ const HomeLayout = () => {
                                     setMarkerMenu('list');
                                     setEditMarkerMessages([]);
                                 }}>
-                                {t('map.cancel-marker-adding')}
+                                {t('home.cancel-marker-adding')}
                             </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_add_button}`}
                                 type="submit">
@@ -425,7 +422,7 @@ const HomeLayout = () => {
                                             curveWidth="3px" />
                                         :
                                         <span>
-                                            {t('map.add-marker')}
+                                            {t('home.add-marker')}
                                         </span>
                                 }
                             </button>
@@ -439,7 +436,7 @@ const HomeLayout = () => {
                                     setMarkerMenu('list');
                                     setEditMarkerMessages([]);
                                 }}>
-                                {t('map.go-to-the-list')}
+                                {t('home.go-to-the-list')}
                             </button>
                             <button className={`${cl.editing_marker_button} ${cl.editing_marker_edit_button}`}
                                 type="submit">
@@ -452,7 +449,7 @@ const HomeLayout = () => {
                                             curveWidth="3px" />
                                         :
                                         <span>
-                                            {t('map.edit-marker')}
+                                            {t('home.edit-marker')}
                                         </span>
                                 }
                             </button>
@@ -719,7 +716,7 @@ const HomeLayout = () => {
                                 setNewMarker(null);
                                 setMarkerMenu('list');
                                 setEditMarkerMessages([]);
-                            }}>{t('map.cancel-marker-adding')}</button>
+                            }}>{t('home.cancel-marker-adding')}</button>
                     </Popup>
                 </Marker>
             );
@@ -792,69 +789,71 @@ const HomeLayout = () => {
     }, [isMarkerPanelVisible]);
 
     return (
-        <div className={`${cl.main} ${cl[theme]}`}>
-            <Map
-                load={mapLoadEvent}
-                click={mapClickEvent}
-                moveend={mapMoveendEvent}
-                renderMarkers={renderMarkersOnMap}
-                ref={mapRef}
-                containerClassName={isMarkerPanelVisible ? 'with_panel' : ''} />
-            <div className={`${cl.right_side_menu} ${isMarkerPanelVisible ? '' : cl.hided}`}>
-                <div className={`${cl.right_side_menu__user_name__cont}`}>
-                    <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
-                </div>
-                <button className={`${cl.right_side_menu__marker_menu_button}`}
-                    type="button"
-                    onClick={() => {
-                        if (!isMarkerPanelVisible && currentMarkerMenu === null) {
-                            setMarkerMenu('list');
+        <div className={`${cl.main} ${cl[theme]} ${isMarkerPanelVisible ? '' : cl.hidden_menu}`}>
+            <div className={`${cl.map_display}`}>
+                <Map
+                    load={mapLoadEvent}
+                    click={mapClickEvent}
+                    moveend={mapMoveendEvent}
+                    renderMarkers={renderMarkersOnMap}
+                    ref={mapRef}
+                    containerClassName={isMarkerPanelVisible ? 'with_panel' : ''} />
+                <div className={`${cl.right_side_menu}`}>
+                    <div className={`${cl.right_side_menu__user_name__cont}`}>
+                        <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
+                    </div>
+                    <button className={`${cl.right_side_menu__marker_menu_button}`}
+                        type="button"
+                        onClick={() => {
+                            if (!isMarkerPanelVisible && currentMarkerMenu === null) {
+                                setMarkerMenu('list');
+                            }
+                            setMarkerPanelVisibility(p => !p);
+                        }}>
+                        <img className={`${cl.right_side_menu__marker_menu_button__img}`}
+                            alt='marker menu' />
+                    </button>
+                    <button className={`${cl.right_side_menu__settings_button}`}
+                        type="button"
+                        onClick={() => navigate(PageRoutes.USER_SETTINGS)}>
+                        <img className={`${cl.right_side_menu__settings_button__img}`}
+                            alt='settings' />
+                    </button>
+                    <button className={cl.right_side_menu__log_out_button}
+                        type="button"
+                        onClick={() => {
+                            if (!loggingOut) {
+                                logOutRequest();
+                            }
+                        }}>
+                        {
+                            loggingOut ?
+                                <div className={cl.right_side_menu__log_out_button__loading}>
+                                    <LoadingAnimation
+                                        curveColor1="transparent"
+                                        curveColor2="#000000"
+                                        size="18px"
+                                        curveWidth="4px" />
+                                </div>
+                                :
+                                <img className={cl.right_side_menu__log_out_button__img}
+                                    alt='log out' />
                         }
-                        setMarkerPanelVisibility(p => !p);
-                    }}>
-                    <img className={`${cl.right_side_menu__marker_menu_button__img}`}
-                        alt='marker menu' />
-                </button>
-                <button className={`${cl.right_side_menu__settings_button}`}
-                    type="button"
-                    onClick={() => navigate(PageRoutes.USER_SETTINGS)}>
-                    <img className={`${cl.right_side_menu__settings_button__img}`}
-                        alt='settings' />
-                </button>
-                <button className={cl.right_side_menu__log_out_button}
-                    type="button"
-                    onClick={() => {
-                        if (!loggingOut) {
-                            logOutRequest();
-                        }
-                    }}>
+                    </button>
                     {
-                        loggingOut ?
-                            <div className={cl.right_side_menu__log_out_button__loading}>
+                        markersForMapLoading ?
+                            <div className={cl.map_markers_loading}>
                                 <LoadingAnimation
-                                    curveColor1="transparent"
+                                    curveColor1="#FFFFFF"
                                     curveColor2="#000000"
-                                    size="18px"
-                                    curveWidth="4px" />
+                                    size="28px"
+                                    curveWidth="5px" />
                             </div>
-                            :
-                            <img className={cl.right_side_menu__log_out_button__img}
-                                alt='log out' />
+                            : <></>
                     }
-                </button>
-                {
-                    markersForMapLoading ?
-                        <div className={cl.map_markers_loading}>
-                            <LoadingAnimation
-                                curveColor1="#FFFFFF"
-                                curveColor2="#000000"
-                                size="28px"
-                                curveWidth="5px" />
-                        </div>
-                        : <></>
-                }
+                </div>
             </div>
-            <div className={`${cl.marker_panel} ${isMarkerPanelVisible ? '' : cl.hided}`}>
+            <div className={`${cl.marker_panel}`}>
                 <button className={`${cl.marker_panel__marker_menu_button}`}
                     type="button"
                     onClick={() => {
@@ -903,8 +902,8 @@ const HomeLayout = () => {
             </div>
             <YesNoDialog
                 dialogState={isYesNoDialogOpen}
-                title={t('map.remove-marker.dialog-title')}
-                description={t('map.remove-marker.dialog-description')}
+                title={t('home.remove-marker.dialog-title')}
+                description={t('home.remove-marker.dialog-description')}
                 onYesButtonClick={removeMarker}
                 onNoButtonClick={cancelMarkerRemoving} />
         </div>
