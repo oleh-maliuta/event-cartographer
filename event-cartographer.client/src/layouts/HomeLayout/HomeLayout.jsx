@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import mapIcons from "../../utils/map-icons";
@@ -13,9 +12,30 @@ import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
-import { DEFAULT_DATE_TIME_FORMAT, PageRoutes } from "../../utils/constants";
+import { DEFAULT_DATE_TIME_FORMAT } from "../../utils/constants";
 import { convertLocalTimeToUtc, convertUtcToLocalTime, isTimeInPast } from "../../utils/time";
 import { useTimeZone } from "../../hooks/useTimeZone";
+import MapInterface from "../../components/MapInterface/MapInterface";
+
+/**
+ * Returns the appropriate icon for a marker based on its importance and start time.
+ * @param {string} importance 
+ * @param {string} startsAt 
+ * @returns {import('leaflet').Icon | null} Icon for marker with specified importance and time of the start.
+ */
+function getImportanceIcon(importance, startsAt) {
+    const isInPast = isTimeInPast(startsAt);
+    switch (importance) {
+        case 'low':
+            return isInPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
+        case 'medium':
+            return isInPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
+        case 'high':
+            return isInPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
+        default:
+            return null;
+    }
+};
 
 const HomeLayout = () => {
     const { t } = useTranslation();
@@ -30,17 +50,15 @@ const HomeLayout = () => {
     const [markerListPageCount, setMarkerListPageCount] = useState(0);
     const [mapBounds, setMapBounds] = useState(null);
 
-    const [userInfo, setUserInfo] = useState(null);
     const [markersForMap, setMarkersForMap] = useState(null);
     const [markersForList, setMarkersForList] = useState(null);
-    const [currentMarkerMenu, setMarkerMenu] = useState(null);
-    const [isMarkerPanelVisible, setMarkerPanelVisibility] = useState(false);
-    const [isMarkerListFilterVisible, setMarkerListFilterVisibility] = useState(false);
+    const [markerMenuMode, setMarkerMenuMode] = useState(null);
+    const [isMarkerPanelOpen, setIsMarkerPanelOpen] = useState(false);
+    const [isMarkerListFilterOpen, setIsMarkerListFilterOpen] = useState(false);
 
-    const [markersForMapLoading, setMarkersForMapLoading] = useState(false);
-    const [markersForListLoading, setMarkersForListLoading] = useState(false);
+    const [loadingMarkersForMap, setLoadingMarkersForMap] = useState(false);
+    const [loadingMarkersForList, setLoadingMarkersForList] = useState(false);
     const [updatingMarkerList, setUpdatingMarkerList] = useState(false);
-    const [loggingOut, setLoggingOut] = useState(false);
 
     const [markerListSort, setMarkerListSort] = useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = useState([]);
@@ -48,29 +66,106 @@ const HomeLayout = () => {
 
     const [isYesNoDialogOpen, setIsYesNoDialogOpen] = useState(false);
 
-    const mapRef = useRef(null);
-
     const [markerSearchQuery, setMarkerSearchQuery] = useState('');
 
-    const navigate = useNavigate();
+    const mapRef = useRef(null);
 
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
 
-    async function logOutRequest() {
-        setLoggingOut(true);
+    const loadMarkersForList = useCallback(async (page) => {
+        setLoadingMarkersForList(true);
+        setMarkerListMessages([]);
 
-        const response = await fetch('/api/users/logout', {
+        const url = new URL('/api/markers/search', window.location.origin);
+        url.searchParams.append('page_size', '10');
+        url.searchParams.append('page', page || '1');
+        url.searchParams.append('q', markerSearchQuery);
+        url.searchParams.append('sort_type', markerListSort.type);
+        url.searchParams.append('sort_by_asc', markerListSort.asc);
+        url.searchParams.append('min_time', markerListTimeOfStartFilter.min
+            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.min).toString() : '');
+        url.searchParams.append('max_time', markerListTimeOfStartFilter.max
+            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.max).toString() : '');
+
+        markerListImportanceFilter.forEach(el => {
+            url.searchParams.append('imp', el);
+        });
+
+        const response = await fetch(url, {
             method: "GET",
             credentials: "include"
         });
+        const json = await response.json();
 
-        if (response.ok) {
-            navigate(PageRoutes.SIGN_IN);
+        setMarkersForList(json.data.items || []);
+        setMarkerListPage(page || 1);
+        setMarkerListPageCount(json.data.pageCount || 0);
+        setLoadingMarkersForList(false);
+    }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type, markerSearchQuery]);
+
+    const loadMarkersForMap = useCallback(async (bounds) => {
+        setLoadingMarkersForMap(true);
+
+        let url = '/api/markers/map';
+        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
+        url += `&n_e_long=${bounds.getNorthEast().lng}`;
+        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
+        url += `&s_w_long=${bounds.getSouthWest().lng}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            credentials: "include"
+        });
+        const json = await response.json();
+
+        setMarkersForMap(json.data || []);
+
+        setLoadingMarkersForMap(false);
+    }, []);
+
+    const navigateToMarker = useCallback((marker) => {
+        mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
+    }, []);
+
+    const editMarker = useCallback((marker) => {
+        setMarkerMenuMode('edit');
+        setEditingMarker(marker);
+        setMarkerListMessages([]);
+    }, []);
+
+    const mapLoadEvent = useCallback((map) => {
+        loadMarkersForMap(map.getBounds());
+        setMapBounds(map.getBounds());
+    }, [loadMarkersForMap]);
+
+    const mapClickEvent = useCallback((e) => {
+        setNewMarker({
+            latitude: e.latlng.lat,
+            longitude: e.latlng.lng
+        });
+
+        setMarkerMenuMode('add');
+        setIsMarkerPanelOpen(true);
+    }, []);
+
+    const mapMoveendEvent = useCallback(() => {
+        const bounds = mapRef.current?.getBounds();
+
+        if (!bounds) {
+            return;
         }
 
-        setLoggingOut(false);
-    }
+        loadMarkersForMap(bounds);
+        setMapBounds(bounds);
+    }, [loadMarkersForMap]);
+
+    const onMarkerMenuToggle = useCallback(() => {
+        if (!isMarkerPanelOpen && markerMenuMode === null) {
+            setMarkerMenuMode('list');
+        }
+        setIsMarkerPanelOpen(p => !p);
+    }, [isMarkerPanelOpen, markerMenuMode]);
 
     function renderMarkerList() {
         const displayMarkerList = () => {
@@ -108,7 +203,7 @@ const HomeLayout = () => {
                             onChange={(e) => setMarkerSearchQuery(e.target.value)} />
                         <button className={`${cl.marker_list__apply_button}`}
                             onClick={() => {
-                                if (!markersForListLoading) {
+                                if (!loadingMarkersForList) {
                                     loadMarkersForList(1);
                                 }
                             }}>
@@ -153,11 +248,11 @@ const HomeLayout = () => {
                                 alt='sort direction' />
                         </button>
                         <button className={`${cl.marker_list_filter_button}`}
-                            onClick={() => { setMarkerListFilterVisibility(p => !p) }}>
+                            onClick={() => { setIsMarkerListFilterOpen(p => !p) }}>
                             <img className={`${cl.marker_list_filter_button_img}`} alt='filter' />
                         </button>
                     </div>
-                    <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterVisible ? 'fit-content' : '0px' }}>
+                    <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterOpen ? 'fit-content' : '0px' }}>
                         <div className={`${cl.marker_list_filter_panel}`}>
                             <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
                                 <h3 className={cl.marker_list_filter_panel__section_header}>
@@ -278,7 +373,7 @@ const HomeLayout = () => {
                     state='error'
                     messages={markerListMessages} />
                 {
-                    markersForListLoading ?
+                    loadingMarkersForList ?
                         <div className={`${cl.marker_list_loading}`}>
                             <LoadingAnimation size="50px" curveWidth="10px" />
                         </div>
@@ -298,7 +393,7 @@ const HomeLayout = () => {
     }
 
     function renderMenuForMarkerEditing() {
-        const isForAdding = currentMarkerMenu === 'add';
+        const isForAdding = markerMenuMode === 'add';
         const marker = isForAdding ? newMarker : editingMarker;
         const setMarker = isForAdding ? setNewMarker : setEditingMarker;
         const dateTimeLocalValue = marker?.startsAt
@@ -406,7 +501,7 @@ const HomeLayout = () => {
                                 type="button"
                                 onClick={() => {
                                     setNewMarker(null);
-                                    setMarkerMenu('list');
+                                    setMarkerMenuMode('list');
                                     setEditMarkerMessages([]);
                                 }}>
                                 {t('home.cancel-marker-adding')}
@@ -433,7 +528,7 @@ const HomeLayout = () => {
                                 type="button"
                                 onClick={() => {
                                     setEditingMarker(null);
-                                    setMarkerMenu('list');
+                                    setMarkerMenuMode('list');
                                     setEditMarkerMessages([]);
                                 }}>
                                 {t('home.go-to-the-list')}
@@ -459,56 +554,69 @@ const HomeLayout = () => {
         );
     }
 
-    const loadMarkersForList = useCallback(async (page) => {
-        setMarkersForListLoading(true);
-        setMarkerListMessages([]);
+    const renderMarkersOnMap = useCallback(() => {
+        const result = [];
 
-        const url = new URL('/api/markers/search', window.location.origin);
-        url.searchParams.append('page_size', '10');
-        url.searchParams.append('page', page || '1');
-        url.searchParams.append('q', markerSearchQuery);
-        url.searchParams.append('sort_type', markerListSort.type);
-        url.searchParams.append('sort_by_asc', markerListSort.asc);
-        url.searchParams.append('min_time', markerListTimeOfStartFilter.min
-            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.min).toString() : '');
-        url.searchParams.append('max_time', markerListTimeOfStartFilter.max
-            ? convertLocalTimeToUtc(markerListTimeOfStartFilter.max).toString() : '');
+        if (newMarker !== null) {
+            result.push(
+                <Marker
+                    key='new'
+                    position={[newMarker.latitude, newMarker.longitude]}
+                    icon={mapIcons.newMarkerIcon}>
+                    <Popup className="marker_popup">
+                        <button className={`${cl.marker_popup__cancel_button}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setNewMarker(null);
+                                setMarkerMenuMode('list');
+                                setEditMarkerMessages([]);
+                            }}>{t('home.cancel-marker-adding')}</button>
+                    </Popup>
+                </Marker>
+            );
+        }
 
-        markerListImportanceFilter.forEach(el => {
-            url.searchParams.append('imp', el);
+        markersForMap?.forEach(el => {
+            const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
+
+            result.push(
+                <Marker
+                    key={el.id}
+                    position={[el.latitude, el.longitude]}
+                    icon={getImportanceIcon(el.importance, el.startsAt) || undefined}>
+                    <Popup className="marker_popup">
+                        <div className={cl.marker_popup__cont}>
+                            <div className={cl.marker_popup__main}>
+                                <h2 className={cl.marker_popup__title}>{el.title}</h2>
+                                <p className={cl.marker_popup__description}>{el.description}</p>
+                            </div>
+                            <p className={`${cl.marker_popup__starts_at} ${isTimeInPast(el.startsAt) ? cl.past : ''}`}>
+                                {dateTimeLocal}
+                            </p>
+                            <div className={cl.marker_popup__actions}>
+                                <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
+                                    onClick={() => {
+                                        setIsMarkerPanelOpen(true);
+                                        editMarker(el);
+                                    }}>
+                                    <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="edit" />
+                                </button>
+                                <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
+                                    onClick={() => { prepareToRemoveMarker(el); }}>
+                                    <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="delete" />
+                                </button>
+                            </div>
+                        </div>
+                    </Popup>
+                </Marker>
+            );
         });
 
-        const response = await fetch(url, {
-            method: "GET",
-            credentials: "include"
-        });
-        const json = await response.json();
-
-        setMarkersForList(json.data.items || []);
-        setMarkerListPage(page || 1);
-        setMarkerListPageCount(json.data.pageCount || 0);
-        setMarkersForListLoading(false);
-    }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type, markerSearchQuery]);
-
-    const loadMarkersForMap = useCallback(async (bounds) => {
-        setMarkersForMapLoading(true);
-
-        let url = '/api/markers/map';
-        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
-        url += `&n_e_long=${bounds.getNorthEast().lng}`;
-        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
-        url += `&s_w_long=${bounds.getSouthWest().lng}`;
-
-        const response = await fetch(url, {
-            method: "GET",
-            credentials: "include"
-        });
-        const json = await response.json();
-
-        setMarkersForMap(json.data || []);
-
-        setMarkersForMapLoading(false);
-    }, []);
+        return result;
+    }, [newMarker, markersForMap, t, timeZone.name, editMarker]);
 
     async function addMarkerRequest() {
         setUpdatingMarkerList(true);
@@ -533,7 +641,7 @@ const HomeLayout = () => {
         if (response.ok) {
             loadMarkersForMap(mapBounds);
             loadMarkersForList(1);
-            setMarkerMenu('list');
+            setMarkerMenuMode('list');
             setNewMarker(null);
             setEditMarkerMessages([]);
         } else if (!response.ok) {
@@ -580,7 +688,7 @@ const HomeLayout = () => {
         if (response.ok) {
             loadMarkersForMap(mapBounds);
             loadMarkersForList(1);
-            setMarkerMenu('list');
+            setMarkerMenuMode('list');
             setEditingMarker(null);
             setEditMarkerMessages([]);
         } else if (!response.ok) {
@@ -649,136 +757,9 @@ const HomeLayout = () => {
         setIsYesNoDialogOpen(false);
     }
 
-    const getImportanceIcon = useCallback((importance, startsAt) => {
-        const isInPast = isTimeInPast(startsAt);
-
-        switch (importance) {
-            case 'low':
-                return isInPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
-            case 'medium':
-                return isInPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
-            case 'high':
-                return isInPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
-            default:
-                return undefined;
-        }
-    }, []);
-
-    const navigateToMarker = useCallback((marker) => {
-        mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
-    }, []);
-
-    const editMarker = useCallback((marker) => {
-        setMarkerMenu('edit');
-        setEditingMarker(marker);
-        setMarkerListMessages([]);
-    }, []);
-
-    const mapLoadEvent = useCallback((map) => {
-        loadMarkersForMap(map.getBounds());
-        setMapBounds(map.getBounds());
-    }, [loadMarkersForMap]);
-
-    const mapClickEvent = useCallback((e) => {
-        setNewMarker({
-            latitude: e.latlng.lat,
-            longitude: e.latlng.lng
-        });
-
-        setMarkerMenu('add');
-        setMarkerPanelVisibility(true);
-    }, []);
-
-    const mapMoveendEvent = useCallback(() => {
-        const bounds = mapRef.current?.getBounds();
-
-        if (!bounds) {
-            return;
-        }
-
-        loadMarkersForMap(bounds);
-        setMapBounds(bounds);
-    }, [loadMarkersForMap]);
-
-    const renderMarkersOnMap = useCallback(() => {
-        const result = [];
-
-        if (newMarker !== null) {
-            result.push(
-                <Marker
-                    key='new'
-                    position={[newMarker.latitude, newMarker.longitude]}
-                    icon={mapIcons.newMarkerIcon}>
-                    <Popup className="marker_popup">
-                        <button className={`${cl.marker_popup__cancel_button}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setNewMarker(null);
-                                setMarkerMenu('list');
-                                setEditMarkerMessages([]);
-                            }}>{t('home.cancel-marker-adding')}</button>
-                    </Popup>
-                </Marker>
-            );
-        }
-
-        markersForMap?.forEach(el => {
-            const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
-
-            result.push(
-                <Marker
-                    key={el.id}
-                    position={[el.latitude, el.longitude]}
-                    icon={getImportanceIcon(el.importance, el.startsAt)}>
-                    <Popup className="marker_popup">
-                        <div className={cl.marker_popup__cont}>
-                            <div className={cl.marker_popup__main}>
-                                <h2 className={cl.marker_popup__title}>{el.title}</h2>
-                                <p className={cl.marker_popup__description}>{el.description}</p>
-                            </div>
-                            <p className={`${cl.marker_popup__starts_at} ${isTimeInPast(el.startsAt) ? cl.past : ''}`}>
-                                {dateTimeLocal}
-                            </p>
-                            <div className={cl.marker_popup__actions}>
-                                <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
-                                    onClick={() => {
-                                        setMarkerPanelVisibility(true);
-                                        editMarker(el);
-                                    }}>
-                                    <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
-                                        alt="edit" />
-                                </button>
-                                <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
-                                    onClick={() => { prepareToRemoveMarker(el); }}>
-                                    <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
-                                        alt="delete" />
-                                </button>
-                            </div>
-                        </div>
-                    </Popup>
-                </Marker>
-            );
-        });
-
-        return result;
-    }, [newMarker, markersForMap, t, getImportanceIcon, timeZone.name, editMarker]);
-
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            const response = await fetch('/api/users/self', {
-                method: "GET",
-                credentials: "include"
-            });
-            const json = await response.json();
-            setUserInfo(json.data || undefined);
-        };
-
-        fetchUserInfo();
-    }, []);
-
-    useEffect(() => {
-        loadMarkersForList(1);
+        const id = setTimeout(() => loadMarkersForList(1), 0);
+        return () => clearTimeout(id);
     }, [loadMarkersForList]);
 
     useEffect(() => {
@@ -786,10 +767,10 @@ const HomeLayout = () => {
         if (map) {
             map.invalidateSize()
         }
-    }, [isMarkerPanelVisible]);
+    }, [isMarkerPanelOpen]);
 
     return (
-        <div className={`${cl.main} ${cl[theme]} ${isMarkerPanelVisible ? '' : cl.hidden_menu}`}>
+        <div className={`${cl.main} ${cl[theme]} ${isMarkerPanelOpen ? '' : cl.hidden_menu}`}>
             <div className={`${cl.map_display}`}>
                 <Map
                     load={mapLoadEvent}
@@ -797,70 +778,21 @@ const HomeLayout = () => {
                     moveend={mapMoveendEvent}
                     renderMarkers={renderMarkersOnMap}
                     ref={mapRef}
-                    containerClassName={isMarkerPanelVisible ? 'with_panel' : ''} />
-                <div className={`${cl.right_side_menu}`}>
-                    <div className={`${cl.right_side_menu__user_name__cont}`}>
-                        <span className={`${cl.right_side_menu__user_name}`}>{userInfo?.name}</span>
-                    </div>
-                    <button className={`${cl.right_side_menu__marker_menu_button}`}
-                        type="button"
-                        onClick={() => {
-                            if (!isMarkerPanelVisible && currentMarkerMenu === null) {
-                                setMarkerMenu('list');
-                            }
-                            setMarkerPanelVisibility(p => !p);
-                        }}>
-                        <img className={`${cl.right_side_menu__marker_menu_button__img}`}
-                            alt='marker menu' />
-                    </button>
-                    <button className={`${cl.right_side_menu__settings_button}`}
-                        type="button"
-                        onClick={() => navigate(PageRoutes.USER_SETTINGS)}>
-                        <img className={`${cl.right_side_menu__settings_button__img}`}
-                            alt='settings' />
-                    </button>
-                    <button className={cl.right_side_menu__log_out_button}
-                        type="button"
-                        onClick={() => {
-                            if (!loggingOut) {
-                                logOutRequest();
-                            }
-                        }}>
-                        {
-                            loggingOut ?
-                                <div className={cl.right_side_menu__log_out_button__loading}>
-                                    <LoadingAnimation
-                                        curveColor1="transparent"
-                                        curveColor2="#000000"
-                                        size="18px"
-                                        curveWidth="4px" />
-                                </div>
-                                :
-                                <img className={cl.right_side_menu__log_out_button__img}
-                                    alt='log out' />
-                        }
-                    </button>
-                    {
-                        markersForMapLoading ?
-                            <div className={cl.map_markers_loading}>
-                                <LoadingAnimation
-                                    curveColor1="#FFFFFF"
-                                    curveColor2="#000000"
-                                    size="28px"
-                                    curveWidth="5px" />
-                            </div>
-                            : <></>
-                    }
-                </div>
+                    containerClassName={isMarkerPanelOpen ? 'with_panel' : ''}
+                />
+                <MapInterface
+                    isLoading={loadingMarkersForMap}
+                    onMarkerMenuToggle={onMarkerMenuToggle}
+                />
             </div>
             <div className={`${cl.marker_panel}`}>
                 <button className={`${cl.marker_panel__marker_menu_button}`}
                     type="button"
                     onClick={() => {
-                        if (!isMarkerPanelVisible && currentMarkerMenu === null) {
-                            setMarkerMenu('list');
+                        if (!isMarkerPanelOpen && markerMenuMode === null) {
+                            setMarkerMenuMode('list');
                         }
-                        setMarkerPanelVisibility(p => !p);
+                        setIsMarkerPanelOpen(p => !p);
                     }}>
                     <img className={`${cl.marker_panel__marker_menu_button__img}`}
                         alt='marker menu' />
@@ -869,14 +801,14 @@ const HomeLayout = () => {
                     <button className={
                         `${cl.marker_panel__top_menu__option} 
                             ${newMarker === null ? cl.unavailable : ''} 
-                            ${currentMarkerMenu === 'add' ? cl.current : ''}`}
+                            ${markerMenuMode === 'add' ? cl.current : ''}`}
                         type="button"
                         onClick={() => {
-                            if (currentMarkerMenu === 'list') {
+                            if (markerMenuMode === 'list') {
                                 setMarkerListMessages([]);
                             }
                             if (newMarker) {
-                                setMarkerMenu('add');
+                                setMarkerMenuMode('add');
                             }
                         }}>
                         <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
@@ -885,20 +817,20 @@ const HomeLayout = () => {
                     <button
                         className={
                             `${cl.marker_panel__top_menu__option} 
-                            ${['list', 'edit'].includes(currentMarkerMenu) ? cl.current : ''}`}
+                            ${['list', 'edit'].includes(markerMenuMode) ? cl.current : ''}`}
                         type="button"
                         onClick={() => {
-                            if (currentMarkerMenu === 'add') {
+                            if (markerMenuMode === 'add') {
                                 setEditMarkerMessages([]);
                             }
-                            setMarkerMenu('list');
+                            setMarkerMenuMode('list');
                         }}>
                         <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`}
                             alt="list" />
                     </button>
                 </div>
-                {isMarkerPanelVisible && currentMarkerMenu === 'list' ? renderMarkerList() : <></>}
-                {isMarkerPanelVisible && ['add', 'edit'].includes(currentMarkerMenu) ? renderMenuForMarkerEditing() : <></>}
+                {isMarkerPanelOpen && markerMenuMode === 'list' ? renderMarkerList() : <></>}
+                {isMarkerPanelOpen && ['add', 'edit'].includes(markerMenuMode) ? renderMenuForMarkerEditing() : <></>}
             </div>
             <YesNoDialog
                 dialogState={isYesNoDialogOpen}
