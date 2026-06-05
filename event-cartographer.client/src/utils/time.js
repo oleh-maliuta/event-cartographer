@@ -5,7 +5,7 @@ import { Temporal } from '@js-temporal/polyfill';
  * @param {string} utcString - A UTC ISO string (e.g., "2024-05-11T15:00:00Z")
  * @returns {boolean} - True if the time is in the past, false otherwise.
  */
-export function isTimeInPast(utcString) {
+export function isInPast(utcString) {
     return Temporal.Instant.compare(
         Temporal.Instant.from(utcString.endsWith('Z') ? utcString : utcString + 'Z'),
         Temporal.Now.instant()

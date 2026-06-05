@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback, useReducer } from "react";
 import cl from "./.module.css";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
@@ -7,13 +7,18 @@ import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from "../../components/MemoLink/MemoLink";
+import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
+import { MessageStates } from "../../utils/constants";
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
-    const [messageState, setMessageState] = useState('success');
-    const [messages, setMessages] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState()
+    );
 
     const passwordInputRef = useRef(null);
     const confirmPasswordInputRef = useRef(null);
@@ -40,7 +45,7 @@ const SignUpLayout = () => {
     }, []);
 
     const signUpRequest = useCallback(async (e) => {
-        setMessages([]);
+        dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         setSubmitting(true);
 
         const response = await fetch(`/api/users/sign-up?locale=${i18n.language}`, {
@@ -51,12 +56,16 @@ const SignUpLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            setMessageState('success');
-            setMessages([t('sign-up.email-is-sent')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.email-is-sent')] }
+            });
         } else if (!response.ok) {
             if (json.message) {
-                setMessageState('error');
-                setMessages([t(json.message)]);
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -67,13 +76,17 @@ const SignUpLayout = () => {
                 }
 
                 if (errors.length > 0) {
-                    setMessageState('error')
-                    setMessages(errors);
+                    dispatchMessageState({
+                        type: 'SET_MESSAGES',
+                        payload: { mode: MessageStates.ERROR, list: errors }
+                    });
                 }
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessageState('error');
-            setMessages([t('general.server-error')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setSubmitting(false);
@@ -86,17 +99,11 @@ const SignUpLayout = () => {
                 onSubmit={(e) => {
                     e.preventDefault();
                     if (submitting) return;
-                    if (confirmPasswordInputRef.current.value !== passwordInputRef.current.value) {
-                        setMessageState('error');
-                        setMessages([t('sign-up.password-not-confirmed')]);
-                        return;
-                    }
                     signUpRequest(e);
                 }}>
                 <BlockMessage
                     style={blockMessageStyle}
-                    state={messageState}
-                    messages={messages} />
+                    state={messageState} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     name='username'
@@ -139,10 +146,12 @@ const SignUpLayout = () => {
                     label={t('sign-up.confirm-password-input')}
                     type='password'
                     placeholder={t('sign-up.confirm-password-input')}
+                    condition={() => confirmPasswordInputRef.current.value === passwordInputRef.current.value}
                     maxLength='200'
                     required
                     ref={confirmPasswordInputRef}
-                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)} />
+                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)}
+                    conditionalValidity={t(`sign-up.confirm_password_invalid.conditional`)} />
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-up.create-account')}

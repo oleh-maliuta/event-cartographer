@@ -31,7 +31,6 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "create-account": "Create account",
-        "password-not-confirmed": "Password not confirmed.",
         "sign-in-link": "Sign in",
         "email-is-sent": "Email is sent to confirm your email address.",
         "username_invalid": {
@@ -49,7 +48,8 @@
             "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
         },
         "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required."
+            "value_missing": "Password confirmation is required.",
+            "conditional": "Password confirmation does not match the password."
         }
     },
     "reset-password": {
@@ -57,7 +57,6 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
-        "password-not-confirmed": "Password not confirmed.",
         "password-is-reset": "Password is reset. Now you can use it to sign in.",
         "new_password_invalid": {
             "value_missing": "Password is required.",
@@ -65,7 +64,8 @@
             "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
         },
         "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required."
+            "value_missing": "Password confirmation is required.",
+            "conditional": "Password confirmation does not match the password."
         }
     },
     "settings": {
@@ -74,9 +74,9 @@
         "basic-info": {
             "header": "Basic information",
             "username-input": "Username",
-            "permission-to-delete-past-events-input": "Automatically delete past events",
+            "permission-to-delete-past-events-input": "Delete past events automatically",
             "save-changes": "Save changes",
-            "changes-are-saved": "Changes are saved."
+            "changes-are-saved": "Changes have been saved."
         },
         "personalization": {
             "header": "Personalization",
@@ -135,9 +135,8 @@
         "marker-edit-title-label": "Title:",
         "marker-edit-description-label": "Description:",
         "add-marker": "Add",
-        "cancel-marker-adding": "Cancel",
         "edit-marker": "Edit",
-        "go-to-the-list": "Go to the list",
+        "cancel-marker-editing": "Cancel",
         "remove-marker": {
             "dialog-title": "Remove the marker",
             "dialog-description": "Are you sure you want to remove the marker?"

@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect, useMemo, memo } from 'react';
+import { useState, useRef, useEffect, useMemo, memo, useReducer } from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const ResetPasswordDialog = memo(({
     dialogState,
@@ -12,9 +14,12 @@ const ResetPasswordDialog = memo(({
 }) => {
     const { t, i18n } = useTranslation();
 
-    const [messageState, setMessageState] = useState("success");
-    const [messages, setMessages] = useState([]);
     const [sendingEmail, setSendingEmail] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState()
+    );
 
     const dialogRef = useRef(null);
 
@@ -35,13 +40,17 @@ const ResetPasswordDialog = memo(({
         const json = await response.json();
 
         if (response.ok) {
-            setMessageState('success');
-            setMessages([t('sign-in.reset-password-modal-window.email-is-sent')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-in.reset-password-modal-window.email-is-sent')] }
+            });
             setDialogState(false);
         } else if (!response.ok) {
-            setMessageState('error');
             if (json.message) {
-                setMessages([t(json.message)]);
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
                 for (const prop in json.errors) {
@@ -49,11 +58,16 @@ const ResetPasswordDialog = memo(({
                         errors.push(`${t(json.errors[prop][err])}`);
                     }
                 }
-                setMessages(errors);
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: errors }
+                });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessageState('error');
-            setMessages([t('general.server-error')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setSendingEmail(false);
@@ -86,8 +100,7 @@ const ResetPasswordDialog = memo(({
                     </p>
                     <BlockMessage
                         style={blockMessageStyle}
-                        state={messageState}
-                        messages={messages} />
+                        state={messageState} />
                     <input className={`${cl.modal_window__reset_password__input}`}
                         name='usernameOrEmail'
                         type="text"

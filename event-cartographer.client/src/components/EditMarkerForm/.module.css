@@ -1,0 +1,152 @@
+.edit_marker_form {
+    --marker-edit-panel-label-color: #000000;
+    --marker-edit-panel-input-border-color: #000000;
+    --marker-edit-panel-input-text-color: #000000;
+    --marker-edit-panel-input-image-filter: none;
+}
+
+.edit_marker_form.dark {
+    --marker-edit-panel-label-color: #ffffff;
+    --marker-edit-panel-input-border-color: #ffffff;
+    --marker-edit-panel-input-text-color: #ffffff;
+    --marker-edit-panel-input-image-filter: invert(100%);
+}
+
+.edit_marker_form__field {
+    margin-top: 15px;
+}
+
+.edit_marker_form__field_label {
+    color: var(--marker-edit-panel-label-color);
+    font-size: 1.25rem;
+}
+
+.edit_marker_form__field_input {
+    background-color: transparent;
+    color: var(--marker-edit-panel-input-text-color);
+    font-size: 1.25rem;
+    border: 2px solid var(--marker-edit-panel-input-border-color);
+    border-radius: 5px;
+    padding-block: 3px;
+
+    &:not(select) {
+        padding-left: 3px;
+    }
+}
+
+.edit_marker_form__field_value {
+    font-size: 1.25rem;
+}
+
+.edit_marker_form__latitude_input {
+    width: calc(100% - 20px);
+}
+
+.edit_marker_form__longitude_input {
+    width: calc(100% - 20px);
+}
+
+.edit_marker_form__starts_at_input {
+    width: calc(100% - 20px);
+
+    &::-webkit-calendar-picker-indicator {
+        filter: var(--marker-edit-panel-input-image-filter);
+    }
+}
+
+.edit_marker_form__importance_input {
+    width: calc(100% - 13px);
+}
+
+.edit_marker_form__importance_input__no_value {
+    background-color: #3b2e2e;
+    color: #ffffff;
+}
+
+.edit_marker_form__importance_input__low_value {
+    background-color: #008000;
+    color: #ffffff;
+}
+
+.edit_marker_form__importance_input__medium_value {
+    background-color: #c5c500;
+    color: #ffffff;
+}
+
+.edit_marker_form__importance_input__high_value {
+    background-color: #ff0000;
+    color: #ffffff;
+}
+
+.edit_marker_form__title_input {
+    width: calc(100% - 20px);
+}
+
+.edit_marker_form__description_input {
+    width: calc(100% - 20px);
+    height: 150px;
+    resize: none;
+}
+
+.edit_marker_form__buttons {
+    display: flex;
+    margin-top: 7px;
+}
+
+.edit_marker_form__cancel_button {
+    color: #ffffff;
+    background-color: #d30000;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 5px;
+    padding-block: 8px;
+    padding-inline: 10px;
+
+    &:hover {
+        background-color: #a50000;
+    }
+}
+
+.edit_marker_form__add_button {
+    color: #ffffff;
+    background-color: #00b944;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 5px;
+    padding-block: 8px;
+    padding-inline: 10px;
+    margin-left: 10px;
+
+    &:hover {
+        background-color: #008c33;
+    }
+}
+
+.edit_marker_form__cancel_button {
+    color: #ffffff;
+    background-color: #d30000;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 5px;
+    padding-block: 8px;
+    padding-inline: 10px;
+
+    &:hover {
+        background-color: #a50000;
+    }
+}
+
+.edit_marker_form__edit_button {
+    color: #ffffff;
+    background-color: #debd00;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 5px;
+    padding-block: 8px;
+    padding-inline: 10px;
+    margin-left: 10px;
+
+    &:hover {
+        background-color: #888800;
+    }
+}

@@ -3,40 +3,35 @@ import cl from "./.module.css";
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
 
+function renderMessages(messages) {
+    return messages?.map((el, idx) => {
+        return (
+            <p className={cl.block_message__text}
+                key={idx}>
+                {el}
+            </p>
+        );
+    });
+}
+
 const BlockMessage = memo(({
     style,
     state,
-    messages
 }) => {
     const { theme } = useTheme();
 
-    function renderMessages() {
-        const result = [];
-
-        messages?.forEach((el, idx) => {
-            result.push(
-                <p className={cl.block_message__text}
-                    key={idx}>
-                    {el}
-                </p>
-            );
-        });
-
-        return result;
-    }
-
-    if (messages?.length === 0) {
+    if (state.list?.length === 0) {
         return (
-            <div className={`${cl.empty}`}
+            <div className={`${cl.block_message__empty}`}
                 style={style}>
             </div>
         );
     }
 
     return (
-        <div className={`${cl.block_message} ${cl[state]} ${cl[theme]}`}
+        <div className={`${cl.block_message} ${cl[state.mode]} ${cl[theme]}`}
             style={style}>
-            {renderMessages()}
+            {renderMessages(state.list)}
         </div>
     );
 });
@@ -45,8 +40,7 @@ BlockMessage.displayName = "BlockMessage";
 
 BlockMessage.propTypes = {
     style: PropTypes.object,
-    state: PropTypes.string,
-    messages: PropTypes.array
+    state: PropTypes.object.isRequired,
 };
 
 export default BlockMessage;

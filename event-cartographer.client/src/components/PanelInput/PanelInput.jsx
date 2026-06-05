@@ -12,6 +12,7 @@ const PanelInput = memo(({
     type,
     placeholder,
     pattern,
+    condition = () => true,
     minLength,
     maxLength,
     required,
@@ -19,6 +20,7 @@ const PanelInput = memo(({
     tooShortValidity,
     typeMismatchValidity,
     patternValidity,
+    conditionalValidity,
     ref,
 }) => {
     const { theme } = useTheme();
@@ -35,8 +37,15 @@ const PanelInput = memo(({
             obj.setCustomValidity(typeMismatchValidity);
         } else if (obj.validity.patternMismatch && patternValidity) {
             obj.setCustomValidity(patternValidity);
+        } else if (!condition() && conditionalValidity) {
+            obj.setCustomValidity(conditionalValidity);
         }
-    }, [valueMissingValidity, tooShortValidity, typeMismatchValidity, patternValidity]);
+
+    }, [
+        valueMissingValidity, tooShortValidity,
+        typeMismatchValidity, patternValidity,
+        condition, conditionalValidity
+    ]);
 
     return (
         <div className={`${cl.panel_input} ${cl[theme]}`}
@@ -70,6 +79,7 @@ PanelInput.propTypes = {
     type: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
     pattern: PropTypes.string,
+    condition: PropTypes.func,
     minLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     required: PropTypes.bool,
@@ -77,6 +87,7 @@ PanelInput.propTypes = {
     tooShortValidity: PropTypes.string,
     typeMismatchValidity: PropTypes.string,
     patternValidity: PropTypes.string,
+    conditionalValidity: PropTypes.string,
     ref: PropTypes.object,
 };
 

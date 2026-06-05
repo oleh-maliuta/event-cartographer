@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useReducer } from "react";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import mapIcons from "../../utils/map-icons";
@@ -12,10 +12,12 @@ import { useTranslation } from "react-i18next";
 import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
-import { DEFAULT_DATE_TIME_FORMAT } from "../../utils/constants";
-import { convertLocalTimeToUtc, convertUtcToLocalTime, isTimeInPast } from "../../utils/time";
+import { DEFAULT_DATE_TIME_FORMAT, MessageStates } from "../../utils/constants";
+import { convertLocalTimeToUtc, convertUtcToLocalTime, isInPast } from "../../utils/time";
 import { useTimeZone } from "../../hooks/useTimeZone";
 import MapInterface from "../../components/MapInterface/MapInterface";
+import EditMarkerForm from "../../components/EditMarkerForm/EditMarkerForm";
+import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
 
 /**
  * Returns the appropriate icon for a marker based on its importance and start time.
@@ -24,27 +26,22 @@ import MapInterface from "../../components/MapInterface/MapInterface";
  * @returns {import('leaflet').Icon | null} Icon for marker with specified importance and time of the start.
  */
 function getImportanceIcon(importance, startsAt) {
-    const isInPast = isTimeInPast(startsAt);
-    switch (importance) {
-        case 'low':
-            return isInPast ? mapIcons.pastLowImpMarkerIcon : mapIcons.lowImpMarkerIcon;
-        case 'medium':
-            return isInPast ? mapIcons.pastMediumImpMarkerIcon : mapIcons.mediumImpMarkerIcon;
-        case 'high':
-            return isInPast ? mapIcons.pastHighImpMarkerIcon : mapIcons.highImpMarkerIcon;
-        default:
-            return null;
-    }
+    if (!['low', 'medium', 'high'].includes(importance)) return null;
+
+    const prefix = isInPast(startsAt) ? 'past' : '';
+    const capitalizedImp = importance.charAt(0).toUpperCase() + importance.slice(1);
+    const iconKey = prefix 
+        ? `${prefix}${capitalizedImp}ImpMarkerIcon` 
+        : `${importance}ImpMarkerIcon`;
+
+    return mapIcons[iconKey] || null;
 };
 
 const HomeLayout = () => {
     const { t } = useTranslation();
 
-    const [editMarkerMessages, setEditMarkerMessages] = useState([]);
-    const [markerListMessages, setMarkerListMessages] = useState([]);
-
     const [newMarker, setNewMarker] = useState(null);
-    const [editingMarker, setEditingMarker] = useState(null);
+    const [markerToEdit, setMarkerToEdit] = useState(null);
     const [markerIdToRemove, setMarkerIdToRemove] = useState(null);
     const [markerListPage, setMarkerListPage] = useState(1);
     const [markerListPageCount, setMarkerListPageCount] = useState(0);
@@ -58,7 +55,6 @@ const HomeLayout = () => {
 
     const [loadingMarkersForMap, setLoadingMarkersForMap] = useState(false);
     const [loadingMarkersForList, setLoadingMarkersForList] = useState(false);
-    const [updatingMarkerList, setUpdatingMarkerList] = useState(false);
 
     const [markerListSort, setMarkerListSort] = useState({ type: 'importance', asc: false });
     const [markerListImportanceFilter, setMarkerListImportanceFilter] = useState([]);
@@ -68,6 +64,15 @@ const HomeLayout = () => {
 
     const [markerSearchQuery, setMarkerSearchQuery] = useState('');
 
+    const [editMarkerFormMessageState, dispatchEditMarkerFormMessageState] = useReducer(
+        messageListReducer,
+        messageListState()
+    );
+    const [markerListMessageState, dispatchMarkerListMessageState] = useReducer(
+        messageListReducer,
+        messageListState()
+    );
+
     const mapRef = useRef(null);
 
     const { theme } = useTheme();
@@ -75,7 +80,7 @@ const HomeLayout = () => {
 
     const loadMarkersForList = useCallback(async (page) => {
         setLoadingMarkersForList(true);
-        setMarkerListMessages([]);
+        dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
 
         const url = new URL('/api/markers/search', window.location.origin);
         url.searchParams.append('page_size', '10');
@@ -130,8 +135,8 @@ const HomeLayout = () => {
 
     const editMarker = useCallback((marker) => {
         setMarkerMenuMode('edit');
-        setEditingMarker(marker);
-        setMarkerListMessages([]);
+        setMarkerToEdit(marker);
+        dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
     }, []);
 
     const mapLoadEvent = useCallback((map) => {
@@ -371,7 +376,7 @@ const HomeLayout = () => {
                 <BlockMessage
                     style={{ marginTop: '8px', width: 'calc(100% - 16px)' }}
                     state='error'
-                    messages={markerListMessages} />
+                    state={markerListMessageState} />
                 {
                     loadingMarkersForList ?
                         <div className={`${cl.marker_list_loading}`}>
@@ -392,168 +397,6 @@ const HomeLayout = () => {
         );
     }
 
-    function renderMenuForMarkerEditing() {
-        const isForAdding = markerMenuMode === 'add';
-        const marker = isForAdding ? newMarker : editingMarker;
-        const setMarker = isForAdding ? setNewMarker : setEditingMarker;
-        const dateTimeLocalValue = marker?.startsAt
-            ? convertUtcToLocalTime(marker.startsAt, timeZone.name).toString() : '';
-
-        return (
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                if (updatingMarkerList) return;
-                if (isForAdding) { addMarkerRequest(); }
-                else { editMarkerRequest(); }
-            }}>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_latitude}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_latitude_label}`}>
-                        {t('home.marker-edit-latitude-label')}
-                    </p>
-                    <input
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_latitude_input}`}
-                        type='number'
-                        value={marker?.latitude ?? ''}
-                        required
-                        onChange={(e) => setMarker(p => ({ ...p, latitude: e.target.value }))} />
-                </div>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_longitude}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_longitude_label}`}>
-                        {t('home.marker-edit-longitude-label')}
-                    </p>
-                    <input
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_longitude_input}`}
-                        type='number'
-                        value={marker?.longitude ?? ''}
-                        required
-                        onChange={(e) => setMarker(p => ({ ...p, longitude: e.target.value }))} />
-                </div>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_starts_at}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_starts_at_label}`}>
-                        {t('home.marker-edit-starts-at-label')}
-                    </p>
-                    <input
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_starts_at_input}`}
-                        type='datetime-local'
-                        value={dateTimeLocalValue}
-                        step="60"
-                        required
-                        onChange={(e) => {
-                            const utcValue = e.target.value ?
-                                convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
-                            setMarker(p => ({ ...p, startsAt: utcValue?.toString() }));
-                        }} />
-                </div>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_importance}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_importance_label}`}>
-                        {t('home.marker-edit-importance-label')}
-                    </p>
-                    <select
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_importance_input}`}
-                        value={marker?.importance ?? ''}
-                        required
-                        onChange={(e) => setMarker(p => ({ ...p, importance: e.target.value }))}>
-                        <option className={cl.editing_marker_importance_input__no_value} value=''>
-                            {t('home.no-importance-value')}
-                        </option>
-                        <option className={cl.editing_marker_importance_input__high_value} value='high'>
-                            {t('home.high-importance-value')}
-                        </option>
-                        <option className={cl.editing_marker_importance_input__medium_value} value='medium'>
-                            {t('home.medium-importance-value')}
-                        </option>
-                        <option className={cl.editing_marker_importance_input__low_value} value='low'>
-                            {t('home.low-importance-value')}
-                        </option>
-                    </select>
-                </div>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_title}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_title_label}`}>
-                        {t('home.marker-edit-title-label')}
-                    </p>
-                    <input
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_title_input}`}
-                        type='text'
-                        maxLength='100'
-                        value={marker?.title ?? ''}
-                        required
-                        onChange={(e) => setMarker(p => ({ ...p, title: e.target.value }))} />
-                </div>
-                <div className={`${cl.editing_marker_field} ${cl.editing_marker_description}`}>
-                    <p className={`${cl.editing_marker_field_label} ${cl.editing_marker_description_label}`}>
-                        {t('home.marker-edit-description-label')}
-                    </p>
-                    <textarea
-                        className={`${cl.editing_marker_field_input} ${cl.editing_marker_description_input}`}
-                        maxLength='5000'
-                        value={marker?.description ?? ''}
-                        onChange={(e) => setMarker(p => ({ ...p, description: e.target.value }))}
-                    ></textarea>
-                </div>
-                <BlockMessage
-                    style={{ marginTop: '8px', width: 'calc(100% - 22px)' }}
-                    state='error'
-                    messages={editMarkerMessages} />
-                {
-                    isForAdding ?
-                        <div className={`${cl.editing_marker_buttons}`}>
-                            <button className={`${cl.editing_marker_button} ${cl.editing_marker_cancel_button}`}
-                                type="button"
-                                onClick={() => {
-                                    setNewMarker(null);
-                                    setMarkerMenuMode('list');
-                                    setEditMarkerMessages([]);
-                                }}>
-                                {t('home.cancel-marker-adding')}
-                            </button>
-                            <button className={`${cl.editing_marker_button} ${cl.editing_marker_add_button}`}
-                                type="submit">
-                                {
-                                    updatingMarkerList ?
-                                        <LoadingAnimation
-                                            curveColor1="#FFFFFF"
-                                            curveColor2="#00000000"
-                                            size="15px"
-                                            curveWidth="3px" />
-                                        :
-                                        <span>
-                                            {t('home.add-marker')}
-                                        </span>
-                                }
-                            </button>
-                        </div>
-                        :
-                        <div className={`${cl.editing_marker_buttons}`}>
-                            <button className={`${cl.editing_marker_button} ${cl.editing_marker_go_back_button}`}
-                                type="button"
-                                onClick={() => {
-                                    setEditingMarker(null);
-                                    setMarkerMenuMode('list');
-                                    setEditMarkerMessages([]);
-                                }}>
-                                {t('home.go-to-the-list')}
-                            </button>
-                            <button className={`${cl.editing_marker_button} ${cl.editing_marker_edit_button}`}
-                                type="submit">
-                                {
-                                    updatingMarkerList ?
-                                        <LoadingAnimation
-                                            curveColor1="#FFFFFF"
-                                            curveColor2="#00000000"
-                                            size="15px"
-                                            curveWidth="3px" />
-                                        :
-                                        <span>
-                                            {t('home.edit-marker')}
-                                        </span>
-                                }
-                            </button>
-                        </div>
-                }
-            </form>
-        );
-    }
-
     const renderMarkersOnMap = useCallback(() => {
         const result = [];
 
@@ -569,8 +412,8 @@ const HomeLayout = () => {
                                 e.stopPropagation();
                                 setNewMarker(null);
                                 setMarkerMenuMode('list');
-                                setEditMarkerMessages([]);
-                            }}>{t('home.cancel-marker-adding')}</button>
+                                dispatchEditMarkerFormMessageState({ type: 'CLEAR_MESSAGES' });
+                            }}>{t('home.cancel-marker-editing')}</button>
                     </Popup>
                 </Marker>
             );
@@ -591,7 +434,7 @@ const HomeLayout = () => {
                                 <h2 className={cl.marker_popup__title}>{el.title}</h2>
                                 <p className={cl.marker_popup__description}>{el.description}</p>
                             </div>
-                            <p className={`${cl.marker_popup__starts_at} ${isTimeInPast(el.startsAt) ? cl.past : ''}`}>
+                            <p className={`${cl.marker_popup__starts_at} ${isInPast(el.startsAt) ? cl.past : ''}`}>
                                 {dateTimeLocal}
                             </p>
                             <div className={cl.marker_popup__actions}>
@@ -618,100 +461,6 @@ const HomeLayout = () => {
         return result;
     }, [newMarker, markersForMap, t, timeZone.name, editMarker]);
 
-    async function addMarkerRequest() {
-        setUpdatingMarkerList(true);
-
-        const response = await fetch('/api/markers', {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                latitude: Number(newMarker.latitude) || null,
-                longitude: Number(newMarker.longitude) || null,
-                startsAt: newMarker.startsAt || null,
-                importance: newMarker.importance || null,
-                title: newMarker.title || null,
-                description: newMarker.description || null
-            })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            loadMarkersForMap(mapBounds);
-            loadMarkersForList(1);
-            setMarkerMenuMode('list');
-            setNewMarker(null);
-            setEditMarkerMessages([]);
-        } else if (!response.ok) {
-            if (json.message) {
-                setEditMarkerMessages([t(json.message)]);
-            } else {
-                const errors = [];
-
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors.push(t(json.errors[prop][err]));
-                    }
-                }
-
-                setEditMarkerMessages(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            setEditMarkerMessages([t('general.server-error')]);
-        }
-
-        setUpdatingMarkerList(false);
-    }
-
-    async function editMarkerRequest() {
-        setUpdatingMarkerList(true);
-
-        const response = await fetch(`/api/markers/${editingMarker.id}`, {
-            method: "PUT",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                latitude: Number(editingMarker.latitude) || null,
-                longitude: Number(editingMarker.longitude) || null,
-                startsAt: editingMarker.startsAt || null,
-                importance: editingMarker.importance || null,
-                title: editingMarker.title || null,
-                description: editingMarker.description || null
-            })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            loadMarkersForMap(mapBounds);
-            loadMarkersForList(1);
-            setMarkerMenuMode('list');
-            setEditingMarker(null);
-            setEditMarkerMessages([]);
-        } else if (!response.ok) {
-            if (json.message) {
-                setEditMarkerMessages([t(json.message)]);
-            } else {
-                const errors = [];
-
-                for (const prop in json.errors) {
-                    for (const err in json.errors[prop]) {
-                        errors.push(t(json.errors[prop][err]));
-                    }
-                }
-
-                setEditMarkerMessages(errors);
-            }
-        } else if (response.status >= 500 && response.status <= 599) {
-            setEditMarkerMessages([t('general.server-error')]);
-        }
-
-        setUpdatingMarkerList(false);
-    }
-
     async function removeMarkerRequest(markerId) {
         const response = await fetch(`/api/markers/${markerId}`, {
             method: "DELETE",
@@ -724,7 +473,10 @@ const HomeLayout = () => {
             loadMarkersForList(1);
         } else if (!response.ok) {
             if (json.message) {
-                setMarkerListMessages([t(json.message)]);
+                dispatchMarkerListMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -734,10 +486,16 @@ const HomeLayout = () => {
                     }
                 }
 
-                setMarkerListMessages(errors);
+                dispatchMarkerListMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: errors }
+                });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMarkerListMessages([t('general.server-error')]);
+            dispatchMarkerListMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
     }
 
@@ -805,7 +563,7 @@ const HomeLayout = () => {
                         type="button"
                         onClick={() => {
                             if (markerMenuMode === 'list') {
-                                setMarkerListMessages([]);
+                                dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
                             }
                             if (newMarker) {
                                 setMarkerMenuMode('add');
@@ -821,7 +579,7 @@ const HomeLayout = () => {
                         type="button"
                         onClick={() => {
                             if (markerMenuMode === 'add') {
-                                setEditMarkerMessages([]);
+                                dispatchEditMarkerFormMessageState({ type: 'CLEAR_MESSAGES' });
                             }
                             setMarkerMenuMode('list');
                         }}>
@@ -830,7 +588,21 @@ const HomeLayout = () => {
                     </button>
                 </div>
                 {isMarkerPanelOpen && markerMenuMode === 'list' ? renderMarkerList() : <></>}
-                {isMarkerPanelOpen && ['add', 'edit'].includes(markerMenuMode) ? renderMenuForMarkerEditing() : <></>}
+                {
+                    isMarkerPanelOpen && ['add', 'edit'].includes(markerMenuMode)
+                        ? <EditMarkerForm
+                            mode={markerMenuMode}
+                            setMode={setMarkerMenuMode}
+                            marker={markerMenuMode === 'add' ? newMarker : markerToEdit}
+                            setMarker={markerMenuMode === 'add' ? setNewMarker : setMarkerToEdit}
+                            messageState={editMarkerFormMessageState}
+                            dispatchMessageState={dispatchEditMarkerFormMessageState}
+                            onSuccess={() => {
+                                loadMarkersForMap(mapBounds);
+                                loadMarkersForList(1);
+                            }}
+                        /> : <></>
+                }
             </div>
             <YesNoDialog
                 dialogState={isYesNoDialogOpen}

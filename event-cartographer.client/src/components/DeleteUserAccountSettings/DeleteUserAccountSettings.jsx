@@ -1,15 +1,21 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, memo, useReducer } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const DeleteUserAccountSettings = memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [messages, setMessages] = useState({ state: 'success', list: [] });
     const [deletingAccount, setDeletingAccount] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState(),
+    );
 
     const { theme } = useTheme();
 
@@ -24,10 +30,16 @@ const DeleteUserAccountSettings = memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            setMessages({ state: 'success', list: [t('settings.delete-account.email-is-sent')] })
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.SUCCESS, list: [t('settings.delete-account.email-is-sent')] }
+            });
         } else if (!response.ok) {
             if (json.message) {
-                setMessages({ state: 'error', list: [t(json.message)] });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -37,10 +49,16 @@ const DeleteUserAccountSettings = memo(() => {
                     }
                 }
 
-                setMessages({ state: 'error', list: errors });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: errors }
+                });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessages({ state: 'error', list: [t('general.server-error')] });
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setDeletingAccount(false);
@@ -73,8 +91,7 @@ const DeleteUserAccountSettings = memo(() => {
             </div>
             <BlockMessage
                 style={blockMessageStyle}
-                state={messages.state}
-                messages={messages.list} />
+                state={messageState} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__delete_account}`}
                     type='submit'>

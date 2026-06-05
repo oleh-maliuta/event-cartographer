@@ -1,15 +1,21 @@
-import { useState, useRef, useMemo, memo } from 'react';
+import { useState, useRef, useMemo, memo, useReducer } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const PasswordUserSettings = memo(() => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = useState({ state: 'success', list: [] });
     const [updatingPassword, setUpdatingPassword] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState(),
+    );
 
     const newPasswordInputRef = useRef(null);
     const confirmPasswordInputRef = useRef(null);
@@ -27,10 +33,16 @@ const PasswordUserSettings = memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            setMessages({ state: 'success', list: [t('settings.password.password-is-changed')] });
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.SUCCESS, list: [t('settings.password.password-is-changed')] }
+            });
         } else if (!response.ok) {
             if (json.message) {
-                setMessages({ state: 'error', list: [t(json.message)] });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -40,10 +52,16 @@ const PasswordUserSettings = memo(() => {
                     }
                 }
 
-                setMessages({ state: 'error', list: errors });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: errors }
+                });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessages({ state: 'error', list: [t('general.server-error')] });
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setUpdatingPassword(false);
@@ -59,7 +77,10 @@ const PasswordUserSettings = memo(() => {
                 e.preventDefault();
                 if (updatingPassword) return;
                 if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
-                    setMessages({ state: 'error', list: [t('settings.password.password-not-confirmed')] });
+                    dispatchMessageState({
+                        type: 'SET_MESSAGES',
+                        payload: { mode: MessageStates.ERROR, list: [t('settings.password.password-not-confirmed')] }
+                    });
                     return;
                 }
                 updateUserPasswordRequest(e);
@@ -91,8 +112,7 @@ const PasswordUserSettings = memo(() => {
             </div>
             <BlockMessage
                 style={blockMessageStyle}
-                state={messages.state}
-                messages={messages.list} />
+                state={messageState} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
                     type='submit'>

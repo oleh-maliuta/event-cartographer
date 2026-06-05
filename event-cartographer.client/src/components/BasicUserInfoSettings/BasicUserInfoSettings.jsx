@@ -1,18 +1,24 @@
-import { useState, useRef, useEffect, useMemo, memo } from 'react';
+import { useState, useRef, useEffect, useMemo, memo, useReducer } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const BasicUserInfoSettings = memo(() => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = useState({ state: 'success', list: [] });
-    const [savingChangesForUserInfo, setSavingChangesForUserInfo] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [userData, setUserData] = useState(null);
     const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = useState(null);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState(),
+    );
 
     const usernameInputRef = useRef(null);
 
@@ -25,7 +31,7 @@ const BasicUserInfoSettings = memo(() => {
         });
         const json = await response.json();
 
-        setUserInfo(json.data || undefined);
+        setUserData(json.data || undefined);
 
         if (json.data) {
             setPermissionToDeletePastEventsValue(json.data.permissionToDeletePastEvents);
@@ -33,7 +39,7 @@ const BasicUserInfoSettings = memo(() => {
     }
 
     async function updateUserInfoRequest() {
-        setSavingChangesForUserInfo(true);
+        setLoading(true);
 
         const response = await fetch(`/api/users/info`, {
             method: "PUT",
@@ -49,10 +55,20 @@ const BasicUserInfoSettings = memo(() => {
         const json = await response.json();
 
         if (response.ok) {
-            setMessages({ state: 'success', list: [t('settings.basic-info.changes-are-saved')] });
+            dispatchMessageState({
+                type: 'SET_MESSAGES', payload: {
+                    mode: MessageStates.SUCCESS,
+                    list: [t('settings.basic-info.changes-are-saved')]
+                }
+            });
         } else if (!response.ok) {
             if (json.message) {
-                setMessages({ state: 'error', list: [t(json.message)] });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES', payload: {
+                        mode: MessageStates.ERROR,
+                        list: [t(json.message)]
+                    }
+                });
             } else {
                 const errors = [];
 
@@ -62,13 +78,23 @@ const BasicUserInfoSettings = memo(() => {
                     }
                 }
 
-                setMessages({ state: 'error', list: errors });
+                dispatchMessageState({
+                    type: 'SET_MESSAGES', payload: {
+                        mode: MessageStates.ERROR,
+                        list: errors
+                    }
+                });
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessages({ state: 'error', list: [t('general.server-error')] });
+            dispatchMessageState({
+                type: 'SET_MESSAGES', payload: {
+                    mode: MessageStates.ERROR,
+                    list: [t('general.server-error')]
+                }
+            });
         }
 
-        setSavingChangesForUserInfo(false);
+        setLoading(false);
     }
 
     const blockMessageStyle = useMemo(() => {
@@ -79,7 +105,7 @@ const BasicUserInfoSettings = memo(() => {
         loadUserInfo();
     }, []);
 
-    if (userInfo === null) {
+    if (userData === null) {
         return (
             <div className={cl.content_loading}>
                 <LoadingAnimation
@@ -93,7 +119,7 @@ const BasicUserInfoSettings = memo(() => {
         <form className={`${cl.basic_info} ${cl[theme]}`}
             onSubmit={(e) => {
                 e.preventDefault();
-                if (savingChangesForUserInfo) return;
+                if (loading) return;
                 updateUserInfoRequest();
             }}>
             <div className={`${cl.basic_info__header__cont}`}>
@@ -110,7 +136,7 @@ const BasicUserInfoSettings = memo(() => {
                     placeholder={t('settings.basic-info.username-input')}
                     minLength='3'
                     maxLength="100"
-                    defaultValue={userInfo.name}
+                    defaultValue={userData.name}
                     required
                     ref={usernameInputRef} />
             </div>
@@ -124,12 +150,11 @@ const BasicUserInfoSettings = memo(() => {
             </div>
             <BlockMessage
                 style={blockMessageStyle}
-                state={messages.state}
-                messages={messages.list} />
+                state={messageState} />
             <button className={cl.save_changes_button}
                 type='submit'>
                 {
-                    savingChangesForUserInfo ?
+                    loading ?
                         <LoadingAnimation
                             curveColor1="#FFFFFF"
                             curveColor2="#00000000"

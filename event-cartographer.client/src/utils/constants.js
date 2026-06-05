@@ -1,5 +1,11 @@
 import { getTimeZones } from "./time";
 
+export const MessageStates = Object.freeze({
+    SUCCESS: 'success',
+    ERROR: 'error',
+    INFO: 'info',
+});
+
 export const ThemeValues = Object.freeze({
     LIGHT: 'light',
     DARK: 'dark',

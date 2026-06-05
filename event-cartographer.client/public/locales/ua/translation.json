@@ -31,7 +31,6 @@
         "password-input": "Пароль",
         "confirm-password-input": "Підтвердження пароля",
         "create-account": "Створити обліковий запис",
-        "password-not-confirmed": "Пароль не підтверджено.",
         "sign-in-link": "Вхід",
         "email-is-sent": "На вашу адресу електронної пошти надіслано листа для підтвердження.",
         "username_invalid": {
@@ -49,7 +48,8 @@
             "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
         },
         "confirm_password_invalid": {
-            "value_missing": "Підтвердження пароля обов'язкове."
+            "value_missing": "Підтвердження пароля обов'язкове.",
+            "conditional": "Підтвердження пароля не співпадає з паролем."
         }
     },
     "reset-password": {
@@ -57,7 +57,6 @@
         "password-input": "Пароль",
         "confirm-password-input": "Підтвердження пароля",
         "submit": "Відправити",
-        "password-not-confirmed": "Пароль не підтверджено.",
         "password-is-reset": "Пароль було перезаписано. Тепер ви можете використовувати його для входу.",
         "new_password_invalid": {
             "value_missing": "Пароль обов'язковий.",
@@ -65,7 +64,8 @@
             "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
         },
         "confirm_password_invalid": {
-            "value_missing": "Підтвердження пароля обов'язкове."
+            "value_missing": "Підтвердження пароля обов'язкове.",
+            "conditional": "Підтвердження пароля не співпадає з паролем."
         }
     },
     "settings": {
@@ -135,9 +135,8 @@
         "marker-edit-title-label": "Заголовок:",
         "marker-edit-description-label": "Опис:",
         "add-marker": "Додати",
-        "cancel-marker-adding": "Відмінити",
         "edit-marker": "Змінити",
-        "go-to-the-list": "Перейти до списку",
+        "cancel-marker-editing": "Відмінити",
         "remove-marker": {
             "dialog-title": "Видалити маркер",
             "dialog-description": "Ви впевнені, що хочете видалити цей маркер?"

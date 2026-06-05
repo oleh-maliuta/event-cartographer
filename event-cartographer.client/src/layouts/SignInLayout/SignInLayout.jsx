@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useReducer } from 'react';
 import cl from './.module.css';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
@@ -9,13 +9,19 @@ import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
 import { useNavigate } from 'react-router-dom';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const SignInLayout = () => {
     const { t } = useTranslation();
 
-    const [messages, setMessages] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [dialogOpened, setDialogOpened] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState(),
+    );
 
     const { theme } = useTheme();
 
@@ -35,7 +41,7 @@ const SignInLayout = () => {
     const navigate = useNavigate();
 
     const signInRequest = useCallback(async (e) => {
-        setMessages([]);
+        dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         setSubmitting(true);
 
         const response = await fetch('/api/users/sign-in', {
@@ -49,7 +55,10 @@ const SignInLayout = () => {
             navigate('/');
         } else if (!response.ok) {
             if (json.message) {
-                setMessages([t(json.message)]);
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -60,11 +69,17 @@ const SignInLayout = () => {
                 }
 
                 if (errors.length > 0) {
-                    setMessages(errors);
+                    dispatchMessageState({
+                        type: 'SET_MESSAGES',
+                        payload: { mode: MessageStates.ERROR, list: errors }
+                    });
                 }
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessages([t('general.server-error')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setSubmitting(false);
@@ -81,8 +96,7 @@ const SignInLayout = () => {
                 }}>
                 <BlockMessage
                     style={blockMessageStyle}
-                    state='error'
-                    messages={messages} />
+                    state={messageState} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     name='usernameOrEmail'

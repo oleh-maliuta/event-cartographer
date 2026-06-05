@@ -1,19 +1,24 @@
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
 import Panel from '../../components/Panel/Panel';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
+import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
+import { MessageStates } from '../../utils/constants';
 
 const ResetPasswordLayout = () => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
 
-    const [messageState, setMessageState] = useState('success');
-    const [messages, setMessages] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [isReset, setIsReset] = useState(false);
+
+    const [messageState, dispatchMessageState] = useReducer(
+        messageListReducer,
+        messageListState()
+    );
 
     const passwordInputRef = useRef(null);
     const confirmPasswordInputRef = useRef(null);
@@ -32,7 +37,7 @@ const ResetPasswordLayout = () => {
     }, []);
 
     const resetPasswordRequest = useCallback(async (e) => {
-        setMessages([]);
+        dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         setSubmitting(true);
 
         const formData = new FormData(e.target);
@@ -47,13 +52,17 @@ const ResetPasswordLayout = () => {
         const json = await response.json();
 
         if (response.ok) {
-            setMessageState('success');
-            setMessages([t('reset-password.password-is-reset')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.SUCCESS, list: [t('reset-password.password-is-reset')] }
+            });
             setIsReset(true);
         } else if (!response.ok) {
-            setMessageState('error');
             if (json.message) {
-                setMessages([t(json.message)]);
+                dispatchMessageState({
+                    type: 'SET_MESSAGES',
+                    payload: { mode: MessageStates.ERROR, list: [t(json.message)] }
+                });
             } else {
                 const errors = [];
 
@@ -64,12 +73,17 @@ const ResetPasswordLayout = () => {
                 }
 
                 if (errors.length > 0) {
-                    setMessages(errors);
+                    dispatchMessageState({
+                        type: 'SET_MESSAGES',
+                        payload: { mode: MessageStates.ERROR, list: errors }
+                    });
                 }
             }
         } else if (response.status >= 500 && response.status <= 599) {
-            setMessageState('error');
-            setMessages([t('general.server-error')]);
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
+            });
         }
 
         setSubmitting(false);
@@ -82,17 +96,11 @@ const ResetPasswordLayout = () => {
                 e.preventDefault();
                 if (isReset) return;
                 if (submitting) return;
-                if (confirmPasswordInputRef.current.value !== passwordInputRef.current.value) {
-                    setMessageState('error');
-                    setMessages([t('reset-password.password-not-confirmed')]);
-                    return;
-                }
                 resetPasswordRequest(e);
             }}>
             <BlockMessage
                 style={blockMessageStyle}
-                state={messageState}
-                messages={messages} />
+                state={messageState} />
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
                 name='newPassword'
@@ -112,10 +120,12 @@ const ResetPasswordLayout = () => {
                 label={t('reset-password.confirm-password-input')}
                 type='password'
                 placeholder={t('reset-password.confirm-password-input')}
+                condition={() => confirmPasswordInputRef.current.value === passwordInputRef.current.value}
                 maxLength='200'
                 required
                 ref={confirmPasswordInputRef}
-                valueMissingValidity={t(`reset-password.confirm_password_invalid.value_missing`)} />
+                valueMissingValidity={t(`reset-password.confirm_password_invalid.value_missing`)}
+                conditionalValidity={t(`reset-password.confirm_password_invalid.conditional`)} />
             <PanelButton
                 style={submitButtonStyle}
                 text={t('reset-password.submit')}
