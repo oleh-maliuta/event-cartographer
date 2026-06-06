@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback, useReducer } from 'react';
+import { useState, useRef, useCallback, useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PanelInput from '../../components/PanelInput/PanelInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
@@ -7,6 +7,11 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
+
+const blockMessageStyle = { marginTop: '15px', width: 'calc(100% - 6px)' };
+const passwordInfoInputStyle = { marginTop: '15px' };
+const confirmPasswordInfoInputStyle = { marginTop: '20px' };
+const submitButtonStyle = { marginTop: '35px' };
 
 const ResetPasswordLayout = () => {
     const { t } = useTranslation();
@@ -22,19 +27,6 @@ const ResetPasswordLayout = () => {
 
     const passwordInputRef = useRef(null);
     const confirmPasswordInputRef = useRef(null);
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '15px', width: 'calc(100% - 6px)' };
-    }, []);
-    const passwordInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const confirmPasswordInfoInputStyle = useMemo(() => {
-        return { marginTop: '20px' };
-    }, []);
-    const submitButtonStyle = useMemo(() => {
-        return { marginTop: '35px' };
-    }, []);
 
     const resetPasswordRequest = useCallback(async (e) => {
         dispatchMessageState({ type: 'CLEAR_MESSAGES' });

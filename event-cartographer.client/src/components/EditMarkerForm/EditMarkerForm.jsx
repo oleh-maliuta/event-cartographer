@@ -9,6 +9,8 @@ import { useTimeZone } from '../../hooks/useTimeZone';
 import { convertLocalTimeToUtc, convertUtcToLocalTime } from '../../utils/time';
 import { MessageStates } from '../../utils/constants';
 
+const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 22px)' };
+
 const EditMarkerForm = memo(({
     mode,
     setMode,
@@ -183,7 +185,7 @@ const EditMarkerForm = memo(({
                 ></textarea>
             </div>
             <BlockMessage
-                style={{ marginTop: '8px', width: 'calc(100% - 22px)' }}
+                style={blockMessageStyle}
                 state={messageState} />
             {
                 mode === 'add' ?

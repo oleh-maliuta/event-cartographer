@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, memo, useReducer } from 'react';
+import { useState, useRef, useEffect, memo, useReducer } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,8 @@ import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
+
+const blockMessageStyle = { marginTop: '10px', width: 'calc(100% - 6px)' };
 
 const BasicUserInfoSettings = memo(() => {
     const { t } = useTranslation();
@@ -96,10 +98,6 @@ const BasicUserInfoSettings = memo(() => {
 
         setLoading(false);
     }
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '10px', width: 'calc(100% - 6px)' };
-    }, []);
 
     useEffect(() => {
         loadUserInfo();

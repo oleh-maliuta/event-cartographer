@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useReducer } from 'react';
+import { useState, useCallback, useReducer } from 'react';
 import cl from './.module.css';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
@@ -12,6 +12,11 @@ import { useNavigate } from 'react-router-dom';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
 
+const blockMessageStyle = { marginTop: '15px', width: 'calc(100% - 6px)' };
+const usernameInfoInputStyle = { marginTop: '15px' };
+const passwordInfoInputStyle = { marginTop: '20px' };
+const submitButtonStyle = { marginTop: '35px' };
+
 const SignInLayout = () => {
     const { t } = useTranslation();
 
@@ -24,19 +29,6 @@ const SignInLayout = () => {
     );
 
     const { theme } = useTheme();
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '15px', width: 'calc(100% - 6px)' };
-    }, []);
-    const usernameInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const passwordInfoInputStyle = useMemo(() => {
-        return { marginTop: '20px' };
-    }, []);
-    const submitButtonStyle = useMemo(() => {
-        return { marginTop: '35px' };
-    }, []);
 
     const navigate = useNavigate();
 

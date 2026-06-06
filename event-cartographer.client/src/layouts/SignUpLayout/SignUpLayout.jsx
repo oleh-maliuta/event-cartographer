@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback, useReducer } from "react";
+import { useState, useRef, useCallback, useReducer } from "react";
 import cl from "./.module.css";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
@@ -9,6 +9,13 @@ import { useTheme } from '../../hooks/useTheme';
 import MemoLink from "../../components/MemoLink/MemoLink";
 import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
 import { MessageStates } from "../../utils/constants";
+
+const blockMessageStyle = { marginTop: '20px', width: 'calc(100% - 6px)' };
+const usernameInfoInputStyle = { marginTop: '15px' };
+const emailInfoInputStyle = { marginTop: '15px' };
+const passwordInfoInputStyle = { marginTop: '15px' };
+const confirmPasswordInfoInputStyle = { marginTop: '15px' };
+const submitButtonStyle = { marginTop: '30px' };
 
 const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
@@ -24,25 +31,6 @@ const SignUpLayout = () => {
     const confirmPasswordInputRef = useRef(null);
 
     const { theme } = useTheme();
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '20px', width: 'calc(100% - 6px)' };
-    }, []);
-    const usernameInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const emailInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const passwordInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const confirmPasswordInfoInputStyle = useMemo(() => {
-        return { marginTop: '15px' };
-    }, []);
-    const submitButtonStyle = useMemo(() => {
-        return { marginTop: '30px' };
-    }, []);
 
     const signUpRequest = useCallback(async (e) => {
         dispatchMessageState({ type: 'CLEAR_MESSAGES' });

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useReducer } from "react";
+import { useState, useRef, useEffect, useCallback, useReducer, useMemo } from "react";
 import { Marker, Popup } from "react-leaflet";
 import cl from './.module.css';
 import mapIcons from "../../utils/map-icons";
@@ -30,12 +30,14 @@ function getImportanceIcon(importance, startsAt) {
 
     const prefix = isInPast(startsAt) ? 'past' : '';
     const capitalizedImp = importance.charAt(0).toUpperCase() + importance.slice(1);
-    const iconKey = prefix 
-        ? `${prefix}${capitalizedImp}ImpMarkerIcon` 
+    const iconKey = prefix
+        ? `${prefix}${capitalizedImp}ImpMarkerIcon`
         : `${importance}ImpMarkerIcon`;
 
     return mapIcons[iconKey] || null;
 };
+
+const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 16px)' };
 
 const HomeLayout = () => {
     const { t } = useTranslation();
@@ -77,6 +79,15 @@ const HomeLayout = () => {
 
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
+
+    const markerStateToHandle = useMemo(
+        () => markerMenuMode === 'add' ? newMarker : markerToEdit,
+        [markerMenuMode, markerToEdit, newMarker]
+    )
+    const markerStateSetterToHandle = useMemo(
+        () => markerMenuMode === 'add' ? setNewMarker : setMarkerToEdit,
+        [markerMenuMode]
+    )
 
     const loadMarkersForList = useCallback(async (page) => {
         setLoadingMarkersForList(true);
@@ -374,8 +385,7 @@ const HomeLayout = () => {
                     </div>
                 </div>
                 <BlockMessage
-                    style={{ marginTop: '8px', width: 'calc(100% - 16px)' }}
-                    state='error'
+                    style={blockMessageStyle}
                     state={markerListMessageState} />
                 {
                     loadingMarkersForList ?
@@ -593,8 +603,8 @@ const HomeLayout = () => {
                         ? <EditMarkerForm
                             mode={markerMenuMode}
                             setMode={setMarkerMenuMode}
-                            marker={markerMenuMode === 'add' ? newMarker : markerToEdit}
-                            setMarker={markerMenuMode === 'add' ? setNewMarker : setMarkerToEdit}
+                            marker={markerStateToHandle}
+                            setMarker={markerStateSetterToHandle}
                             messageState={editMarkerFormMessageState}
                             dispatchMessageState={dispatchEditMarkerFormMessageState}
                             onSuccess={() => {

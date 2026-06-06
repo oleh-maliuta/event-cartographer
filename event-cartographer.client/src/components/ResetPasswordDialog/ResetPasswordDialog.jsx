@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, memo, useReducer } from 'react';
+import { useState, useRef, useEffect, memo, useReducer } from 'react';
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
@@ -7,6 +7,8 @@ import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
+
+const blockMessageStyle = { marginTop: '10px' };
 
 const ResetPasswordDialog = memo(({
     dialogState,
@@ -24,10 +26,6 @@ const ResetPasswordDialog = memo(({
     const dialogRef = useRef(null);
 
     const { theme } = useTheme();
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '10px' };
-    }, []);
 
     async function resetPasswordPermissionRequest(e) {
         setSendingEmail(true);

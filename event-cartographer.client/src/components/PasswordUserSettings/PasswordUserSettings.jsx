@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, memo, useReducer } from 'react';
+import { useState, useRef, memo, useReducer } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,8 @@ import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
+
+const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
 
 const PasswordUserSettings = memo(() => {
     const { t } = useTranslation();
@@ -66,10 +68,6 @@ const PasswordUserSettings = memo(() => {
 
         setUpdatingPassword(false);
     }
-
-    const blockMessageStyle = useMemo(() => {
-        return { marginTop: '8px', width: 'calc(100% - 6px)' };
-    }, []);
 
     return (
         <form className={`${cl.element} ${cl[theme]}`}
