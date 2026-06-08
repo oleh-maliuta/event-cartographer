@@ -1,5 +1,11 @@
 import { getTimeZones } from "./time";
 
+export const SidebarMenuModes = Object.freeze({
+    ADD: 'add',
+    EDIT: 'edit',
+    LIST: 'list',
+});
+
 export const MessageStates = Object.freeze({
     SUCCESS: 'success',
     ERROR: 'error',

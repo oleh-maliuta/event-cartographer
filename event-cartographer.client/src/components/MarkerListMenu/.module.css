@@ -1,0 +1,268 @@
+.marker_list_menu {
+    --marker-search-input-border-color: #000000;
+    --marker-search-input-text-color: #000000;
+    --marker-search-apply-button-color: #000000;
+    --marker-sort-label-color: #000000;
+    --marker-sort-input-border-color: #000000;
+    --marker-sort-input-text-color: #000000;
+    --marker-sort-input-value-background-color: #ffffff;
+    --marker-sort-direction-button-border-color: #000000;
+    --marker-filter-button-border-color: #000000;
+    --marker-filter-panel-border-color: #000000;
+    --marker-filter-panel-header-color: #000000;
+    --marker-importance-filter-value-label-color: #000000;
+    --marker-time-of-start-filter-input-border-color: #000000;
+    --marker-time-of-start-filter-input-content-color: #000000;
+    --marker-time-of-start-filter-dash-color: #000000;
+    --marker-search-apply-button-image-filter: none;
+    --marker-sort-direction-button-image-filter: none;
+    --marker-filter-button-image-filter: none;
+    --marker-time-of-start-filter-input-image-filter: none;
+}
+
+.marker_list_menu.dark {
+    --marker-search-input-border-color: #ffffff;
+    --marker-search-input-text-color: #ffffff;
+    --marker-search-apply-button-color: #ffffff;
+    --marker-sort-label-color: #ffffff;
+    --marker-sort-input-border-color: #ffffff;
+    --marker-sort-input-text-color: #ffffff;
+    --marker-sort-input-value-background-color: #000000;
+    --marker-sort-direction-button-border-color: #ffffff;
+    --marker-filter-button-border-color: #ffffff;
+    --marker-filter-panel-border-color: #ffffff;
+    --marker-filter-panel-header-color: #ffffff;
+    --marker-importance-filter-value-label-color: #ffffff;
+    --marker-time-of-start-filter-input-border-color: #ffffff;
+    --marker-time-of-start-filter-input-content-color: #ffffff;
+    --marker-time-of-start-filter-dash-color: #ffffff;
+    --marker-search-apply-button-image-filter: invert(100%);
+    --marker-sort-direction-button-image-filter: invert(100%);
+    --marker-filter-button-image-filter: invert(100%);
+    --marker-time-of-start-filter-input-image-filter: invert(100%);
+}
+
+.marker_list_panel {
+    position: relative;
+    width: calc(100% - 12px);
+    margin-top: 15px;
+}
+
+.marker_list_panel__search {
+    display: grid;
+    grid-template-columns: 1fr 35px;
+    width: calc(100% + 5px);
+    grid-column-gap: 2px;
+}
+
+.marker_list_search__input {
+    width: 100%;
+    color: var(--marker-search-input-text-color);
+    font-size: 1.25rem;
+    background-color: transparent;
+    border: 2px solid var(--marker-search-input-border-color);
+    border-radius: 5px;
+    padding-left: 2px;
+}
+
+.marker_list__apply_button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 29px;
+    background-color: var(--marker-search-apply-button-color);
+    font-size: 1.125rem;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: #808080;
+    }
+}
+
+.marker_list__apply_button__img {
+    width: 70%;
+    height: 70%;
+    content: url(../../assets/search.png);
+    filter: var(--marker-search-apply-button-image-filter);
+}
+
+.marker_list_sort_and_filter_cont {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.marker_list_sort_label {
+    color: var(--marker-sort-label-color);
+    font-size: 1.25rem;
+    padding-top: 2px;
+}
+
+.marker_list_sort_input {
+    background-color: transparent;
+    color: var(--marker-sort-input-text-color);
+    font-size: 1.25rem;
+    border: 2px solid var(--marker-sort-input-border-color);
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.marker_list_sort_input_option {
+    background-color: var(--marker-sort-input-value-background-color);
+}
+
+.marker_list_sort_direction_button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    background-color: transparent;
+    border: 2px solid var(--marker-sort-direction-button-border-color);
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.marker_list_sort_direction_button_img {
+    width: 80%;
+    height: 80%;
+    filter: var(--marker-sort-direction-button-image-filter);
+}
+
+.marker_list_filter_button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    background-color: transparent;
+    border: 2px solid var(--marker-filter-button-border-color);
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.marker_list_filter_button_img {
+    content: url(../../assets/filter.png);
+    width: 80%;
+    height: 80%;
+    filter: var(--marker-filter-button-image-filter);
+}
+
+.marker_list_filter_panel_cont {
+    width: calc(100% + 4px);
+    overflow: hidden;
+}
+
+.marker_list_filter_panel {
+    margin-top: 10px;
+    border: 2px solid var(--marker-filter-panel-border-color);
+    border-radius: 5px;
+    margin-top: 15px;
+    padding-block: 10px;
+}
+
+.marker_list_filter_panel__section_header {
+    color: var(--marker-filter-panel-header-color);
+}
+
+.marker_list_filter_panel_sep_line_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.marker_list_filter_panel_sep_line {
+    width: calc(100% - 10px);
+    height: 3px;
+    background-color: #808080;
+    margin-top: 10px;
+}
+
+.marker_list_filter_panel_importance_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.marker_list_filter_panel_importance {
+    width: fit-content;
+    margin-top: 5px;
+}
+
+.marker_list_filter_panel_importance_checkbox_cont {
+    margin-top: 3px;
+}
+
+.marker_list_filter_panel_importance_checkbox {
+    scale: 1.2;
+}
+
+.marker_list_filter_panel_importance_label {
+    color: var(--marker-importance-filter-value-label-color);
+    margin-left: 5px;
+}
+
+.marker_list_filter_panel_starts_at_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.marker_list_filter_panel_starts_at {
+    display: grid;
+    grid-template-columns: 1fr 20px 1fr;
+    padding-inline: 3px;
+    margin-top: 5px;
+}
+
+.marker_list_filter_panel_starts_at_input {
+    min-width: 0px;
+    color: var(--marker-time-of-start-filter-input-content-color);
+    font-size: 1.125rem;
+    background-color: transparent;
+    border: 2px solid var(--marker-time-of-start-filter-input-border-color);
+    border-radius: 5px;
+
+    &::-webkit-calendar-picker-indicator {
+        filter: var(--marker-time-of-start-filter-input-image-filter);
+    }
+}
+
+.marker_list_filter_panel_starts_at_sep_line_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker_list_filter_panel_starts_at_sep_line {
+    width: calc(100% - 8px);
+    height: 2px;
+    background-color: var(--marker-time-of-start-filter-dash-color);
+}
+
+.marker_list {
+    position: relative;
+    display: grid;
+    width: calc(100% - 10px);
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-gap: 8px;
+    margin-top: 7px;
+}
+
+.marker_list_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 10px);
+    margin-top: 15px;
+}

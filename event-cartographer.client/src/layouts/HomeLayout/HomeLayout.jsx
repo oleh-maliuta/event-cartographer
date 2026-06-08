@@ -1,43 +1,15 @@
-import { useState, useRef, useEffect, useCallback, useReducer, useMemo } from "react";
-import { Marker, Popup } from "react-leaflet";
+import { useState, useRef, useEffect, useCallback, useReducer } from "react";
 import cl from './.module.css';
-import mapIcons from "../../utils/map-icons";
-import LoadingAnimation from '../../components/LoadingAnimation/LoadingAnimation';
-import ascendingPng from '../../assets/sort-ascending.png';
-import descendingPng from '../../assets/sort-descending.png';
 import Map from "../../components/Map/Map";
-import PageNavigator from "../../components/PageNavigator/PageNavigator";
-import MarkerListElement from "../../components/MarkerListElement/MarkerListElement";
 import { useTranslation } from "react-i18next";
-import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import YesNoDialog from "../../components/YesNoDialog/YesNoDialog";
 import { useTheme } from '../../hooks/useTheme';
-import { DEFAULT_DATE_TIME_FORMAT, MessageStates } from "../../utils/constants";
-import { convertLocalTimeToUtc, convertUtcToLocalTime, isInPast } from "../../utils/time";
-import { useTimeZone } from "../../hooks/useTimeZone";
+import { MessageStates, SidebarMenuModes } from "../../utils/constants";
+import { convertLocalTimeToUtc } from "../../utils/time";
 import MapInterface from "../../components/MapInterface/MapInterface";
-import EditMarkerForm from "../../components/EditMarkerForm/EditMarkerForm";
 import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
-
-/**
- * Returns the appropriate icon for a marker based on its importance and start time.
- * @param {string} importance 
- * @param {string} startsAt 
- * @returns {import('leaflet').Icon | null} Icon for marker with specified importance and time of the start.
- */
-function getImportanceIcon(importance, startsAt) {
-    if (!['low', 'medium', 'high'].includes(importance)) return null;
-
-    const prefix = isInPast(startsAt) ? 'past' : '';
-    const capitalizedImp = importance.charAt(0).toUpperCase() + importance.slice(1);
-    const iconKey = prefix
-        ? `${prefix}${capitalizedImp}ImpMarkerIcon`
-        : `${importance}ImpMarkerIcon`;
-
-    return mapIcons[iconKey] || null;
-};
-
-const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 16px)' };
+import SidebarMenu from "../../components/SidebarMenu/SidebarMenu";
+import { pageNavigationReducer, pageNavigationState } from "../../utils/reducers/pageNavigationReducer";
 
 const HomeLayout = () => {
     const { t } = useTranslation();
@@ -45,15 +17,12 @@ const HomeLayout = () => {
     const [newMarker, setNewMarker] = useState(null);
     const [markerToEdit, setMarkerToEdit] = useState(null);
     const [markerIdToRemove, setMarkerIdToRemove] = useState(null);
-    const [markerListPage, setMarkerListPage] = useState(1);
-    const [markerListPageCount, setMarkerListPageCount] = useState(0);
     const [mapBounds, setMapBounds] = useState(null);
 
     const [markersForMap, setMarkersForMap] = useState(null);
     const [markersForList, setMarkersForList] = useState(null);
-    const [markerMenuMode, setMarkerMenuMode] = useState(null);
-    const [isMarkerPanelOpen, setIsMarkerPanelOpen] = useState(false);
-    const [isMarkerListFilterOpen, setIsMarkerListFilterOpen] = useState(false);
+    const [sidebarMenuMode, setSidebarMenuMode] = useState(null);
+    const [isSidebarMenuOpen, setIsSidebarMenuOpen] = useState(false);
 
     const [loadingMarkersForMap, setLoadingMarkersForMap] = useState(false);
     const [loadingMarkersForList, setLoadingMarkersForList] = useState(false);
@@ -66,6 +35,10 @@ const HomeLayout = () => {
 
     const [markerSearchQuery, setMarkerSearchQuery] = useState('');
 
+    const [markerListPageNavigationState, dispatchMarkerListPageNavigation] = useReducer(
+        pageNavigationReducer,
+        pageNavigationState(),
+    );
     const [editMarkerFormMessageState, dispatchEditMarkerFormMessageState] = useReducer(
         messageListReducer,
         messageListState()
@@ -78,23 +51,13 @@ const HomeLayout = () => {
     const mapRef = useRef(null);
 
     const { theme } = useTheme();
-    const { timeZone } = useTimeZone();
-
-    const markerStateToHandle = useMemo(
-        () => markerMenuMode === 'add' ? newMarker : markerToEdit,
-        [markerMenuMode, markerToEdit, newMarker]
-    )
-    const markerStateSetterToHandle = useMemo(
-        () => markerMenuMode === 'add' ? setNewMarker : setMarkerToEdit,
-        [markerMenuMode]
-    )
 
     const loadMarkersForList = useCallback(async (page) => {
         setLoadingMarkersForList(true);
         dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
 
         const url = new URL('/api/markers/search', window.location.origin);
-        url.searchParams.append('page_size', '10');
+        url.searchParams.append('page_size', '2');
         url.searchParams.append('page', page || '1');
         url.searchParams.append('q', markerSearchQuery);
         url.searchParams.append('sort_type', markerListSort.type);
@@ -114,20 +77,24 @@ const HomeLayout = () => {
         });
         const json = await response.json();
 
+        dispatchMarkerListPageNavigation({
+            type: 'SET_PAGE_NUMBER_AND_COUNT',
+            payload: { page: page || 1, count: json.data.pageCount || 0 },
+        });
         setMarkersForList(json.data.items || []);
-        setMarkerListPage(page || 1);
-        setMarkerListPageCount(json.data.pageCount || 0);
         setLoadingMarkersForList(false);
     }, [markerListTimeOfStartFilter.max, markerListTimeOfStartFilter.min, markerListImportanceFilter, markerListSort.asc, markerListSort.type, markerSearchQuery]);
 
     const loadMarkersForMap = useCallback(async (bounds) => {
         setLoadingMarkersForMap(true);
 
-        let url = '/api/markers/map';
-        url += `?n_e_lat=${bounds.getNorthEast().lat}`;
-        url += `&n_e_long=${bounds.getNorthEast().lng}`;
-        url += `&s_w_lat=${bounds.getSouthWest().lat}`;
-        url += `&s_w_long=${bounds.getSouthWest().lng}`;
+        const northEastCoords = bounds.getNorthEast();
+        const southWestCoords = bounds.getSouthWest();
+        const url = new URL('/api/markers/map', window.location.origin);
+        url.searchParams.append('n_e_lat', northEastCoords.lat);
+        url.searchParams.append('n_e_long', northEastCoords.lng);
+        url.searchParams.append('s_w_lat', southWestCoords.lat);
+        url.searchParams.append('s_w_long', southWestCoords.lng);
 
         const response = await fetch(url, {
             method: "GET",
@@ -136,36 +103,39 @@ const HomeLayout = () => {
         const json = await response.json();
 
         setMarkersForMap(json.data || []);
-
         setLoadingMarkersForMap(false);
     }, []);
 
-    const navigateToMarker = useCallback((marker) => {
-        mapRef.current.flyTo([marker.latitude, marker.longitude], 13);
+    const navigateToMarkerHandler = useCallback((marker) => {
+        mapRef.current.flyTo(
+            [marker.latitude, marker.longitude],
+            13, { duration: 2 }
+        );
     }, []);
 
-    const editMarker = useCallback((marker) => {
-        setMarkerMenuMode('edit');
+    const editMarkerHandler = useCallback((marker) => {
+        setIsSidebarMenuOpen(true);
+        setSidebarMenuMode(SidebarMenuModes.EDIT);
         setMarkerToEdit(marker);
         dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
     }, []);
 
-    const mapLoadEvent = useCallback((map) => {
+    const loadMapEventHandler = useCallback((map) => {
         loadMarkersForMap(map.getBounds());
         setMapBounds(map.getBounds());
     }, [loadMarkersForMap]);
 
-    const mapClickEvent = useCallback((e) => {
+    const clickMapEventHandler = useCallback((e) => {
         setNewMarker({
             latitude: e.latlng.lat,
             longitude: e.latlng.lng
         });
 
-        setMarkerMenuMode('add');
-        setIsMarkerPanelOpen(true);
+        setSidebarMenuMode(SidebarMenuModes.ADD);
+        setIsSidebarMenuOpen(true);
     }, []);
 
-    const mapMoveendEvent = useCallback(() => {
+    const moveEndMapEventHandler = useCallback(() => {
         const bounds = mapRef.current?.getBounds();
 
         if (!bounds) {
@@ -177,301 +147,13 @@ const HomeLayout = () => {
     }, [loadMarkersForMap]);
 
     const onMarkerMenuToggle = useCallback(() => {
-        if (!isMarkerPanelOpen && markerMenuMode === null) {
-            setMarkerMenuMode('list');
+        if (!isSidebarMenuOpen && sidebarMenuMode === null) {
+            setSidebarMenuMode(SidebarMenuModes.LIST);
         }
-        setIsMarkerPanelOpen(p => !p);
-    }, [isMarkerPanelOpen, markerMenuMode]);
+        setIsSidebarMenuOpen(p => !p);
+    }, [isSidebarMenuOpen, sidebarMenuMode]);
 
-    function renderMarkerList() {
-        const displayMarkerList = () => {
-            const result = [];
-
-            markersForList?.forEach((el, idx) => {
-                result.push(
-                    <MarkerListElement
-                        key={idx}
-                        marker={el}
-                        navigate={navigateToMarker}
-                        edit={editMarker}
-                        remove={prepareToRemoveMarker} />
-                );
-            });
-
-            return result;
-        }
-        const dateTimeLocalMin = markerListTimeOfStartFilter.min ?
-            convertUtcToLocalTime(markerListTimeOfStartFilter.min, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
-        const dateTimeLocalMax = markerListTimeOfStartFilter.max ?
-            convertUtcToLocalTime(markerListTimeOfStartFilter.max, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
-
-        return (
-            <>
-                <div className={`${cl.marker_list_panel}`}>
-                    <div className={cl.marker_list_panel__search}>
-                        <input
-                            className={`${cl.marker_list_search__input}`}
-                            type='text'
-                            placeholder={t('home.search-markers-input')}
-                            value={markerSearchQuery}
-                            onChange={(e) => setMarkerSearchQuery(e.target.value)} />
-                        <button className={`${cl.marker_list__apply_button}`}
-                            onClick={() => {
-                                if (!loadingMarkersForList) {
-                                    loadMarkersForList(1);
-                                }
-                            }}>
-                            <img className={cl.marker_list__apply_button__img}
-                                alt="search" />
-                        </button>
-                    </div>
-                    <div className={`${cl.marker_list_sort_and_filter_cont}`}>
-                        <span className={`${cl.marker_list_sort_label}`}>
-                            {t('home.sorting-label')}
-                        </span>
-                        <select className={`${cl.marker_list_sort_input}`}
-                            value={markerListSort.type}
-                            onChange={(e) => {
-                                setMarkerListSort(p => {
-                                    let newP = { ...p };
-                                    newP.type = e.target.value;
-                                    return newP;
-                                });
-                            }}>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='importance'>
-                                {t('home.sort-by-importance-value')}
-                            </option>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='title'>
-                                {t('home.sort-by-title-value')}
-                            </option>
-                            <option className={`${cl.marker_list_sort_input_option}`} value='startsAt'>
-                                {t('home.sort-by-time-value')}
-                            </option>
-                        </select>
-                        <button className={`${cl.marker_list_sort_direction_button}`}
-                            onClick={() => {
-                                setMarkerListSort(p => {
-                                    let newP = { ...p };
-                                    newP.asc = !newP.asc;
-                                    return newP;
-                                });
-                            }}>
-                            <img
-                                className={`${cl.marker_list_sort_direction_button_img}`}
-                                src={markerListSort.asc ? ascendingPng : descendingPng}
-                                alt='sort direction' />
-                        </button>
-                        <button className={`${cl.marker_list_filter_button}`}
-                            onClick={() => { setIsMarkerListFilterOpen(p => !p) }}>
-                            <img className={`${cl.marker_list_filter_button_img}`} alt='filter' />
-                        </button>
-                    </div>
-                    <div className={`${cl.marker_list_filter_panel_cont}`} style={{ height: isMarkerListFilterOpen ? 'fit-content' : '0px' }}>
-                        <div className={`${cl.marker_list_filter_panel}`}>
-                            <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
-                                <h3 className={cl.marker_list_filter_panel__section_header}>
-                                    {t('home.importance-filter-title')}
-                                </h3>
-                                <div className={`${cl.marker_list_filter_panel_importance}`}>
-                                    <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
-                                        <input
-                                            className={`${cl.marker_list_filter_panel_importance_checkbox_low} ${cl.marker_list_filter_panel_importance_checkbox}`}
-                                            type='checkbox'
-                                            checked={markerListImportanceFilter.includes('low')}
-                                            onChange={() => {
-                                                setMarkerListImportanceFilter(p => {
-                                                    const impValue = 'low';
-                                                    let newP = [...p];
-
-                                                    if (newP.includes(impValue)) {
-                                                        newP = newP.filter(el => el !== impValue);
-                                                    } else {
-                                                        newP.push(impValue);
-                                                    }
-
-                                                    return newP;
-                                                });
-                                            }} />
-                                        <span
-                                            className={`${cl.marker_list_filter_panel_importance_label_low} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('home.low-importance-value')}</span>
-                                    </div>
-                                    <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
-                                        <input
-                                            className={`${cl.marker_list_filter_panel_importance_checkbox_medium} ${cl.marker_list_filter_panel_importance_checkbox}`}
-                                            type='checkbox'
-                                            checked={markerListImportanceFilter.includes('medium')}
-                                            onChange={() => {
-                                                setMarkerListImportanceFilter(p => {
-                                                    const impValue = 'medium';
-                                                    let newP = [...p];
-
-                                                    if (newP.includes(impValue)) {
-                                                        newP = newP.filter(el => el !== impValue);
-                                                    } else {
-                                                        newP.push(impValue);
-                                                    }
-
-                                                    return newP;
-                                                });
-                                            }} />
-                                        <span
-                                            className={`${cl.marker_list_filter_panel_importance_label_medium} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('home.medium-importance-value')}</span>
-                                    </div>
-                                    <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
-                                        <input
-                                            className={`${cl.marker_list_filter_panel_importance_checkbox_high} ${cl.marker_list_filter_panel_importance_checkbox}`}
-                                            type='checkbox'
-                                            checked={markerListImportanceFilter.includes('high')}
-                                            onChange={() => {
-                                                setMarkerListImportanceFilter(p => {
-                                                    const impValue = 'high';
-                                                    let newP = [...p];
-
-                                                    if (newP.includes(impValue)) {
-                                                        newP = newP.filter(el => el !== impValue);
-                                                    } else {
-                                                        newP.push(impValue);
-                                                    }
-
-                                                    return newP;
-                                                });
-                                            }} />
-                                        <span
-                                            className={`${cl.marker_list_filter_panel_importance_label_high} ${cl.marker_list_filter_panel_importance_label}`}
-                                        >{t('home.high-importance-value')}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={`${cl.marker_list_filter_panel_sep_line_cont}`}>
-                                <div className={`${cl.marker_list_filter_panel_sep_line}`} />
-                            </div>
-                            <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
-                                <h3 className={cl.marker_list_filter_panel__section_header}>
-                                    {t('home.time-of-the-start-filter-title')}
-                                </h3>
-                                <div className={`${cl.marker_list_filter_panel_starts_at}`}>
-                                    <input
-                                        className={`${cl.marker_list_filter_panel_starts_at_min} ${cl.marker_list_filter_panel_starts_at_input}`}
-                                        type='datetime-local'
-                                        value={dateTimeLocalMin}
-                                        onChange={(e) => {
-                                            setMarkerListTimeOfStartFilter(p => {
-                                                const newP = { ...p };
-                                                newP.min = e.target.value;
-                                                return newP;
-                                            });
-                                        }} />
-                                    <div className={`${cl.marker_list_filter_panel_starts_at_sep_line_cont}`}>
-                                        <div className={`${cl.marker_list_filter_panel_starts_at_sep_line}`} />
-                                    </div>
-                                    <input
-                                        className={`${cl.marker_list_filter_panel_starts_at_max} ${cl.marker_list_filter_panel_starts_at_input}`}
-                                        type='datetime-local'
-                                        value={dateTimeLocalMax}
-                                        onChange={(e) => {
-                                            setMarkerListTimeOfStartFilter(p => {
-                                                const newP = { ...p };
-                                                newP.max = e.target.value;
-                                                return newP;
-                                            });
-                                        }} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <BlockMessage
-                    style={blockMessageStyle}
-                    state={markerListMessageState} />
-                {
-                    loadingMarkersForList ?
-                        <div className={`${cl.marker_list_loading}`}>
-                            <LoadingAnimation size="50px" curveWidth="10px" />
-                        </div>
-                        :
-                        <>
-                            <div className={`${cl.marker_list}`}>
-                                {displayMarkerList()}
-                            </div>
-                            <PageNavigator
-                                currentPage={markerListPage}
-                                pageCount={markerListPageCount}
-                                loadData={loadMarkersForList} />
-                        </>
-                }
-            </>
-        );
-    }
-
-    const renderMarkersOnMap = useCallback(() => {
-        const result = [];
-
-        if (newMarker !== null) {
-            result.push(
-                <Marker
-                    key='new'
-                    position={[newMarker.latitude, newMarker.longitude]}
-                    icon={mapIcons.newMarkerIcon}>
-                    <Popup className="marker_popup">
-                        <button className={`${cl.marker_popup__cancel_button}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setNewMarker(null);
-                                setMarkerMenuMode('list');
-                                dispatchEditMarkerFormMessageState({ type: 'CLEAR_MESSAGES' });
-                            }}>{t('home.cancel-marker-editing')}</button>
-                    </Popup>
-                </Marker>
-            );
-        }
-
-        markersForMap?.forEach(el => {
-            const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
-
-            result.push(
-                <Marker
-                    key={el.id}
-                    position={[el.latitude, el.longitude]}
-                    icon={getImportanceIcon(el.importance, el.startsAt) || undefined}>
-                    <Popup className="marker_popup">
-                        <div className={cl.marker_popup__cont}>
-                            <div className={cl.marker_popup__main}>
-                                <h2 className={cl.marker_popup__title}>{el.title}</h2>
-                                <p className={cl.marker_popup__description}>{el.description}</p>
-                            </div>
-                            <p className={`${cl.marker_popup__starts_at} ${isInPast(el.startsAt) ? cl.past : ''}`}>
-                                {dateTimeLocal}
-                            </p>
-                            <div className={cl.marker_popup__actions}>
-                                <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
-                                    onClick={() => {
-                                        setIsMarkerPanelOpen(true);
-                                        editMarker(el);
-                                    }}>
-                                    <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
-                                        alt="edit" />
-                                </button>
-                                <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
-                                    onClick={() => { prepareToRemoveMarker(el); }}>
-                                    <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
-                                        alt="delete" />
-                                </button>
-                            </div>
-                        </div>
-                    </Popup>
-                </Marker>
-            );
-        });
-
-        return result;
-    }, [newMarker, markersForMap, t, timeZone.name, editMarker]);
-
-    async function removeMarkerRequest(markerId) {
+    const removeMarkerRequest = useCallback(async (markerId) => {
         const response = await fetch(`/api/markers/${markerId}`, {
             method: "DELETE",
             credentials: "include"
@@ -507,23 +189,30 @@ const HomeLayout = () => {
                 payload: { mode: MessageStates.ERROR, list: [t('general.server-error')] }
             });
         }
-    }
+    }, [loadMarkersForList, markersForList, t]);
 
-    function prepareToRemoveMarker(marker) {
+    const prepareToRemoveMarkerHandler = useCallback((marker) => {
         setMarkerIdToRemove(marker.id);
         setIsYesNoDialogOpen(true);
-    }
+    }, []);
 
-    function removeMarker() {
+    const removeMarker = useCallback(() => {
         removeMarkerRequest(markerIdToRemove);
         setMarkerIdToRemove(null);
         setIsYesNoDialogOpen(false);
-    }
+    }, [markerIdToRemove, removeMarkerRequest]);
 
-    function cancelMarkerRemoving() {
+    const cancelNewMarkerHandler = useCallback((e) => {
+        e.stopPropagation();
+        setNewMarker(null);
+        setSidebarMenuMode(SidebarMenuModes.LIST);
+        dispatchEditMarkerFormMessageState({ type: 'CLEAR_MESSAGES' });
+    }, []);
+
+    const cancelMarkerRemoving = useCallback(() => {
         setMarkerIdToRemove(null);
         setIsYesNoDialogOpen(false);
-    }
+    }, []);
 
     useEffect(() => {
         const id = setTimeout(() => loadMarkersForList(1), 0);
@@ -535,85 +224,55 @@ const HomeLayout = () => {
         if (map) {
             map.invalidateSize()
         }
-    }, [isMarkerPanelOpen]);
+    }, [isSidebarMenuOpen]);
 
     return (
-        <div className={`${cl.main} ${cl[theme]} ${isMarkerPanelOpen ? '' : cl.hidden_menu}`}>
+        <div className={`${cl.main} ${cl[theme]} ${isSidebarMenuOpen ? '' : cl.hidden_menu}`}>
             <div className={`${cl.map_display}`}>
                 <Map
-                    load={mapLoadEvent}
-                    click={mapClickEvent}
-                    moveend={mapMoveendEvent}
-                    renderMarkers={renderMarkersOnMap}
-                    ref={mapRef}
-                    containerClassName={isMarkerPanelOpen ? 'with_panel' : ''}
-                />
+                    newMarker={newMarker}
+                    markers={markersForMap}
+                    editMarkerHandler={editMarkerHandler}
+                    removeMarkerHandler={prepareToRemoveMarkerHandler}
+                    cancelNewMarkerHandler={cancelNewMarkerHandler}
+                    loadMapEventHandler={loadMapEventHandler}
+                    clickMapEventHandler={clickMapEventHandler}
+                    moveEndMapEventHandler={moveEndMapEventHandler}
+                    ref={mapRef} />
                 <MapInterface
                     isLoading={loadingMarkersForMap}
-                    onMarkerMenuToggle={onMarkerMenuToggle}
-                />
+                    onMarkerMenuToggle={onMarkerMenuToggle} />
             </div>
-            <div className={`${cl.marker_panel}`}>
-                <button className={`${cl.marker_panel__marker_menu_button}`}
-                    type="button"
-                    onClick={() => {
-                        if (!isMarkerPanelOpen && markerMenuMode === null) {
-                            setMarkerMenuMode('list');
-                        }
-                        setIsMarkerPanelOpen(p => !p);
-                    }}>
-                    <img className={`${cl.marker_panel__marker_menu_button__img}`}
-                        alt='marker menu' />
-                </button>
-                <div className={`${cl.marker_panel__top_menu}`}>
-                    <button className={
-                        `${cl.marker_panel__top_menu__option} 
-                            ${newMarker === null ? cl.unavailable : ''} 
-                            ${markerMenuMode === 'add' ? cl.current : ''}`}
-                        type="button"
-                        onClick={() => {
-                            if (markerMenuMode === 'list') {
-                                dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
-                            }
-                            if (newMarker) {
-                                setMarkerMenuMode('add');
-                            }
-                        }}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.new_marker_img}`}
-                            alt="add" />
-                    </button>
-                    <button
-                        className={
-                            `${cl.marker_panel__top_menu__option} 
-                            ${['list', 'edit'].includes(markerMenuMode) ? cl.current : ''}`}
-                        type="button"
-                        onClick={() => {
-                            if (markerMenuMode === 'add') {
-                                dispatchEditMarkerFormMessageState({ type: 'CLEAR_MESSAGES' });
-                            }
-                            setMarkerMenuMode('list');
-                        }}>
-                        <img className={`${cl.marker_panel__top_menu__option_img} ${cl.marker_list_img}`}
-                            alt="list" />
-                    </button>
-                </div>
-                {isMarkerPanelOpen && markerMenuMode === 'list' ? renderMarkerList() : <></>}
-                {
-                    isMarkerPanelOpen && ['add', 'edit'].includes(markerMenuMode)
-                        ? <EditMarkerForm
-                            mode={markerMenuMode}
-                            setMode={setMarkerMenuMode}
-                            marker={markerStateToHandle}
-                            setMarker={markerStateSetterToHandle}
-                            messageState={editMarkerFormMessageState}
-                            dispatchMessageState={dispatchEditMarkerFormMessageState}
-                            onSuccess={() => {
-                                loadMarkersForMap(mapBounds);
-                                loadMarkersForList(1);
-                            }}
-                        /> : <></>
-                }
-            </div>
+            <SidebarMenu
+                open={isSidebarMenuOpen}
+                setOpen={setIsSidebarMenuOpen}
+                mode={sidebarMenuMode}
+                setMode={setSidebarMenuMode}
+                loadingMarkers={loadingMarkersForList}
+                markers={markersForList}
+                newMarker={newMarker}
+                setNewMarker={setNewMarker}
+                markerToEdit={markerToEdit}
+                setMarkerToEdit={setMarkerToEdit}
+                markerSearchQuery={markerSearchQuery}
+                setMarkerSearchQuery={setMarkerSearchQuery}
+                markerListSort={markerListSort}
+                setMarkerListSort={setMarkerListSort}
+                markerListImportanceFilter={markerListImportanceFilter}
+                setMarkerListImportanceFilter={setMarkerListImportanceFilter}
+                markerListTimeOfStartFilter={markerListTimeOfStartFilter}
+                setMarkerListTimeOfStartFilter={setMarkerListTimeOfStartFilter}
+                mapBounds={mapBounds}
+                markerListPageNavigationState={markerListPageNavigationState}
+                markerListMessageState={markerListMessageState}
+                dispatchMarkerListMessageState={dispatchMarkerListMessageState}
+                editMarkerFormMessageState={editMarkerFormMessageState}
+                dispatchEditMarkerFormMessageState={dispatchEditMarkerFormMessageState}
+                markersForListLoader={loadMarkersForList}
+                markersForMapLoader={loadMarkersForMap}
+                navigateToMarkerHandler={navigateToMarkerHandler}
+                editMarkerHandler={editMarkerHandler}
+                removeMarkerHandler={prepareToRemoveMarkerHandler} />
             <YesNoDialog
                 dialogState={isYesNoDialogOpen}
                 title={t('home.remove-marker.dialog-title')}

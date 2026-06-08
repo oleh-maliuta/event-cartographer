@@ -11,7 +11,7 @@ function loadPage(specifiedPage, currentPage, loader) {
 
 function renderPageList(currentPage, pageCount, loader) {
     if (pageCount <= 1) {
-        return;
+        return null;
     }
 
     let result = [];
@@ -27,7 +27,10 @@ function renderPageList(currentPage, pageCount, loader) {
 
         if ((currentPage - 4) > 1) {
             left.push(
-                <span className={`${cl.page_navigator__obj}`} key="1" onClick={() => loadPage(1)}>1</span>
+                <span className={`${cl.page_navigator__obj}`}
+                    key="1"
+                    onClick={() => loadPage(1, currentPage, loader)}
+                >1</span>
             );
 
             left.push(
@@ -37,7 +40,7 @@ function renderPageList(currentPage, pageCount, loader) {
                             ? currentPage - 10
                             : 2;
 
-                        loadPage(idxLink);
+                        loadPage(idxLink, currentPage, loader);
                     }}>...</span>
             );
 
@@ -54,13 +57,15 @@ function renderPageList(currentPage, pageCount, loader) {
     if (currentPage < pageCount) {
         right.unshift(
             <span className={cl.page_navigator__obj} key="arrow-right"
-                onClick={() => loadPage(currentPage + 1)}>&#62;</span>
+                onClick={() => loadPage(currentPage + 1, currentPage, loader)}
+            >&#62;</span>
         );
 
         if ((currentPage + 4) < pageCount) {
             right.unshift(
                 <span className={`${cl.page_navigator__obj}`} key={pageCount}
-                    onClick={() => loadPage(pageCount)}>{pageCount}</span>
+                    onClick={() => loadPage(pageCount, currentPage, loader)}
+                >{pageCount}</span>
             );
 
             right.unshift(
@@ -70,7 +75,7 @@ function renderPageList(currentPage, pageCount, loader) {
                             ? currentPage + 10
                             : pageCount - 1;
 
-                        loadPage(idxLink);
+                        loadPage(idxLink, currentPage, loader);
                     }}>...</span>
             );
 
@@ -101,7 +106,8 @@ function renderPageList(currentPage, pageCount, loader) {
             <span
                 className={`${cl.page_navigator__obj} ${currentPage === i ? cl.current : ''}`}
                 key={i}
-                onClick={() => loadPage(i)}>{i}</span>
+                onClick={() => loadPage(i, currentPage, loader)}
+            >{i}</span>
         );
     }
 
@@ -112,8 +118,7 @@ function renderPageList(currentPage, pageCount, loader) {
 }
 
 const PageNavigator = memo(({
-    currentPage,
-    pageCount,
+    state,
     loadData,
 }) => {
     const { theme } = useTheme();
@@ -121,7 +126,7 @@ const PageNavigator = memo(({
     return (
         <div className={`${cl.page_navigator__cont} ${cl[theme]}`}>
             <div className={cl.page_navigator}>
-                {renderPageList(currentPage, pageCount, loadData)}
+                {renderPageList(state.page, state.count, loadData)}
             </div>
         </div>
     );
@@ -130,8 +135,7 @@ const PageNavigator = memo(({
 PageNavigator.displayName = 'PageNavigator';
 
 PageNavigator.propTypes = {
-    currentPage: PropTypes.number.isRequired,
-    pageCount: PropTypes.number.isRequired,
+    state: PropTypes.object.isRequired,
     loadData: PropTypes.func.isRequired
 };
 

@@ -1,0 +1,124 @@
+.sidebar_menu {
+    --marker-panel-button-color: #800080;
+    --marker-panel-button-hover-color: #c55ac5;
+    --marker-panel-background-color: #ffffff;
+    --marker-panel-top-menu-current-option-color: #1e1e1e;
+    --marker-panel-top-menu-option-hover-color: #c4c4c4;
+    --marker-panel-button-image-filter: none;
+    --marker-panel-top-menu-not-current-option-filter: none;
+    --marker-panel-top-menu-current-option-filter: invert(100%);
+}
+
+.sidebar_menu.dark {
+    --marker-panel-button-color: #ff4cff;
+    --marker-panel-button-hover-color: #8d2b8d;
+    --marker-panel-background-color: #121212;
+    --marker-panel-top-menu-current-option-color: #e1e1e1;
+    --marker-panel-top-menu-option-hover-color: #4c4c4c;
+    --marker-panel-button-image-filter: invert(100%);
+    --marker-panel-top-menu-not-current-option-filter: invert(100%);
+    --marker-panel-top-menu-current-option-filter: none;
+    --marker-search-apply-button-image-filter: invert(100%);
+    --marker-sort-direction-button-image-filter: invert(100%);
+    --marker-filter-button-image-filter: invert(100%);
+    --marker-time-of-start-filter-input-image-filter: invert(100%);
+}
+
+.sidebar_menu {
+    background-color: var(--marker-panel-background-color);
+    overflow-y: scroll;
+    padding-left: 10px;
+    padding-bottom: 10px;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &.hidden {
+        display: none;
+    }
+}
+
+.sidebar_menu__marker_menu_button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background-color: var(--marker-panel-button-color);
+    border: none;
+    margin-top: 10px;
+
+    &:hover {
+        background-color: var(--marker-panel-button-hover-color);
+    }
+
+    @media screen and (width >=480px) {
+        display: none;
+    }
+}
+
+.sidebar_menu__marker_menu_button__img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    content: url(../../assets/menu.png);
+    filter: var(--marker-panel-button-image-filter);
+}
+
+.sidebar_menu__top_menu {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.sidebar_menu__top_menu__option {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    border: none;
+    border-radius: 15px;
+
+    &.current {
+        background-color: var(--marker-panel-top-menu-current-option-color);
+    }
+
+    &.current>img {
+        filter: var(--marker-panel-top-menu-current-option-filter);
+    }
+
+    &.unavailable {
+        cursor: default;
+    }
+
+    &.unavailable {
+        opacity: 0.3;
+    }
+
+    &:not(&.current, &.unavailable):hover {
+        background-color: var(--marker-panel-top-menu-option-hover-color);
+    }
+}
+
+.sidebar_menu__top_menu__option_img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35px;
+    height: 35px;
+    filter: var(--marker-panel-top-menu-not-current-option-filter);
+}
+
+.marker_list_img {
+    content: url(../../assets/list.png);
+}
+
+.new_marker_img {
+    content: url(../../assets/plus.png);
+}

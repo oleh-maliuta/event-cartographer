@@ -1,0 +1,107 @@
+.marker_popup {
+    --marker-popup-title-color: #000000;
+    --marker-popup-description-color: #000000;
+    --marker-popup-starts-at-color: #000000;
+}
+
+.marker_popup.dark {
+    --marker-popup-title-color: #ffffff;
+    --marker-popup-description-color: #ffffff;
+    --marker-popup-starts-at-color: #ffffff;
+}
+
+.marker_popup {
+    container-type: normal;
+    container-name: marker_popup__cont;
+    overflow: hidden;
+}
+
+.marker_popup__cancel_button {
+    background-color: #d30000;
+    color: #ffffff;
+    font-size: 0.938rem;
+    border: none;
+    border-radius: 5px;
+    padding-block: 3px;
+    padding-inline: 5px;
+
+    &:hover {
+        background-color: #a50000;
+    }
+}
+
+.marker_popup__main {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 3px;
+    scrollbar-color: #808080 transparent;
+}
+
+.marker_popup__title {
+    color: var(--marker-popup-title-color);
+    word-break: break-all;
+}
+
+.marker_popup__description {
+    color: var(--marker-popup-description-color);
+    word-break: break-all;
+}
+
+.marker_popup__starts_at {
+    color: var(--marker-popup-starts-at-color);
+    word-break: break-all;
+    margin-top: 15px;
+
+    &.past {
+        color: #ff0000;
+        font-weight: bold;
+    }
+}
+
+.marker_popup__actions {
+    display: flex;
+    justify-content: end;
+}
+
+.marker_popup__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    border: none;
+}
+
+.marker_popup__edit_button {
+    background-color: #ffa200;
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: #bf7900;
+    }
+}
+
+.marker_popup__delete_button {
+    background-color: #d40000;
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &:hover {
+        background-color: #880000;
+    }
+}
+
+.marker_popup__button__img {
+    width: 70%;
+    height: 70%;
+}
+
+.marker_popup__edit_button__img {
+    content: url(../../assets/edit.png);
+}
+
+.marker_popup__delete_button__img {
+    content: url(../../assets/delete.png);
+}
