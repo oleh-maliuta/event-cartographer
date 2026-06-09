@@ -1,4 +1,4 @@
-import { useState, useRef, memo, useReducer } from 'react';
+import { useState, useRef, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
 const PasswordUserSettings = memo(() => {
     const { t } = useTranslation();
 
-    const [updatingPassword, setUpdatingPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
@@ -24,8 +24,16 @@ const PasswordUserSettings = memo(() => {
 
     const { theme } = useTheme();
 
-    async function updateUserPasswordRequest(e) {
-        setUpdatingPassword(true);
+    const updateUserPasswordRequest = useCallback(async (e) => {
+        if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('settings.password.password-not-confirmed')] }
+            });
+            return;
+        }
+
+        setLoading(true);
 
         const response = await fetch(`/api/users/password`, {
             method: "PUT",
@@ -66,23 +74,12 @@ const PasswordUserSettings = memo(() => {
             });
         }
 
-        setUpdatingPassword(false);
-    }
+        setLoading(false);
+    }, [t]);
 
     return (
         <form className={`${cl.element} ${cl[theme]}`}
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (updatingPassword) return;
-                if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
-                    dispatchMessageState({
-                        type: 'SET_MESSAGES',
-                        payload: { mode: MessageStates.ERROR, list: [t('settings.password.password-not-confirmed')] }
-                    });
-                    return;
-                }
-                updateUserPasswordRequest(e);
-            }}>
+            onSubmit={updateUserPasswordRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.password.header')}
@@ -113,9 +110,10 @@ const PasswordUserSettings = memo(() => {
                 state={messageState} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
+                    disabled={loading}
                     type='submit'>
                     {
-                        updatingPassword ?
+                        loading ?
                             <LoadingAnimation
                                 curveColor1="#FFFFFF"
                                 curveColor2="#00000000"

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import PersonalizationSettings from '../../components/PersonalizationSettings/PersonalizationSettings';
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
+import { PageRoutes } from '../../utils/constants';
 
 const UserSettingsLayout = () => {
     const { t } = useTranslation();
@@ -21,7 +22,7 @@ const UserSettingsLayout = () => {
                         {t('settings.header')}
                     </h1>
                     <div className={cl.panel__page_header__control}>
-                        <MemoLink className={cl.panel__page_header__map_button} to='/'>
+                        <MemoLink className={cl.panel__page_header__map_button} to={PageRoutes.HOME}>
                             <img className={cl.panel__page_header__map_button__img}
                                 alt="map" />
                         </MemoLink>

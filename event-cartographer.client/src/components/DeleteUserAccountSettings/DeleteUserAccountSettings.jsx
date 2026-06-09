@@ -1,4 +1,4 @@
-import { useState, memo, useReducer } from 'react';
+import { useState, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
 const DeleteUserAccountSettings = memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [deletingAccount, setDeletingAccount] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
@@ -21,8 +21,9 @@ const DeleteUserAccountSettings = memo(() => {
 
     const { theme } = useTheme();
 
-    async function deleteAccountRequest(e) {
-        setDeletingAccount(true);
+    const deleteAccountRequest = useCallback(async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
         const response = await fetch(`/api/users/delete?locale=${i18n.language}`, {
             method: "PUT",
@@ -63,16 +64,12 @@ const DeleteUserAccountSettings = memo(() => {
             });
         }
 
-        setDeletingAccount(false);
-    }
+        setLoading(false);
+    }, [i18n.language, t]);
 
     return (
         <form className={`${cl.element} ${cl[theme]}`}
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (deletingAccount) return;
-                deleteAccountRequest(e);
-            }}>
+            onSubmit={deleteAccountRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.delete-account.header')}
@@ -92,9 +89,10 @@ const DeleteUserAccountSettings = memo(() => {
                 state={messageState} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__delete_account}`}
-                    type='submit'>
+                    type='submit'
+                    disabled={loading}>
                     {
-                        deletingAccount ?
+                        loading ?
                             <LoadingAnimation
                                 curveColor1="#FFFFFF"
                                 curveColor2="#00000000"

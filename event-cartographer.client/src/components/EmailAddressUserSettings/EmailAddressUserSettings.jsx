@@ -1,4 +1,4 @@
-import { useState, memo, useReducer } from 'react';
+import { useState, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
 const EmailAddressUserSettings = memo(() => {
     const { t, i18n } = useTranslation();
 
-    const [updatingEmail, setUpdatingEmail] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
@@ -21,8 +21,9 @@ const EmailAddressUserSettings = memo(() => {
 
     const { theme } = useTheme();
 
-    async function updateUserEmailRequest(e) {
-        setUpdatingEmail(true);
+    const updateUserEmailRequest = useCallback(async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
         const response = await fetch(`/api/users/email?locale=${i18n.language}`, {
             method: "PUT",
@@ -63,16 +64,12 @@ const EmailAddressUserSettings = memo(() => {
             });
         }
 
-        setUpdatingEmail(false);
-    }
+        setLoading(false);
+    }, [i18n.language, t]);
 
     return (
         <form className={`${cl.element} ${cl[theme]}`}
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (updatingEmail) return;
-                updateUserEmailRequest(e);
-            }}>
+            onSubmit={updateUserEmailRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
                     {t('settings.email-address.header')}
@@ -98,9 +95,10 @@ const EmailAddressUserSettings = memo(() => {
                 state={messageState} />
             <div className={`${cl.element__control}`}>
                 <button className={`${cl.element__control__apply}`}
+                    disabled={loading}
                     type='submit'>
                     {
-                        updatingEmail ?
+                        loading ?
                             <LoadingAnimation
                                 curveColor1="#FFFFFF"
                                 curveColor2="#00000000"

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, memo, useReducer } from 'react';
+import { useState, useRef, useEffect, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ const BasicUserInfoSettings = memo(() => {
 
     const { theme } = useTheme();
 
-    async function loadUserInfo() {
+    const loadUserInfo = useCallback(async () => {
         const response = await fetch(`/api/users/self`, {
             method: "GET",
             credentials: "include"
@@ -38,9 +38,10 @@ const BasicUserInfoSettings = memo(() => {
         if (json.data) {
             setPermissionToDeletePastEventsValue(json.data.permissionToDeletePastEvents);
         }
-    }
+    }, []);
 
-    async function updateUserInfoRequest() {
+    const updateUserInfoRequest = useCallback(async (e) => {
+        e.preventDefault();
         setLoading(true);
 
         const response = await fetch(`/api/users/info`, {
@@ -97,11 +98,11 @@ const BasicUserInfoSettings = memo(() => {
         }
 
         setLoading(false);
-    }
+    }, [permissionToDeletePastEventsValue, t]);
 
     useEffect(() => {
         loadUserInfo();
-    }, []);
+    }, [loadUserInfo]);
 
     if (userData === null) {
         return (
@@ -115,11 +116,7 @@ const BasicUserInfoSettings = memo(() => {
 
     return (
         <form className={`${cl.basic_info} ${cl[theme]}`}
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (loading) return;
-                updateUserInfoRequest();
-            }}>
+            onSubmit={updateUserInfoRequest}>
             <div className={`${cl.basic_info__header__cont}`}>
                 <h2 className={`${cl.basic_info__header}`}>
                     {t('settings.basic-info.header')}
@@ -150,6 +147,7 @@ const BasicUserInfoSettings = memo(() => {
                 style={blockMessageStyle}
                 state={messageState} />
             <button className={cl.save_changes_button}
+                disabled={loading}
                 type='submit'>
                 {
                     loading ?

@@ -30,6 +30,12 @@ const EditMarkerForm = memo(({
         return marker?.startsAt ? convertUtcToLocalTime(marker.startsAt, timeZone.name).toString() : '';
     }, [marker?.startsAt, timeZone.name]);
 
+    const onCancel = useCallback(() => {
+        setMarker(null);
+        setMode('list');
+        dispatchMessageState({ type: 'CLEAR_MESSAGES' });
+    }, [dispatchMessageState, setMarker, setMode]);
+
     const apply = useCallback(async () => {
         setLoading(true);
 
@@ -89,17 +95,18 @@ const EditMarkerForm = memo(({
         setLoading(false);
     }, [dispatchMessageState, marker, mode, onSuccess, setMarker, setMode, t]);
 
+    const handleSubmit = useCallback(async (e) => {
+        e.preventDefault();
+        await apply();
+    }, [apply]);
+
     if (!mode) {
         return null;
     }
 
     return (
         <form className={`${cl.edit_marker_form} ${cl[theme]}`}
-            onSubmit={async (e) => {
-                e.preventDefault();
-                if (loading) return;
-                await apply();
-            }}>
+            onSubmit={handleSubmit}>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__latitude}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__latitude_label}`}>
                     {t('home.marker-edit-latitude-label')}
@@ -192,11 +199,7 @@ const EditMarkerForm = memo(({
                     <div className={`${cl.edit_marker_form__buttons}`}>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__cancel_button}`}
                             type="button"
-                            onClick={() => {
-                                setMarker(null);
-                                setMode('list');
-                                dispatchMessageState({ type: 'CLEAR_MESSAGES' });
-                            }}>
+                            onClick={onCancel}>
                             {t('home.cancel-marker-editing')}
                         </button>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__add_button}`}
@@ -220,11 +223,7 @@ const EditMarkerForm = memo(({
                     <div className={`${cl.edit_marker_form__buttons}`}>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__cancel_button}`}
                             type="button"
-                            onClick={() => {
-                                setMarker(null);
-                                setMode('list');
-                                dispatchMessageState({ type: 'CLEAR_MESSAGES' });
-                            }}>
+                            onClick={onCancel}>
                             {t('home.cancel-marker-editing')}
                         </button>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__edit_button}`}
@@ -251,14 +250,14 @@ const EditMarkerForm = memo(({
 
 EditMarkerForm.displayName = 'EditMarkerForm';
 
-LoadingAnimation.propTypes = {
+EditMarkerForm.propTypes = {
     mode: PropTypes.string.isRequired,
     setMode: PropTypes.func.isRequired,
     marker: PropTypes.object.isRequired,
     setMarker: PropTypes.func.isRequired,
     messageState: PropTypes.object.isRequired,
     dispatchMessageState: PropTypes.func.isRequired,
-    onSuccess: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func,
 };
 
 export default EditMarkerForm;

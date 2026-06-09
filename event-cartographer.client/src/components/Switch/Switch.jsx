@@ -1,4 +1,4 @@
-import { useRef, memo } from "react";
+import { memo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 
@@ -6,24 +6,19 @@ const Switch = memo(({
     value,
     setValue
 }) => {
-    const inputRef = useRef(null);
-
     return (
         <div className={cl.switch}>
             <input className={cl.switch__input}
-                type="checkbox"
+                type='checkbox'
                 checked={value}
-                ref={inputRef}
-                onChange={() => setValue(x => !x)} />
+                readOnly={true} />
             <label className={cl.switch__label}
-                onClick={() => inputRef.current.click()}>
-                Toggle
-            </label>
+                onClick={() => setValue(x => !x)}></label>
         </div>
     );
 });
 
-Switch.displayName = "Switch";
+Switch.displayName = 'Switch';
 
 Switch.propTypes = {
     value: PropTypes.bool.isRequired,

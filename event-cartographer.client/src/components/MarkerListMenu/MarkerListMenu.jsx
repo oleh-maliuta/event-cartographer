@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import cl from './.module.css';
 import ascendingPng from '../../assets/sort-ascending.png';
 import descendingPng from '../../assets/sort-descending.png';
@@ -41,11 +41,11 @@ const MarkerListMenu = memo(({
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
 
-    const displayMarkerList = useCallback(() => {
-        return markers?.map((el, idx) => {
+    const markerListElements = useMemo(() => {
+        return markers?.map((el) => {
             return (
                 <MarkersListElement
-                    key={idx}
+                    key={el.id}
                     marker={el}
                     navigate={navigateToMarkerHandler}
                     edit={editMarkerHandler}
@@ -53,16 +53,19 @@ const MarkerListMenu = memo(({
             );
         });
     }, [
-        editMarkerHandler, markers,
-        navigateToMarkerHandler, removeMarkerHandler
+        markers,
+        editMarkerHandler,
+        navigateToMarkerHandler,
+        removeMarkerHandler
     ]);
-
-    const dateTimeLocalMin = markerListTimeOfStartFilter.min ?
+    const dateTimeLocalMin = useMemo(() => markerListTimeOfStartFilter.min ?
         convertUtcToLocalTime(markerListTimeOfStartFilter.min, timeZone.name)
-            .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
-    const dateTimeLocalMax = markerListTimeOfStartFilter.max ?
+            .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined,
+        [markerListTimeOfStartFilter.min, timeZone.name]);
+    const dateTimeLocalMax = useMemo(() => markerListTimeOfStartFilter.max ?
         convertUtcToLocalTime(markerListTimeOfStartFilter.max, timeZone.name)
-            .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined;
+            .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT) : undefined,
+        [markerListTimeOfStartFilter.max, timeZone.name]);
 
     return (
         <div className={`${cl.marker_list_menu} ${cl[theme]}`}>
@@ -249,7 +252,7 @@ const MarkerListMenu = memo(({
                     :
                     <>
                         <div className={`${cl.marker_list}`}>
-                            {displayMarkerList()}
+                            {markerListElements}
                         </div>
                         <PageNavigator
                             state={markerListPageNavigationState}
@@ -263,15 +266,21 @@ const MarkerListMenu = memo(({
 MarkerListMenu.displayName = 'MarkerListMenu';
 
 MarkerListMenu.propTypes = {
-    marker: PropTypes.any.isRequired,
+    markers: PropTypes.array.isRequired,
     loadingMarkers: PropTypes.bool.isRequired,
-    markerSearchQuery: PropTypes.object.isRequired,
+    markerSearchQuery: PropTypes.string.isRequired,
     setMarkerSearchQuery: PropTypes.func.isRequired,
-    markerListSort: PropTypes.object.isRequired,
+    markerListSort: PropTypes.shape({
+        type: PropTypes.string,
+        asc: PropTypes.bool,
+    }).isRequired,
     setMarkerListSort: PropTypes.func.isRequired,
-    markerListImportanceFilter: PropTypes.object.isRequired,
+    markerListImportanceFilter: PropTypes.arrayOf(PropTypes.string).isRequired,
     setMarkerListImportanceFilter: PropTypes.func.isRequired,
-    markerListTimeOfStartFilter: PropTypes.object.isRequired,
+    markerListTimeOfStartFilter: PropTypes.shape({
+        min: PropTypes.string,
+        max: PropTypes.string,
+    }).isRequired,
     setMarkerListTimeOfStartFilter: PropTypes.func.isRequired,
     markerListPageNavigationState: PropTypes.object.isRequired,
     markerListMessageState: PropTypes.object.isRequired,

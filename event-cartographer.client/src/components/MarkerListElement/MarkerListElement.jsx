@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import cl from "./.module.css";
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
@@ -14,6 +14,14 @@ const MarkerListElement = memo(({
 }) => {
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
+
+    const startsAtText = useMemo(() => convertUtcToLocalTime(marker.startsAt, timeZone.name)
+        .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT), [marker.startsAt, timeZone.name]);
+
+    const startsAtClass = useMemo(
+        () => isInPast(marker.startsAt) ? cl.past : '',
+        [marker.startsAt]
+    );
 
     return (
         <div className={`${cl.marker_list_element} ${cl[theme]}`}
@@ -55,8 +63,8 @@ const MarkerListElement = memo(({
                 </span>
             </div>
             <div className={`${cl.marker_list_element__starts_at__cont}`}>
-                <span className={`${cl.marker_list_element__starts_at} ${isInPast(marker.startsAt) ? cl.past : ''}`}>
-                    {convertUtcToLocalTime(marker.startsAt, timeZone.name).toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT)}
+                <span className={`${cl.marker_list_element__starts_at} ${startsAtClass}`}>
+                    {startsAtText}
                 </span>
             </div>
         </div>

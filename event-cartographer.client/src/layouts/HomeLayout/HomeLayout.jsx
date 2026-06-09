@@ -57,7 +57,7 @@ const HomeLayout = () => {
         dispatchMarkerListMessageState({ type: 'CLEAR_MESSAGES' });
 
         const url = new URL('/api/markers/search', window.location.origin);
-        url.searchParams.append('page_size', '2');
+        url.searchParams.append('page_size', '10');
         url.searchParams.append('page', page || '1');
         url.searchParams.append('q', markerSearchQuery);
         url.searchParams.append('sort_type', markerListSort.type);

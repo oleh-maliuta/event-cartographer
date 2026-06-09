@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import mapIcons from "../../utils/map-icons";
@@ -39,62 +39,73 @@ const MapMarkerRenderer = memo(({
 
     const { t } = useTranslation();
 
-    const result = [];
+    const markerElements = useMemo(() => {
+        const result = markers?.map(el => {
+            const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
+                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
 
-    if (newMarker !== null) {
-        result.push(
-            <Marker
-                key='new'
-                position={[newMarker.latitude, newMarker.longitude]}
-                icon={mapIcons.newMarkerIcon}>
-                <Popup className="marker_popup">
-                    <div className={`${cl.marker_popup} ${cl[theme]}`}>
-                        <button className={`${cl.marker_popup__cancel_button}`}
-                            onClick={cancelNewMarkerHandler}
-                        >{t('home.cancel-marker-editing')}</button>
-                    </div>
-                </Popup>
-            </Marker>
-        );
-    }
-
-    markers?.forEach(el => {
-        const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
-            .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
-
-        result.push(
-            <Marker
-                key={el.id}
-                position={[el.latitude, el.longitude]}
-                icon={getImportanceIcon(el.importance, el.startsAt) || undefined}>
-                <Popup className="marker_popup">
-                    <div className={`${cl.marker_popup} ${cl[theme]}`}>
-                        <div className={cl.marker_popup__main}>
-                            <h2 className={cl.marker_popup__title}>{el.title}</h2>
-                            <p className={cl.marker_popup__description}>{el.description}</p>
+            return (
+                <Marker
+                    key={el.id}
+                    position={[el.latitude, el.longitude]}
+                    icon={getImportanceIcon(el.importance, el.startsAt) || undefined}>
+                    <Popup className="marker_popup">
+                        <div className={`${cl.marker_popup} ${cl[theme]}`}>
+                            <div className={cl.marker_popup__main}>
+                                <h2 className={cl.marker_popup__title}>{el.title}</h2>
+                                <p className={cl.marker_popup__description}>{el.description}</p>
+                            </div>
+                            <p className={`${cl.marker_popup__starts_at} ${isInPast(el.startsAt) ? cl.past : ''}`}>
+                                {dateTimeLocal}
+                            </p>
+                            <div className={cl.marker_popup__actions}>
+                                <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
+                                    onClick={() => editMarkerHandler(el)}>
+                                    <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="edit" />
+                                </button>
+                                <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
+                                    onClick={() => removeMarkerHandler(el)}>
+                                    <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
+                                        alt="delete" />
+                                </button>
+                            </div>
                         </div>
-                        <p className={`${cl.marker_popup__starts_at} ${isInPast(el.startsAt) ? cl.past : ''}`}>
-                            {dateTimeLocal}
-                        </p>
-                        <div className={cl.marker_popup__actions}>
-                            <button className={`${cl.marker_popup__edit_button} ${cl.marker_popup__button}`}
-                                onClick={() => editMarkerHandler(el)}>
-                                <img className={`${cl.marker_popup__edit_button__img} ${cl.marker_popup__button__img}`}
-                                    alt="edit" />
-                            </button>
-                            <button className={`${cl.marker_popup__delete_button} ${cl.marker_popup__button}`}
-                                onClick={() => removeMarkerHandler(el)}>
-                                <img className={`${cl.marker_popup__delete_button__img} ${cl.marker_popup__button__img}`}
-                                    alt="delete" />
-                            </button>
-                        </div>
-                    </div>
-                </Popup>
-            </Marker>
-        );
-    });
+                    </Popup>
+                </Marker>
+            );
+        }) || [];
 
-    return result;
+        if (newMarker !== null) {
+            return [...result, (
+                <Marker
+                    key='new'
+                    position={[newMarker.latitude, newMarker.longitude]}
+                    icon={mapIcons.newMarkerIcon}>
+                    <Popup className="marker_popup">
+                        <div className={`${cl.marker_popup} ${cl[theme]}`}>
+                            <button className={`${cl.marker_popup__cancel_button}`}
+                                onClick={cancelNewMarkerHandler}
+                            >{t('home.cancel-marker-editing')}</button>
+                        </div>
+                    </Popup>
+                </Marker>
+            )];
+        }
+
+        return result;
+    }, [
+        cancelNewMarkerHandler,
+        editMarkerHandler,
+        markers,
+        removeMarkerHandler,
+        newMarker,
+        t,
+        theme,
+        timeZone.name
+    ]);
+
+    return markerElements;
 });
 
 MapMarkerRenderer.displayName = 'MapMarkerRenderer';
