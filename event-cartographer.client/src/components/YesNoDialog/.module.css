@@ -31,7 +31,7 @@
         transition: display var(--modal_window__animation-duration) allow-discrete,
             overlay var(--modal_window__animation-duration) allow-discrete,
             background-color var(--modal_window__animation-duration);
-        background-color: hsl(0 0 0 / 0);
+        background-color: #00000000;
     }
 
     &[open] {
@@ -40,7 +40,7 @@
     }
 
     &[open]::backdrop {
-        background-color: hsl(0 0 0 / 65%);
+        background-color: #000000a6;
     }
 
     @starting-style {
@@ -50,7 +50,7 @@
         }
 
         &[open]::backdrop {
-            background-color: hsl(0 0 0 / 0);
+            background-color: #00000000;
         }
     }
 }

@@ -31,8 +31,10 @@
         "password-input": "Password",
         "confirm-password-input": "Confirm password",
         "create-account": "Create account",
+        "resend-email-link": "Resend confirmation email",
         "sign-in-link": "Sign in",
         "email-is-sent": "Email is sent to confirm your email address.",
+        "password-not-confirmed": "Password not confirmed.",
         "username_invalid": {
             "value_missing": "Username is required.",
             "too_short": "Username should contain at least 3 characters.",
@@ -48,8 +50,15 @@
             "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
         },
         "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required.",
-            "conditional": "Password confirmation does not match the password."
+            "value_missing": "Password confirmation is required."
+        },
+        "resend-email-confirmation-dialog": {
+            "header": "Resend confirmation email",
+            "description": "Input username or email of your account to resend a mail to verify the email address.",
+            "username-or-email-input": "Username or Email",
+            "cancel": "Cancel",
+            "send-mail": "Send mail",
+            "email-is-sent": "Email is sent."
         }
     },
     "reset-password": {
@@ -58,14 +67,14 @@
         "confirm-password-input": "Confirm password",
         "submit": "Submit",
         "password-is-reset": "Password is reset. Now you can use it to sign in.",
+        "password-not-confirmed": "Password not confirmed.",
         "new_password_invalid": {
             "value_missing": "Password is required.",
             "too_short": "Password should contain at least 6 characters.",
             "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
         },
         "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required.",
-            "conditional": "Password confirmation does not match the password."
+            "value_missing": "Password confirmation is required."
         }
     },
     "settings": {
@@ -182,6 +191,11 @@
             "delete-user": {
                 "password": {
                     "required": "Password is required."
+                }
+            },
+            "resend-email-confirmation": {
+                "username-or-email": {
+                    "required": "Username or email is required."
                 }
             },
             "reset-password": {
@@ -316,6 +330,10 @@
                     "invalid-password": "Invalid password.",
                     "already-exists": "Email is already sent to the user!"
                 },
+                "resend-email-confirmation": {
+                    "user-not-found-or-activated": "The user wasn't found or already activated.",
+                    "email-error": "Error sending the email."
+                },
                 "send-reset-password-permission": {
                     "user-not-found": "User not found.",
                     "have-permission": "You have got the permission already.",
@@ -329,8 +347,7 @@
                     "incorrect-password": "New password must include lower case letters, upper case letters and digits.",
                     "user-not-found": "User not found.",
                     "link": "Link is expired or unavailable."
-                },
-                "confirm-email": {}
+                }
             },
             "marker": {
                 "add-marker": {

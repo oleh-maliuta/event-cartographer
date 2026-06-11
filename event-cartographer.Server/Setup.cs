@@ -29,6 +29,13 @@ public static class Setup
 
             var key = parts[0].Trim();
             var value = parts[1].Trim();
+
+            if ((value.StartsWith('"') && value.EndsWith('"')) ||
+                (value.StartsWith('\'') && value.EndsWith('\'')))
+            {
+                value = value[1..^1];
+            }
+
             Environment.SetEnvironmentVariable(key, value);
         }
 

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const blockMessageStyle = { marginTop: '10px' };
 
-const ResetPasswordDialog = memo(({
+const ResendConfirmationEmailDialog = memo(({
     dialogState,
     setDialogState
 }) => {
@@ -34,8 +34,8 @@ const ResetPasswordDialog = memo(({
         e.preventDefault();
         setSendingEmail(true);
 
-        const response = await fetch(`/api/users/reset-password-permission?locale=${i18n.language}`, {
-            method: "POST",
+        const response = await fetch(`/api/users/resend-email-confirmation?locale=${i18n.language}`, {
+            method: "PUT",
             credentials: "include",
             body: new FormData(e.target)
         });
@@ -44,7 +44,7 @@ const ResetPasswordDialog = memo(({
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-in.reset-password-modal-window.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.resend-email-confirmation-dialog.email-is-sent')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -90,10 +90,10 @@ const ResetPasswordDialog = memo(({
                 onSubmit={resetPasswordPermissionRequest}>
                 <div className={`${cl.modal_window__content}`}>
                     <h1 className={`${cl.modal_window__header}`}>
-                        {t('sign-in.reset-password-modal-window.header')}
+                        {t('sign-up.resend-email-confirmation-dialog.header')}
                     </h1>
                     <p className={`${cl.modal_window__reset_password__description}`}>
-                        {t('sign-in.reset-password-modal-window.description')}
+                        {t('sign-up.resend-email-confirmation-dialog.description')}
                     </p>
                     <BlockMessage
                         style={blockMessageStyle}
@@ -101,7 +101,7 @@ const ResetPasswordDialog = memo(({
                     <input className={`${cl.modal_window__reset_password__input}`}
                         name='usernameOrEmail'
                         type="text"
-                        placeholder={t('sign-in.reset-password-modal-window.username-or-email-input')}
+                        placeholder={t('sign-up.resend-email-confirmation-dialog.username-or-email-input')}
                         maxLength="500"
                         required />
                 </div>
@@ -113,7 +113,7 @@ const ResetPasswordDialog = memo(({
                                 navigate('#', { replace: true });
                                 setDialogState(false);
                             }}>
-                            {t('sign-in.reset-password-modal-window.cancel')}
+                            {t('sign-up.resend-email-confirmation-dialog.cancel')}
                         </button>
                         <button className={`${cl.modal_window__control__buttons__apply}`}
                             type='submit'
@@ -127,7 +127,7 @@ const ResetPasswordDialog = memo(({
                                         curveWidth="3px" />
                                     :
                                     <span>
-                                        {t('sign-in.reset-password-modal-window.send-mail')}
+                                        {t('sign-up.resend-email-confirmation-dialog.send-mail')}
                                     </span>
                             }
                         </button>
@@ -138,11 +138,11 @@ const ResetPasswordDialog = memo(({
     );
 });
 
-ResetPasswordDialog.displayName = "ResetPasswordDialog";
+ResendConfirmationEmailDialog.displayName = "ResendConfirmationEmailDialog";
 
-ResetPasswordDialog.propTypes = {
+ResendConfirmationEmailDialog.propTypes = {
     dialogState: PropTypes.bool.isRequired,
     setDialogState: PropTypes.func.isRequired
 };
 
-export default ResetPasswordDialog;
+export default ResendConfirmationEmailDialog;

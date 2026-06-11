@@ -1,4 +1,4 @@
-import { useState, useCallback, useReducer } from 'react';
+import { useState, useCallback, useReducer, useEffect } from 'react';
 import cl from './.module.css';
 import Panel from '../../components/Panel/Panel';
 import PanelInput from '../../components/PanelInput/PanelInput';
@@ -8,7 +8,7 @@ import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPassw
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
 import { MessageStates } from '../../utils/constants';
 
@@ -21,7 +21,7 @@ const SignInLayout = () => {
     const { t } = useTranslation();
 
     const [submitting, setSubmitting] = useState(false);
-    const [dialogOpened, setDialogOpened] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
@@ -30,9 +30,11 @@ const SignInLayout = () => {
 
     const { theme } = useTheme();
 
+    const location = useLocation();
     const navigate = useNavigate();
 
     const signInRequest = useCallback(async (e) => {
+        e.preventDefault();
         dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         setSubmitting(true);
 
@@ -77,15 +79,18 @@ const SignInLayout = () => {
         setSubmitting(false);
     }, [t, navigate]);
 
+    useEffect(() => {
+        const set = () => {
+            setIsDialogOpen(location.hash === '#reset-password-dialog');
+        };
+        set();
+    }, [location.hash]);
+
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
                 title={t('sign-in.panel-header')}
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (submitting) return;
-                    signInRequest(e);
-                }}>
+                onSubmit={signInRequest}>
                 <BlockMessage
                     style={blockMessageStyle}
                     state={messageState} />
@@ -108,15 +113,17 @@ const SignInLayout = () => {
                     required
                     valueMissingValidity={t(`sign-in.password_invalid.value_missing`)} />
                 <div className={cl.forgot_password_link_cont}>
-                    <span className={cl.forgot_password_link}
-                        onClick={() => setDialogOpened(true)}>
+                    <MemoLink className={cl.forgot_password_link}
+                        to='#reset-password-dialog'
+                        replace={true}>
                         {t('sign-in.forgot-password')}
-                    </span>
+                    </MemoLink>
                 </div>
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-in.submit')}
-                    loading={submitting} />
+                    loading={submitting}
+                    disabled={submitting} />
                 <div className={cl.sign_up_link_cont}>
                     <MemoLink className={cl.sign_up_link} to='/sign-up'>
                         {t('sign-in.sign-up-link')}
@@ -124,8 +131,8 @@ const SignInLayout = () => {
                 </div>
             </Panel>
             <ResetPasswordDialog
-                dialogState={dialogOpened}
-                setDialogState={setDialogOpened} />
+                dialogState={isDialogOpen}
+                setDialogState={setIsDialogOpen} />
         </div>
     );
 }

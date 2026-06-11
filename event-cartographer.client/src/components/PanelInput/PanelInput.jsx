@@ -12,16 +12,15 @@ const PanelInput = memo(({
     type,
     placeholder,
     pattern,
-    condition = () => true,
     minLength,
     maxLength,
     required,
+    value,
+    setValue,
     valueMissingValidity,
     tooShortValidity,
     typeMismatchValidity,
     patternValidity,
-    conditionalValidity,
-    ref,
 }) => {
     const { theme } = useTheme();
 
@@ -37,15 +36,13 @@ const PanelInput = memo(({
             obj.setCustomValidity(typeMismatchValidity);
         } else if (obj.validity.patternMismatch && patternValidity) {
             obj.setCustomValidity(patternValidity);
-        } else if (!condition() && conditionalValidity) {
-            obj.setCustomValidity(conditionalValidity);
         }
+    }, [valueMissingValidity, tooShortValidity, typeMismatchValidity, patternValidity]);
 
-    }, [
-        valueMissingValidity, tooShortValidity,
-        typeMismatchValidity, patternValidity,
-        condition, conditionalValidity
-    ]);
+    const onChangeEvent = useCallback((e) => {
+        if (value !== undefined)
+            setValue(e.target.value);
+    }, [value, setValue]);
 
     return (
         <div className={`${cl.panel_input} ${cl[theme]}`}
@@ -63,7 +60,8 @@ const PanelInput = memo(({
                 minLength={minLength}
                 maxLength={maxLength}
                 required={required}
-                ref={ref}
+                value={value}
+                onChange={onChangeEvent}
                 onInput={customValidity}
                 onInvalid={customValidity} />
         </div>
@@ -79,15 +77,15 @@ PanelInput.propTypes = {
     type: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
     pattern: PropTypes.string,
-    condition: PropTypes.func,
     minLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     required: PropTypes.bool,
+    value: PropTypes.string,
+    setValue: PropTypes.func,
     valueMissingValidity: PropTypes.string,
     tooShortValidity: PropTypes.string,
     typeMismatchValidity: PropTypes.string,
     patternValidity: PropTypes.string,
-    conditionalValidity: PropTypes.string,
     ref: PropTypes.object,
 };
 

@@ -57,17 +57,17 @@ public class MarkerController(DbApp service) : BaseController(service)
         user.LastActivityAt = DateTime.UtcNow;
 
         await DB.SaveChangesAsync();
-        return Ok(new MarkerResponse(marker));
+        return StatusCode(201, new MarkerResponse(marker));
     }
 
     [Authorized]
-    [HttpPut("{markerId}")]
+    [HttpPut("{markerId:guid}")]
     public async Task<IActionResult> UpdateMarker(
-        [FromRoute] int markerId,
+        [FromRoute] Guid markerId,
         [FromBody] UpdateMarkerRequest request)
     {
         User user = AuthorizedUser;
-        Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
+        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {
@@ -103,12 +103,12 @@ public class MarkerController(DbApp service) : BaseController(service)
     }
 
     [Authorized]
-    [HttpDelete("{markerId}")]
+    [HttpDelete("{markerId:guid}")]
     public async Task<IActionResult> DeleteMarker(
-        [FromRoute] int markerId)
+        [FromRoute] Guid markerId)
     {
         User user = AuthorizedUser;
-        Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
+        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {
@@ -140,11 +140,11 @@ public class MarkerController(DbApp service) : BaseController(service)
     }
 
     [Authorized]
-    [HttpGet("{markerId}")]
+    [HttpGet("{markerId:guid}")]
     public async Task<IActionResult> GetMarker(
-        [FromRoute] int markerId)
+        [FromRoute] Guid markerId)
     {
-        Marker? marker = await DB.Markers.SingleOrDefaultAsync(x => x.Id == markerId);
+        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {

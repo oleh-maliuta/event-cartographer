@@ -5,7 +5,7 @@ namespace EventCartographer.Server.Models;
 public class User
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     [MaxLength(100)]
     public string Name { get; set; }
     [MaxLength(320)]

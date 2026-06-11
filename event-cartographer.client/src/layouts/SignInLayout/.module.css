@@ -1,13 +1,11 @@
 .main {
-    --sign-up-link-color: #0000ee;
-    --sign-up-link-visited-color: #551a8b;
-    --forgot-password-link-color: #000000;
+    --link-color: #0000ee;
+    --link-visited-color: #551a8b;
 }
 
 .main.dark {
-    --sign-up-link-color: #0084ff;
-    --sign-up-link-visited-color: #ee82ee;
-    --forgot-password-link-color: #ffffff;
+    --link-color: #0084ff;
+    --link-visited-color: #ee82ee;
 }
 
 .main {
@@ -27,11 +25,12 @@
 
 .forgot_password_link {
     cursor: pointer;
-    color: var(--forgot-password-link-color);
+    color: var(--link-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
     text-wrap: nowrap;
+    text-decoration: none;
 
     &:hover {
         text-decoration: underline;
@@ -63,10 +62,10 @@
     }
 
     &:link {
-        color: var(--sign-up-link-color);
+        color: var(--link-color);
     }
 
     &:visited {
-        color: var(--sign-up-link-visited-color);
+        color: var(--link-visited-color);
     }
 }

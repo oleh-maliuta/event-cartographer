@@ -33,5 +33,5 @@ public class ConfirmEmailQuery
         }
     }
     [FromQuery(Name = "token")]
-    public string? Token { get; set; }
+    public Guid? Token { get; set; }
 }

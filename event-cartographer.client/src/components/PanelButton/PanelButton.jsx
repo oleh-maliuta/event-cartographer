@@ -8,12 +8,14 @@ const PanelButton = memo(({
     style,
     text,
     loading,
+    disabled,
 }) => {
     const { theme } = useTheme();
 
     return (
         <button className={`${cl.panel_button} ${cl[theme]}`}
             type="submit"
+            disabled={disabled}
             style={style}>
             {
                 loading ?
@@ -32,7 +34,7 @@ PanelButton.propTypes = {
     style: PropTypes.object,
     text: PropTypes.string,
     loading: PropTypes.bool,
-    onClick: PropTypes.func,
+    disabled: PropTypes.bool,
 };
 
 export default PanelButton;

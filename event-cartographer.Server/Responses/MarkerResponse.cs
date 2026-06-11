@@ -18,7 +18,7 @@ public class MarkerResponse : BaseResponse
     public class View(Marker marker)
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; } = marker.Id;
+        public string Id { get; set; } = marker.Id.ToString("N");
         [JsonPropertyName("latitude")]
         public decimal Latitude { get; set; } = marker.Latitude;
         [JsonPropertyName("longitude")]
@@ -36,7 +36,7 @@ public class MarkerResponse : BaseResponse
     public class ShortView(Marker marker)
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; } = marker.Id;
+        public string Id { get; set; } = marker.Id.ToString("N");
         [JsonPropertyName("latitude")]
         public decimal Latitude { get; set; } = marker.Latitude;
         [JsonPropertyName("longitude")]

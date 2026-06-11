@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventCartographer.Server.Services.EntityFramework.Migrations
 {
     [DbContext(typeof(DbApp))]
-    [Migration("20240809185612_Init")]
+    [Migration("20260611180736_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -20,34 +20,28 @@ namespace EventCartographer.Server.Services.EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EventCartographer.Server.Models.ActivationCode", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Action")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
 
@@ -58,11 +52,9 @@ namespace EventCartographer.Server.Services.EntityFramework.Migrations
 
             modelBuilder.Entity("EventCartographer.Server.Models.Marker", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(5000)
@@ -89,8 +81,9 @@ namespace EventCartographer.Server.Services.EntityFramework.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
 
@@ -101,11 +94,9 @@ namespace EventCartographer.Server.Services.EntityFramework.Migrations
 
             modelBuilder.Entity("EventCartographer.Server.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -126,6 +117,9 @@ namespace EventCartographer.Server.Services.EntityFramework.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PermissionToDeletePastEvents")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

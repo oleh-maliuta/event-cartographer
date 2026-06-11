@@ -8,164 +8,156 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EventCartographer.Server.Services.EntityFramework.Migrations;
-
-[DbContext(typeof(DbApp))]
-partial class DbAppModelSnapshot : ModelSnapshot
+namespace EventCartographer.Server.Services.EntityFramework.Migrations
 {
-    protected override void BuildModel(ModelBuilder modelBuilder)
+    [DbContext(typeof(DbApp))]
+    partial class DbAppModelSnapshot : ModelSnapshot
     {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
 #pragma warning disable 612, 618
-        modelBuilder
-            .HasAnnotation("ProductVersion", "10.0.7")
-            .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            modelBuilder
+                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-        modelBuilder.Entity("EventCartographer.Server.Models.ActivationCode", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
+            modelBuilder.Entity("EventCartographer.Server.Models.ActivationCode", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(36)");
 
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-            b.Property<string>("Action")
-                .IsRequired()
-                .HasMaxLength(1000)
-                .HasColumnType("nvarchar(1000)");
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
 
-            b.Property<string>("Code")
-                .IsRequired()
-                .HasMaxLength(256)
-                .HasColumnType("nvarchar(256)");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
 
-            b.Property<DateTime>("ExpiresAt")
-                .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-            b.Property<int>("UserId")
-                .HasColumnType("int");
+                    b.HasIndex("UserId");
 
-            b.HasKey("Id");
+                    b.ToTable("ActivationCodes");
+                });
 
-            b.HasIndex("UserId");
+            modelBuilder.Entity("EventCartographer.Server.Models.Marker", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(36)");
 
-            b.ToTable("ActivationCodes");
-        });
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
 
-        modelBuilder.Entity("EventCartographer.Server.Models.Marker", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
+                    b.Property<string>("Importance")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<decimal>("Latitude")
+                        .HasPrecision(38, 20)
+                        .HasColumnType("decimal(38,20)");
 
-            b.Property<string>("Description")
-                .HasMaxLength(5000)
-                .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Longitude")
+                        .HasPrecision(38, 20)
+                        .HasColumnType("decimal(38,20)");
 
-            b.Property<string>("Importance")
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnType("nvarchar(100)");
+                    b.Property<DateTime>("StartsAt")
+                        .HasColumnType("datetime2");
 
-            b.Property<decimal>("Latitude")
-                .HasPrecision(38, 20)
-                .HasColumnType("decimal(38,20)");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
-            b.Property<decimal>("Longitude")
-                .HasPrecision(38, 20)
-                .HasColumnType("decimal(38,20)");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(36)");
 
-            b.Property<DateTime>("StartsAt")
-                .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-            b.Property<string>("Title")
-                .IsRequired()
-                .HasMaxLength(300)
-                .HasColumnType("nvarchar(300)");
+                    b.HasIndex("UserId");
 
-            b.Property<int>("UserId")
-                .HasColumnType("int");
+                    b.ToTable("Markers");
+                });
 
-            b.HasKey("Id");
+            modelBuilder.Entity("EventCartographer.Server.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(36)");
 
-            b.HasIndex("UserId");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
-            b.ToTable("Markers");
-        });
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
 
-        modelBuilder.Entity("EventCartographer.Server.Models.User", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
+                    b.Property<DateTime>("LastActivityAt")
+                        .HasColumnType("datetime2");
 
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-            b.Property<string>("Email")
-                .IsRequired()
-                .HasMaxLength(320)
-                .HasColumnType("nvarchar(320)");
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-            b.Property<bool>("IsActivated")
-                .HasColumnType("bit");
+                    b.Property<bool>("PermissionToDeletePastEvents")
+                        .HasColumnType("bit");
 
-            b.Property<DateTime>("LastActivityAt")
-                .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-            b.Property<string>("Name")
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnType("nvarchar(100)");
+                    b.HasIndex("Email")
+                        .IsUnique();
 
-            b.Property<string>("PasswordHash")
-                .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-            b.Property<bool>("PermissionToDeletePastEvents")
-                .HasColumnType("bit");
+                    b.ToTable("Users");
+                });
 
-            b.HasKey("Id");
+            modelBuilder.Entity("EventCartographer.Server.Models.ActivationCode", b =>
+                {
+                    b.HasOne("EventCartographer.Server.Models.User", "User")
+                        .WithMany("ActivationCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            b.HasIndex("Email")
-                .IsUnique();
+                    b.Navigation("User");
+                });
 
-            b.HasIndex("Name")
-                .IsUnique();
+            modelBuilder.Entity("EventCartographer.Server.Models.Marker", b =>
+                {
+                    b.HasOne("EventCartographer.Server.Models.User", "User")
+                        .WithMany("Markers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            b.ToTable("Users");
-        });
+                    b.Navigation("User");
+                });
 
-        modelBuilder.Entity("EventCartographer.Server.Models.ActivationCode", b =>
-        {
-            b.HasOne("EventCartographer.Server.Models.User", "User")
-                .WithMany("ActivationCodes")
-                .HasForeignKey("UserId")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+            modelBuilder.Entity("EventCartographer.Server.Models.User", b =>
+                {
+                    b.Navigation("ActivationCodes");
 
-            b.Navigation("User");
-        });
-
-        modelBuilder.Entity("EventCartographer.Server.Models.Marker", b =>
-        {
-            b.HasOne("EventCartographer.Server.Models.User", "User")
-                .WithMany("Markers")
-                .HasForeignKey("UserId")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            b.Navigation("User");
-        });
-
-        modelBuilder.Entity("EventCartographer.Server.Models.User", b =>
-        {
-            b.Navigation("ActivationCodes");
-
-            b.Navigation("Markers");
-        });
+                    b.Navigation("Markers");
+                });
 #pragma warning restore 612, 618
+        }
     }
 }

@@ -4,22 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventCartographer.Server.Services.Background;
 
-public class CleanupService : BackgroundService
+public class CleanupService(
+    ILogger<CleanupService> logger,
+    IServiceScopeFactory factory) : BackgroundService
 {
-    private readonly IServiceScopeFactory _factory;
-    private readonly ILogger<CleanupService> _logger;
+    private readonly IServiceScopeFactory _factory = factory;
+    private readonly ILogger<CleanupService> _logger = logger;
     private readonly TimeSpan _period = TimeSpan.FromHours(1);
     private DbApp? _database;
 
     public bool IsEnabled { get; set; }
-
-    public CleanupService(
-        ILogger<CleanupService> logger,
-        IServiceScopeFactory factory)
-    {
-        _logger = logger;
-        _factory = factory;
-    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -11,5 +11,5 @@ public class ResetPasswordRequest
     [MinLength(6, ErrorMessage = "http.request-errors.reset-password.new-password.min-length")]
     public string? NewPassword { get; set; }
     [Required(ErrorMessage = "http.request-errors.reset-password.token.required")]
-    public string? Token { get; set; }
+    public Guid? Token { get; set; }
 }

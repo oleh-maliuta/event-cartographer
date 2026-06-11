@@ -1,17 +1,16 @@
-﻿using EventCartographer.Server.Models;
-using EventCartographer.Server.Responses;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using EventCartographer.Server.Services.Email;
-using EventCartographer.Server.Attributes;
-using EventCartographer.Server.Services.EntityFramework;
-using Microsoft.EntityFrameworkCore;
-using EventCartographer.Server.Utils;
-using EventCartographer.Server.Services.Localization;
-using EventCartographer.Server.Requests.Queries;
+﻿using EventCartographer.Server.Attributes;
+using EventCartographer.Server.Models;
 using EventCartographer.Server.Requests.Bodies;
+using EventCartographer.Server.Requests.Queries;
+using EventCartographer.Server.Responses;
+using EventCartographer.Server.Services.Email;
+using EventCartographer.Server.Services.EntityFramework;
+using EventCartographer.Server.Utils;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EventCartographer.Server.Controllers;
 
@@ -19,11 +18,9 @@ namespace EventCartographer.Server.Controllers;
 [Route("api/users")]
 public class UserController(
         DbApp db,
-        IEmailService emailService,
-        ILocalizationService localizationService) : BaseController(db)
+        IEmailService emailService) : BaseController(db)
 {
     private readonly IEmailService _emailService = emailService;
-    private readonly ILocalizationService _localizationService = localizationService;
 
     [HttpPost("sign-up")]
     public async Task<IActionResult> SignUp(
@@ -45,10 +42,25 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.incorrect-password"));
         }
 
-        string token = await StringTool.RandomTokenAsync(256, async id =>
-            await DB.ActivationCodes
-            .Include(x => x.User)
-            .AnyAsync(x => x.User.Email == request.Email));
+        User user = (await DB.Users.AddAsync(new()
+        {
+            Name = request.Username!,
+            Email = request.Email!,
+            PasswordHash = PasswordTool.Hash(request.Password!),
+            PermissionToDeletePastEvents = false,
+            IsActivated = false,
+            LastActivityAt = DateTime.UtcNow
+        })).Entity;
+
+        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id,
+            User = user,
+            Action = "confirm-registration",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        })).Entity;
+
+        await DB.SaveChangesAsync();
 
         try
         {
@@ -57,12 +69,12 @@ public class UserController(
                 Scheme = HttpContext.Request.Scheme,
                 Host = HttpContext.Request.Host.Host,
                 Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/users/confirm-email",
+                Path = "api/email",
             };
 
             using (var content = new FormUrlEncodedContent([
                     new("email", request.Email!),
-                    new("token", token),
+                    new("token", code.Id.ToString("N")),
                     new("locale", query.Locale),
                 ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
@@ -82,27 +94,7 @@ public class UserController(
             return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
         }
 
-        User user = (await DB.Users.AddAsync(new()
-        {
-            Name = request.Username!,
-            Email = request.Email!,
-            PasswordHash = PasswordTool.Hash(request.Password!),
-            PermissionToDeletePastEvents = false,
-            IsActivated = false,
-            LastActivityAt = DateTime.UtcNow
-        })).Entity;
-
-        await DB.ActivationCodes.AddAsync(new()
-        {
-            UserId = user.Id,
-            User = user,
-            Code = token,
-            Action = "confirm-registration",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        });
-
-        await DB.SaveChangesAsync();
-        return Ok(new UserResponse(user));
+        return StatusCode(201, new UserResponse(user));
     }
 
     [HttpPost("sign-in")]
@@ -114,12 +106,12 @@ public class UserController(
         if (request.UsernameOrEmail?.Contains('@') == true)
         {
             request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-            user = await DB.Users.SingleOrDefaultAsync(
+            user = await DB.Users.FirstOrDefaultAsync(
                 x => x.Email == request.UsernameOrEmail);
         }
         else
         {
-            user = await DB.Users.SingleOrDefaultAsync(
+            user = await DB.Users.FirstOrDefaultAsync(
                 x => x.Name == request.UsernameOrEmail);
         }
 
@@ -263,8 +255,15 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
         }
 
-        string token = await StringTool.RandomTokenAsync(256, async id =>
-            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Action = $"change-email,{request.Email}",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        })).Entity;
+
+        await DB.SaveChangesAsync();
 
         try
         {
@@ -273,12 +272,12 @@ public class UserController(
                 Scheme = HttpContext.Request.Scheme,
                 Host = HttpContext.Request.Host.Host,
                 Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/users/confirm-email",
+                Path = "api/email",
             };
 
             using (var content = new FormUrlEncodedContent([
-                new("email", user.Email),
-                    new("token", token),
+                    new("email", user.Email),
+                    new("token", code.Id.ToString("N")),
                     new("locale", query.Locale),
                 ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
@@ -297,16 +296,6 @@ public class UserController(
             return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
         }
 
-        await DB.ActivationCodes.AddAsync(new()
-        {
-            UserId = user.Id!,
-            User = user,
-            Code = token,
-            Action = $"change-email,{request.Email}",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        });
-
-        await DB.SaveChangesAsync();
         return Ok(new BaseResponse.SuccessResponse(null));
     }
 
@@ -328,8 +317,15 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.already-exists"));
         }
 
-        string token = await StringTool.RandomTokenAsync(256, async id =>
-            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Action = "delete-user",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        })).Entity;
+
+        await DB.SaveChangesAsync();
 
         try
         {
@@ -338,12 +334,12 @@ public class UserController(
                 Scheme = HttpContext.Request.Scheme,
                 Host = HttpContext.Request.Host.Host,
                 Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/users/confirm-email",
+                Path = "api/email",
             };
 
             using (var content = new FormUrlEncodedContent([
                 new("email", user.Email),
-                    new("token", token),
+                    new("token", code.Id.ToString("N")),
                     new("locale", query.Locale),
                 ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
@@ -362,16 +358,87 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
         }
 
-        await DB.ActivationCodes.AddAsync(new()
+        return Ok(new BaseResponse.SuccessResponse(null));
+    }
+
+    [HttpPut("resend-email-confirmation")]
+    public async Task<IActionResult> ResendEmailConfirmation(
+        [FromQuery] LocaleQuery query,
+        [FromForm] ResendEmailConfirmationRequest request)
+    {
+        User? user;
+
+        if (request.UsernameOrEmail?.Contains('@') == true)
         {
-            UserId = user.Id!,
-            User = user,
-            Code = token,
-            Action = "delete-user",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        });
+            request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
+            user = await DB.Users.FirstOrDefaultAsync(
+                x => x.Email == request.UsernameOrEmail && !x.IsActivated);
+        }
+        else
+        {
+            user = await DB.Users.FirstOrDefaultAsync(
+                x => x.Name == request.UsernameOrEmail && !x.IsActivated);
+        }
+
+        if (user == null)
+        {
+            return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.resend-email-confirmation.user-not-found-or-activated"));
+        }
+
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Action == "confirm-registration");
+
+        if (activationCode == null)
+        {
+            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            {
+                UserId = user.Id,
+                User = user,
+                Action = "confirm-registration",
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            })).Entity;
+        }
+        else
+        {
+            activationCode.ExpiresAt = DateTime.UtcNow.AddHours(12);
+        }
+
+        user.LastActivityAt = DateTime.UtcNow;
 
         await DB.SaveChangesAsync();
+
+        try
+        {
+            var emailURL = new UriBuilder
+            {
+                Scheme = HttpContext.Request.Scheme,
+                Host = HttpContext.Request.Host.Host,
+                Port = HttpContext.Request.Host.Port ?? -1,
+                Path = "api/email",
+            };
+
+            using (var content = new FormUrlEncodedContent([
+                    new("email", user.Email),
+                    new("token", activationCode.Id.ToString("N")),
+                    new("locale", query.Locale),
+                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+
+            await _emailService.SendEmailUseTemplateAsync(
+                email: user.Email,
+                templateName: "registration_confirm.html",
+                parameters: new Dictionary<string, string>
+                {
+                        { "username", user.Name },
+                        { "link", emailURL.ToString() }
+                },
+                query.Locale!
+            );
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.resend-email-confirmation.email-error"));
+        }
+
         return Ok(new BaseResponse.SuccessResponse(null));
     }
 
@@ -385,12 +452,12 @@ public class UserController(
         if (request.UsernameOrEmail?.Contains('@') == true)
         {
             request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-            user = await DB.Users.SingleOrDefaultAsync(
+            user = await DB.Users.FirstOrDefaultAsync(
                 x => x.Email == request.UsernameOrEmail);
         }
         else
         {
-            user = await DB.Users.SingleOrDefaultAsync(
+            user = await DB.Users.FirstOrDefaultAsync(
                 x => x.Name == request.UsernameOrEmail);
         }
 
@@ -408,8 +475,15 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
         }
 
-        string token = await StringTool.RandomTokenAsync(256, async id =>
-            await DB.ActivationCodes.AnyAsync(x => x.UserId == user.Id));
+        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
+        {
+            UserId = user.Id!,
+            User = user,
+            Action = "reset-password-permission",
+            ExpiresAt = DateTime.UtcNow.AddHours(12)
+        })).Entity;
+
+        await DB.SaveChangesAsync();
 
         try
         {
@@ -427,7 +501,7 @@ public class UserController(
                 parameters: new Dictionary<string, string>
                 {
                         { "username", user.Name },
-                        { "token", token },
+                        { "token", code.Id.ToString("N") },
                         { "link", emailURL.ToString() }
                 },
                 query.Locale!);
@@ -437,18 +511,6 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.email-error"));
         }
 
-        DateTime resTime = DateTime.UtcNow;
-
-        await DB.ActivationCodes.AddAsync(new()
-        {
-            UserId = user.Id!,
-            User = user,
-            Code = token,
-            Action = "reset-password-permission",
-            ExpiresAt = resTime.AddHours(12)
-        });
-
-        await DB.SaveChangesAsync();
         return Ok(new BaseResponse.SuccessResponse(null));
     }
 
@@ -456,7 +518,7 @@ public class UserController(
     public async Task<IActionResult> AcceptPasswordResetting(
         [FromForm] AcceptPasswordResettingRequest request)
     {
-        User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+        User? user = await DB.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
 
         if (user == null)
         {
@@ -464,7 +526,7 @@ public class UserController(
         }
 
         ActivationCode? activationCode = await DB.ActivationCodes
-            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
+            .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Id == request.Token);
 
         if (activationCode == null)
         {
@@ -494,8 +556,8 @@ public class UserController(
         };
 
         using (var content = new FormUrlEncodedContent([
-            new("user", user.Name),
-                new("token", activationCode.Code),
+                new("user", user.Name),
+                new("token", activationCode.Id.ToString("N")),
             ])) { linkToResetPassword.Query = await content.ReadAsStringAsync(); }
 
         if (actionInfo.Length < 2)
@@ -521,7 +583,7 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));
         }
 
-        User? user = await DB.Users.SingleOrDefaultAsync(x => x.Name == request.Username);
+        User? user = await DB.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
 
         if (user == null)
         {
@@ -529,7 +591,7 @@ public class UserController(
         }
 
         ActivationCode? activationCode = await DB.ActivationCodes
-            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == request.Token);
+            .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Id == request.Token);
 
         if (activationCode == null)
         {
@@ -562,77 +624,5 @@ public class UserController(
 
         await DB.SaveChangesAsync();
         return Ok(new BaseResponse.SuccessResponse(null));
-    }
-
-    [HttpGet("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(
-        [FromQuery] ConfirmEmailQuery query)
-    {
-        User? user = await DB.Users.SingleOrDefaultAsync(
-            x => x.Email == query.Email!);
-
-        if (user == null)
-        {
-            return MessageContentResult(
-                false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("user-not-found", query.Locale ?? "en"));
-        }
-
-        ActivationCode? activationCode = await DB.ActivationCodes
-            .SingleOrDefaultAsync(x => user.Id == x.UserId && x.Code == query.Token);
-
-        if (activationCode == null)
-        {
-            return MessageContentResult(
-                false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("link-issue", query.Locale ?? "en"));
-        }
-
-        if (DateTime.UtcNow > activationCode.ExpiresAt)
-        {
-            DB.ActivationCodes.Remove(activationCode);
-            await DB.SaveChangesAsync();
-            return MessageContentResult(
-                false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("link-issue", query.Locale ?? "en"));
-        }
-
-        string[] actionInfo = activationCode.Action.Split(',');
-        string messageCode;
-
-        switch (actionInfo[0])
-        {
-            case "confirm-registration":
-                user.IsActivated = true;
-                user.LastActivityAt = DateTime.UtcNow;
-                messageCode = "registration-completed";
-                DB.ActivationCodes.Remove(activationCode);
-                break;
-            case "change-email":
-                user.Email = actionInfo[1];
-                user.LastActivityAt = DateTime.UtcNow;
-                messageCode = "email-confirmed";
-                DB.ActivationCodes.Remove(activationCode);
-                break;
-            case "delete-user":
-                messageCode = "account-deleted";
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                DB.Users.Remove(user);
-                break;
-            default:
-                return MessageContentResult(
-                    false,
-                    _localizationService.GetString("fail", query.Locale ?? "en"),
-                    _localizationService.GetString("unknown-action", query.Locale ?? "en"));
-        }
-
-        await DB.SaveChangesAsync();
-        return MessageContentResult(
-            true,
-            _localizationService.GetString("success", query.Locale ?? "en"),
-            _localizationService.GetString(messageCode, query.Locale ?? "en"));
     }
 }

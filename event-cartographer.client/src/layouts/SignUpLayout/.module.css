@@ -1,11 +1,11 @@
 .main {
-    --sign-in-link-color: #0000ee;
-    --sign-in-link-visited-color: #551a8b;
+    --link-color: #0000ee;
+    --link-visited-color: #551a8b;
 }
 
 .main.dark {
-    --sign-in-link-color: #0084ff;
-    --sign-in-link-visited-color: #ee82ee;
+    --link-color: #0084ff;
+    --link-visited-color: #ee82ee;
 }
 
 .main {
@@ -14,6 +14,26 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
+}
+
+.resend_email_link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:link {
+        color: var(--link-color);
+    }
+
+    &:visited {
+        color: var(--link-visited-color);
+    }
 }
 
 .sign_in_link_cont {
@@ -34,10 +54,10 @@
     }
 
     &:link {
-        color: var(--sign-in-link-color);
+        color: var(--link-color);
     }
 
     &:visited {
-        color: var(--sign-in-link-visited-color);
+        color: var(--link-visited-color);
     }
 }

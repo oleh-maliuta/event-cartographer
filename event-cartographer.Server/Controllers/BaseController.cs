@@ -8,14 +8,14 @@ namespace EventCartographer.Server.Controllers;
 public abstract class BaseController(DbApp db) : ControllerBase
 {
     protected DbApp DB { get; } = db;
-    protected int AuthorizedUserId
+    protected Guid AuthorizedUserId
     {
         get
         {
-            var strId = HttpContext.User.Claims
+            string? strId = HttpContext.User.Claims
                 .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            if (!int.TryParse(strId, out int id))
+            if (!Guid.TryParse(strId, out Guid id))
             {
                 throw new InvalidOperationException("This property accessible only for authorized users.");
             }
@@ -27,7 +27,7 @@ public abstract class BaseController(DbApp db) : ControllerBase
     {
         get
         {
-            User? user = DB.Users.SingleOrDefault(x => x.Id == AuthorizedUserId);
+            User? user = DB.Users.FirstOrDefault(x => x.Id == AuthorizedUserId);
 
             return user is null
                 ? throw new InvalidOperationException("This property accessible only for authorized users.")

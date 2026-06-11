@@ -6,8 +6,8 @@ namespace EventCartographer.Server.Models;
 public class Marker
 {
     [Key]
-    public int Id { get; set; }
-    public int UserId { get; set; }
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
     public User User { get; set; }
     [Precision(38, 20)]
     public decimal Latitude { get; set; }

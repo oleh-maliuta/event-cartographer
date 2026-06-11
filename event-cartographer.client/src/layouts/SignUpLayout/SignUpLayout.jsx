@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useReducer } from "react";
+import { useState, useCallback, useReducer, useEffect, useMemo } from "react";
 import cl from "./.module.css";
 import Panel from "../../components/Panel/Panel";
 import PanelInput from "../../components/PanelInput/PanelInput";
@@ -9,6 +9,8 @@ import { useTheme } from '../../hooks/useTheme';
 import MemoLink from "../../components/MemoLink/MemoLink";
 import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
 import { MessageStates } from "../../utils/constants";
+import ResendConfirmationEmailDialog from "../../components/ResendConfirmationEmailDialog/ResendConfirmationEmailDialog";
+import { useLocation } from "react-router-dom";
 
 const blockMessageStyle = { marginTop: '20px', width: 'calc(100% - 6px)' };
 const usernameInfoInputStyle = { marginTop: '15px' };
@@ -21,19 +23,37 @@ const SignUpLayout = () => {
     const { t, i18n } = useTranslation();
 
     const [submitting, setSubmitting] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const [passwordValue, setPasswordValue] = useState('');
+    const [confirmPasswordValue, setConfirmPasswordValue] = useState('');
+
+    const location = useLocation();
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
         messageListState()
     );
 
-    const passwordInputRef = useRef(null);
-    const confirmPasswordInputRef = useRef(null);
-
     const { theme } = useTheme();
 
+    const isPasswordConfirmed = useMemo(() => {
+        return confirmPasswordValue === passwordValue
+    }, [confirmPasswordValue, passwordValue]);
+
     const signUpRequest = useCallback(async (e) => {
-        dispatchMessageState({ type: 'CLEAR_MESSAGES' });
+        e.preventDefault();
+
+        if (!isPasswordConfirmed) {
+            dispatchMessageState({
+                type: 'SET_MESSAGES',
+                payload: { mode: MessageStates.ERROR, list: [t('sign-up.password-not-confirmed')] }
+            });
+            return;
+        } else {
+            dispatchMessageState({ type: 'CLEAR_MESSAGES' });
+        }
+
         setSubmitting(true);
 
         const response = await fetch(`/api/users/sign-up?locale=${i18n.language}`, {
@@ -78,17 +98,20 @@ const SignUpLayout = () => {
         }
 
         setSubmitting(false);
-    }, [i18n.language, t]);
+    }, [i18n.language, isPasswordConfirmed, t]);
+
+    useEffect(() => {
+        const set = () => {
+            setIsDialogOpen(location.hash === '#resend-email-dialog');
+        };
+        set();
+    }, [location.hash]);
 
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
                 title={t('sign-up.panel-header')}
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (submitting) return;
-                    signUpRequest(e);
-                }}>
+                onSubmit={signUpRequest}>
                 <BlockMessage
                     style={blockMessageStyle}
                     state={messageState} />
@@ -125,7 +148,8 @@ const SignUpLayout = () => {
                     minLength='6'
                     maxLength='200'
                     required
-                    ref={passwordInputRef}
+                    value={passwordValue}
+                    setValue={setPasswordValue}
                     valueMissingValidity={t(`sign-up.password_invalid.value_missing`)}
                     tooShortValidity={t(`sign-up.password_invalid.too_short`)}
                     patternValidity={t(`sign-up.password_invalid.pattern`)} />
@@ -134,22 +158,31 @@ const SignUpLayout = () => {
                     label={t('sign-up.confirm-password-input')}
                     type='password'
                     placeholder={t('sign-up.confirm-password-input')}
-                    condition={() => confirmPasswordInputRef.current.value === passwordInputRef.current.value}
                     maxLength='200'
                     required
-                    ref={confirmPasswordInputRef}
-                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)}
-                    conditionalValidity={t(`sign-up.confirm_password_invalid.conditional`)} />
+                    value={confirmPasswordValue}
+                    setValue={setConfirmPasswordValue}
+                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)} />
                 <PanelButton
                     style={submitButtonStyle}
                     text={t('sign-up.create-account')}
-                    loading={submitting} />
+                    loading={submitting}
+                    disabled={submitting} />
+                <MemoLink className={`${cl.resend_email_link}`}
+                    to='#resend-email-dialog'
+                    replace={true}>
+                    {t('sign-up.resend-email-link')}
+                </MemoLink>
                 <div className={cl.sign_in_link_cont}>
-                    <MemoLink className={cl.sign_in_link} to='/sign-in'>
+                    <MemoLink className={cl.sign_in_link}
+                        to='/sign-in'>
                         {t('sign-up.sign-in-link')}
                     </MemoLink>
                 </div>
             </Panel>
+            <ResendConfirmationEmailDialog
+                dialogState={isDialogOpen}
+                setDialogState={setIsDialogOpen} />
         </div>
     );
 }
