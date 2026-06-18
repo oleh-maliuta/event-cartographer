@@ -1,8 +1,8 @@
-﻿using EventCartographer.Server.Models;
-using EventCartographer.Server.Services.EntityFramework;
+﻿using EventCartographer.Domain.Entities;
+using EventCartographer.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventCartographer.Server.Services.Background;
+namespace EventCartographer.Services.Background;
 
 public class CleanupService(
     ILogger<CleanupService> logger,
@@ -11,14 +11,14 @@ public class CleanupService(
     private readonly IServiceScopeFactory _factory = factory;
     private readonly ILogger<CleanupService> _logger = logger;
     private readonly TimeSpan _period = TimeSpan.FromHours(1);
-    private DbApp? _database;
+    private ApplicationDbContext? _database;
 
     public bool IsEnabled { get; set; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await using var scope = _factory.CreateAsyncScope();
-        _database = scope.ServiceProvider.GetRequiredService<DbApp>();
+        _database = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         if (_database == null)
         {

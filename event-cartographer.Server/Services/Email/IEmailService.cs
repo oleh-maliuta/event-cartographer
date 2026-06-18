@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Server.Services.Email;
+﻿namespace EventCartographer.Services.Email;
 
 public interface IEmailService
 {

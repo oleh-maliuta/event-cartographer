@@ -74,6 +74,11 @@ const ResendConfirmationEmailDialog = memo(({
         setSendingEmail(false);
     }, [i18n.language, t]);
 
+    const cancelButtonClickEvent = useCallback(() => {
+        navigate('#', { replace: true });
+        setDialogState(false);
+    }, [navigate, setDialogState]);
+
     useEffect(() => {
         if (dialogState) {
             dialogRef.current.showModal();
@@ -109,10 +114,7 @@ const ResendConfirmationEmailDialog = memo(({
                     <div className={`${cl.modal_window__control__buttons}`}>
                         <button className={`${cl.modal_window__control__buttons__cancel}`}
                             type='button'
-                            onClick={() => {
-                                navigate('#', { replace: true });
-                                setDialogState(false);
-                            }}>
+                            onClick={cancelButtonClickEvent}>
                             {t('sign-up.resend-email-confirmation-dialog.cancel')}
                         </button>
                         <button className={`${cl.modal_window__control__buttons__apply}`}

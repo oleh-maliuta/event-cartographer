@@ -56,7 +56,7 @@ const SignUpLayout = () => {
 
         setSubmitting(true);
 
-        const response = await fetch(`/api/users/sign-up?locale=${i18n.language}`, {
+        const response = await fetch(`/api/auth/sign-up?locale=${i18n.language}`, {
             method: "POST",
             credentials: "include",
             body: new FormData(e.target)

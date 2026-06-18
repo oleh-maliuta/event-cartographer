@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>EventCartographer.Server</RootNamespace>
+    <RootNamespace>EventCartographer</RootNamespace>
     <UserSecretsId>e0cd809c-9ff7-46f1-893e-aedb3a85035c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <SpaRoot>..\event-cartographer.client</SpaRoot>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>10.*-*</Version>
     </PackageReference>
@@ -28,7 +28,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,15 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EditorConfigFiles Remove="D:\my_projects\event-cartographer\event-cartographer.Server\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="D:\my_projects\event-cartographer\event-cartographer.Server\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\EntityFramework\Migrations\" />
+    <EditorConfigFiles Remove=".editorconfig" />
   </ItemGroup>
 
 </Project>

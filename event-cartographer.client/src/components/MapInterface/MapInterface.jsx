@@ -20,7 +20,7 @@ const MapInterface = memo(({
     async function logOutRequest() {
         setIsLoggingOut(true);
 
-        const response = await fetch('/api/users/logout', {
+        const response = await fetch('/api/auth/logout', {
             method: "GET",
             credentials: "include"
         });

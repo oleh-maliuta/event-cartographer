@@ -8,7 +8,7 @@ import UserSettingsLayout from "./layouts/UserSettingsLayout/UserSettingsLayout"
 import ResetPasswordLayout from "./layouts/ResetPasswordLayout/ResetPasswordLayout";
 
 async function authCheck(navHook, path) {
-    const response = await fetch('/api/users/check', {
+    const response = await fetch('/api/auth/check', {
         method: "GET",
         credentials: "include"
     });

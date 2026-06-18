@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
-namespace EventCartographer.Server.Services.Email;
+namespace EventCartographer.Services.Email;
 
 public class EmailService : IEmailService
 {

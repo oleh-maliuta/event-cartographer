@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace EventCartographer.Server.Services.Localization;
+namespace EventCartographer.Services.Localization;
 
 public class LocalizationService : ILocalizationService
 {

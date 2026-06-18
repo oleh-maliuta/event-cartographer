@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { latLng, latLngBounds } from "leaflet";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useTheme } from '../../hooks/useTheme';
-import MapMarkerRenderer from "../MapMarkerRenderer/mapMarkerRenderer";
+import MapMarkerRenderer from "../MapMarkerRenderer/MapMarkerRenderer";
 import MapEventHandler from "../MapEventHandler/MapEventHandler";
 
 const initMapZoom = 2;

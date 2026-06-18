@@ -38,7 +38,7 @@ const SignInLayout = () => {
         dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         setSubmitting(true);
 
-        const response = await fetch('/api/users/sign-in', {
+        const response = await fetch('/api/auth/sign-in', {
             method: "POST",
             credentials: "include",
             body: new FormData(e.target)
