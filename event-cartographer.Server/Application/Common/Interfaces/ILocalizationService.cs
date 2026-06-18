@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Services.Localization;
+﻿namespace EventCartographer.Application.Common.Interfaces;
 
 public interface ILocalizationService
 {

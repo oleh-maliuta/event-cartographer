@@ -41,4 +41,55 @@
     <EditorConfigFiles Remove=".editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Api\Locales\Strings\en.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Api\Locales\Strings\ru.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Api\Locales\Strings\ua.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Api\Locales\EmailTemplates\en\change_email_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\en\delete_account_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\en\registration_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\en\reset_password_permission.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ru\change_email_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ru\delete_account_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ru\registration_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ru\reset_password_permission.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ua\change_email_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ua\delete_account_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ua\registration_confirm.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Api\Locales\EmailTemplates\ua\reset_password_permission.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

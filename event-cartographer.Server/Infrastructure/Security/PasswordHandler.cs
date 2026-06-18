@@ -1,4 +1,4 @@
-﻿using EventCartographer.Application.Interfaces;
+﻿using EventCartographer.Application.Common.Interfaces;
 using System.Security.Cryptography;
 
 namespace EventCartographer.Infrastructure.Security;

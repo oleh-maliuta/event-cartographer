@@ -1,9 +1,10 @@
-﻿using EventCartographer.Application.Interfaces;
+﻿using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Application.Maintenance.Commands;
+using EventCartographer.Infrastructure.BackgroundServices;
 using EventCartographer.Infrastructure.Database;
+using EventCartographer.Infrastructure.Localization;
 using EventCartographer.Infrastructure.Security;
-using EventCartographer.Services.Background;
 using EventCartographer.Services.Email;
-using EventCartographer.Services.Localization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,10 @@ public static class Startup
 
     public static void ConfigureServices(WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<PurgeExpiredDataCommand>();
+        builder.Services.AddScoped<IApplicationDbContext>(provider =>
+            provider.GetRequiredService<ApplicationDbContext>());
+
         builder.Services.AddSingleton<IPasswordHandler, PasswordHandler>();
 
         builder.Services.AddHostedService<CleanupService>();

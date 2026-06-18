@@ -1,4 +1,4 @@
-﻿using EventCartographer.Application.Interfaces;
+﻿using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Infrastructure.Database.ValueGenerators;
 using Microsoft.EntityFrameworkCore;

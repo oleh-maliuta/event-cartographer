@@ -7,7 +7,7 @@ using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Infrastructure.Database;
-using EventCartographer.Application.Interfaces;
+using EventCartographer.Application.Common.Interfaces;
 
 namespace EventCartographer.Api.Controllers;
 

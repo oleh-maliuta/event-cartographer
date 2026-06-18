@@ -1,4 +1,6 @@
-﻿namespace EventCartographer.Services.Localization;
+﻿using EventCartographer.Application.Common.Interfaces;
+
+namespace EventCartographer.Infrastructure.Localization;
 
 public static class LocalizationServiceExtensions
 {

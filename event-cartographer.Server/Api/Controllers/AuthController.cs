@@ -1,7 +1,7 @@
 ﻿using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Responses;
-using EventCartographer.Application.Interfaces;
+using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Infrastructure.Database;
 using EventCartographer.Services.Email;

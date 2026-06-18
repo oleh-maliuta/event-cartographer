@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Application.Interfaces;
+﻿namespace EventCartographer.Application.Common.Interfaces;
 
 public interface IPasswordHandler
 {
