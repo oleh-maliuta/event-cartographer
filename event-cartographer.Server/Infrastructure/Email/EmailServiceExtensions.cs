@@ -1,4 +1,6 @@
-﻿namespace EventCartographer.Services.Email;
+﻿using EventCartographer.Application.Common.Interfaces;
+
+namespace EventCartographer.Infrastructure.Email;
 
 public static class EmailServiceExtensions
 {

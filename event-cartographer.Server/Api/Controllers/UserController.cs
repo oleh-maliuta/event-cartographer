@@ -1,24 +1,23 @@
-﻿using EventCartographer.Api.Models.Responses;
-using EventCartographer.Api.Attributes;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using EventCartographer.Services.Email;
+﻿using EventCartographer.Api.Attributes;
 using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Api.Models.Requests.Queries;
-using EventCartographer.Domain.Entities;
-using EventCartographer.Infrastructure.Database;
+using EventCartographer.Api.Models.Responses;
 using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Domain.Entities;
+using Hangfire;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventCartographer.Api.Controllers;
 
 [ApiController]
 [Route("api/users")]
 public class UserController(
-        ApplicationDbContext db,
-        IEmailService emailService,
+        IApplicationDbContext db,
+        IBackgroundJobClient backgroundJobClient,
         IPasswordHandler passwordHandler) : BaseController(db)
 {
-    private readonly IEmailService _emailService = emailService;
+    private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient;
     private readonly IPasswordHandler _passwordHandler = passwordHandler;
 
     [Authorized]
@@ -119,36 +118,32 @@ public class UserController(
 
         await DB.SaveChangesAsync();
 
-        try
+        var emailURL = new UriBuilder
         {
-            var emailURL = new UriBuilder
-            {
-                Scheme = HttpContext.Request.Scheme,
-                Host = HttpContext.Request.Host.Host,
-                Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/email",
-            };
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "api/email",
+        };
 
-            using (var content = new FormUrlEncodedContent([
-                    new("email", user.Email),
-                    new("token", code.Id.ToString("N")),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+        using (var content = new FormUrlEncodedContent([
+            new("email", user.Email),
+            new("token", code.Id.ToString("N")),
+            new("locale", query.Locale),
+        ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
-            await _emailService.SendEmailUseTemplateAsync(
+        _backgroundJobClient.Enqueue<IEmailService>(emailService =>
+            emailService.SendEmailUseTemplateAsync(
                 email: request.Email!,
                 templateName: "change_email_confirm.html",
                 parameters: new Dictionary<string, string>
                 {
-                        { "username", user.Name },
-                        { "link", emailURL.ToString() }
+                    { "username", user.Name },
+                    { "link", emailURL.ToString() }
                 },
-                query.Locale!);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
-        }
+                query.Locale!
+            )
+        );
 
         return Ok(new BaseResponse.SuccessResponse(null));
     }
@@ -181,36 +176,32 @@ public class UserController(
 
         await DB.SaveChangesAsync();
 
-        try
+        var emailURL = new UriBuilder
         {
-            var emailURL = new UriBuilder
-            {
-                Scheme = HttpContext.Request.Scheme,
-                Host = HttpContext.Request.Host.Host,
-                Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/email",
-            };
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "api/email",
+        };
 
-            using (var content = new FormUrlEncodedContent([
-                new("email", user.Email),
-                    new("token", code.Id.ToString("N")),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+        using (var content = new FormUrlEncodedContent([
+            new("email", user.Email),
+            new("token", code.Id.ToString("N")),
+            new("locale", query.Locale),
+        ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
-            await _emailService.SendEmailUseTemplateAsync(
+        _backgroundJobClient.Enqueue<IEmailService>(emailService =>
+            emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
                 templateName: "delete_account_confirm.html",
                 parameters: new Dictionary<string, string>
                 {
-                        { "username", user.Name },
-                        { "link", emailURL.ToString() }
+                    { "username", user.Name },
+                    { "link", emailURL.ToString() }
                 },
-                query.Locale!);
-        }
-        catch (Exception)
-        {
-            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.email-error"));
-        }
+                query.Locale!
+            )
+        );
 
         return Ok(new BaseResponse.SuccessResponse(null));
     }
@@ -261,37 +252,32 @@ public class UserController(
 
         await DB.SaveChangesAsync();
 
-        try
+        var emailURL = new UriBuilder
         {
-            var emailURL = new UriBuilder
-            {
-                Scheme = HttpContext.Request.Scheme,
-                Host = HttpContext.Request.Host.Host,
-                Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/email",
-            };
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "api/email",
+        };
 
-            using (var content = new FormUrlEncodedContent([
-                    new("email", user.Email),
-                    new("token", activationCode.Id.ToString("N")),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+        using (var content = new FormUrlEncodedContent([
+            new("email", user.Email),
+            new("token", activationCode.Id.ToString("N")),
+            new("locale", query.Locale),
+        ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
-            await _emailService.SendEmailUseTemplateAsync(
+        _backgroundJobClient.Enqueue<IEmailService>(emailService =>
+            emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
                 templateName: "registration_confirm.html",
                 parameters: new Dictionary<string, string>
                 {
-                        { "username", user.Name },
-                        { "link", emailURL.ToString() }
+                    { "username", user.Name },
+                    { "link", emailURL.ToString() }
                 },
                 query.Locale!
-            );
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.resend-email-confirmation.email-error"));
-        }
+            )
+        );
 
         return Ok(new BaseResponse.SuccessResponse(null));
     }
@@ -339,31 +325,27 @@ public class UserController(
 
         await DB.SaveChangesAsync();
 
-        try
+        var emailURL = new UriBuilder
         {
-            var emailURL = new UriBuilder
-            {
-                Scheme = HttpContext.Request.Scheme,
-                Host = HttpContext.Request.Host.Host,
-                Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/users/accept-reset-password",
-            };
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "api/users/accept-reset-password",
+        };
 
-            await _emailService.SendEmailUseTemplateAsync(
+        _backgroundJobClient.Enqueue<IEmailService>(emailService =>
+            emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
                 templateName: "reset_password_permission.html",
                 parameters: new Dictionary<string, string>
                 {
-                        { "username", user.Name },
-                        { "token", code.Id.ToString("N") },
-                        { "link", emailURL.ToString() }
+                    { "username", user.Name },
+                    { "token", code.Id.ToString("N") },
+                    { "link", emailURL.ToString() }
                 },
-                query.Locale!);
-        }
-        catch (Exception)
-        {
-            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.email-error"));
-        }
+                query.Locale!
+            )
+        );
 
         return Ok(new BaseResponse.SuccessResponse(null));
     }
@@ -410,9 +392,9 @@ public class UserController(
         };
 
         using (var content = new FormUrlEncodedContent([
-                new("user", user.Name),
-                new("token", activationCode.Id.ToString("N")),
-            ])) { linkToResetPassword.Query = await content.ReadAsStringAsync(); }
+            new("user", user.Name),
+            new("token", activationCode.Id.ToString("N")),
+        ])) { linkToResetPassword.Query = await content.ReadAsStringAsync(); }
 
         if (actionInfo.Length < 2)
         {

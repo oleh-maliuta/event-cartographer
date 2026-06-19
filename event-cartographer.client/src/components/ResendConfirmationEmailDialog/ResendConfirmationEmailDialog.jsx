@@ -44,7 +44,7 @@ const ResendConfirmationEmailDialog = memo(({
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.resend-email-confirmation-dialog.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.resend-email-confirmation-dialog.success')] }
             });
         } else if (!response.ok) {
             if (json.message) {

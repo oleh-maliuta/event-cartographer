@@ -6,13 +6,14 @@ using EventCartographer.Api.Models.Responses;
 using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Domain.Entities;
-using EventCartographer.Infrastructure.Database;
+using EventCartographer.Application.Common.Interfaces;
 
 namespace EventCartographer.Api.Controllers;
 
 [ApiController]
 [Route("api/markers")]
-public class MarkerController(ApplicationDbContext service) : BaseController(service)
+public class MarkerController(
+    IApplicationDbContext db) : BaseController(db)
 {
     [Authorized]
     [HttpPost]

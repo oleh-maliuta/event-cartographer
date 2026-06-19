@@ -3,8 +3,7 @@ using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Responses;
 using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
-using EventCartographer.Infrastructure.Database;
-using EventCartographer.Services.Email;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +15,11 @@ namespace EventCartographer.Api.Controllers;
 [ApiController]
 [Route("api/auth")]
 public class AuthController(
-        ApplicationDbContext db,
-        IEmailService emailService,
+        IApplicationDbContext db,
+        IBackgroundJobClient backgroundJobClient,
         IPasswordHandler passwordHandler) : BaseController(db)
 {
-    private readonly IEmailService _emailService = emailService;
+    private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient;
     private readonly IPasswordHandler _passwordHandler = passwordHandler;
 
     [HttpPost("sign-up")]
@@ -63,37 +62,32 @@ public class AuthController(
 
         await DB.SaveChangesAsync();
 
-        try
+        var emailURL = new UriBuilder
         {
-            var emailURL = new UriBuilder
-            {
-                Scheme = HttpContext.Request.Scheme,
-                Host = HttpContext.Request.Host.Host,
-                Port = HttpContext.Request.Host.Port ?? -1,
-                Path = "api/email",
-            };
+            Scheme = HttpContext.Request.Scheme,
+            Host = HttpContext.Request.Host.Host,
+            Port = HttpContext.Request.Host.Port ?? -1,
+            Path = "api/email",
+        };
 
-            using (var content = new FormUrlEncodedContent([
-                    new("email", request.Email!),
-                    new("token", code.Id.ToString("N")),
-                    new("locale", query.Locale),
-                ])) { emailURL.Query = await content.ReadAsStringAsync(); }
+        using (var content = new FormUrlEncodedContent([
+            new("email", request.Email!),
+            new("token", code.Id.ToString("N")),
+            new("locale", query.Locale),
+        ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
-            await _emailService.SendEmailUseTemplateAsync(
+        _backgroundJobClient.Enqueue<IEmailService>(emailService =>
+            emailService.SendEmailUseTemplateAsync(
                 email: request.Email!,
                 templateName: "registration_confirm.html",
                 parameters: new Dictionary<string, string>
                 {
-                        { "username", request.Username! },
-                        { "link", emailURL.ToString() }
+                    { "username", request.Username! },
+                    { "link", emailURL.ToString() },
                 },
                 query.Locale!
-            );
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new BaseResponse.ErrorResponse("http.controller-errors.user.sign-up.email-error"));
-        }
+            )
+        );
 
         return StatusCode(201, new UserResponse(user));
     }

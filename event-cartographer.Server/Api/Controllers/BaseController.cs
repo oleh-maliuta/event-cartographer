@@ -1,13 +1,13 @@
-﻿using EventCartographer.Domain.Entities;
-using EventCartographer.Infrastructure.Database;
+﻿using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace EventCartographer.Api.Controllers;
 
-public abstract class BaseController(ApplicationDbContext db) : ControllerBase
+public abstract class BaseController(IApplicationDbContext db) : ControllerBase
 {
-    protected ApplicationDbContext DB { get; } = db;
+    protected IApplicationDbContext DB { get; } = db;
     protected Guid AuthorizedUserId
     {
         get

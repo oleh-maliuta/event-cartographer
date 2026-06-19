@@ -1,7 +1,6 @@
 ﻿using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
-using EventCartographer.Infrastructure.Database;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,7 @@ namespace EventCartographer.Api.Controllers;
 [ApiController]
 [Route("api/email")]
 public class EmailController(
-        ApplicationDbContext db,
+        IApplicationDbContext db,
         ILocalizationService localizationService) : BaseController(db)
 {
     private readonly ILocalizationService _localizationService = localizationService;

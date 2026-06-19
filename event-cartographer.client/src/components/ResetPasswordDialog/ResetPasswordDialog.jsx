@@ -44,7 +44,7 @@ const ResetPasswordDialog = memo(({
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-in.reset-password-modal-window.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-in.reset-password-dialog.success')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -95,10 +95,10 @@ const ResetPasswordDialog = memo(({
                 onSubmit={resetPasswordPermissionRequest}>
                 <div className={`${cl.modal_window__content}`}>
                     <h1 className={`${cl.modal_window__header}`}>
-                        {t('sign-in.reset-password-modal-window.header')}
+                        {t('sign-in.reset-password-dialog.header')}
                     </h1>
                     <p className={`${cl.modal_window__reset_password__description}`}>
-                        {t('sign-in.reset-password-modal-window.description')}
+                        {t('sign-in.reset-password-dialog.description')}
                     </p>
                     <BlockMessage
                         style={blockMessageStyle}
@@ -106,7 +106,7 @@ const ResetPasswordDialog = memo(({
                     <input className={`${cl.modal_window__reset_password__input}`}
                         name='usernameOrEmail'
                         type="text"
-                        placeholder={t('sign-in.reset-password-modal-window.username-or-email-input')}
+                        placeholder={t('sign-in.reset-password-dialog.username-or-email-input')}
                         maxLength="500"
                         required />
                 </div>
@@ -115,7 +115,7 @@ const ResetPasswordDialog = memo(({
                         <button className={`${cl.modal_window__control__buttons__cancel}`}
                             type='button'
                             onClick={cancelButtonClickEvent}>
-                            {t('sign-in.reset-password-modal-window.cancel')}
+                            {t('sign-in.reset-password-dialog.cancel')}
                         </button>
                         <button className={`${cl.modal_window__control__buttons__apply}`}
                             type='submit'
@@ -129,7 +129,7 @@ const ResetPasswordDialog = memo(({
                                         curveWidth="3px" />
                                     :
                                     <span>
-                                        {t('sign-in.reset-password-modal-window.send-mail')}
+                                        {t('sign-in.reset-password-dialog.send-mail')}
                                     </span>
                             }
                         </button>

@@ -66,7 +66,7 @@ const SignUpLayout = () => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.registered')] }
             });
         } else if (!response.ok) {
             if (json.message) {

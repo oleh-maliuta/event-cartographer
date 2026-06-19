@@ -2,9 +2,10 @@
 using EventCartographer.Application.Maintenance.Commands;
 using EventCartographer.Infrastructure.BackgroundServices;
 using EventCartographer.Infrastructure.Database;
+using EventCartographer.Infrastructure.Email;
 using EventCartographer.Infrastructure.Localization;
 using EventCartographer.Infrastructure.Security;
-using EventCartographer.Services.Email;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +82,22 @@ public static class Startup
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
+        builder.Services.AddHangfire(config =>
+        {
+            string? conn = Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
+            if (string.IsNullOrWhiteSpace(conn))
+            {
+                throw new InvalidOperationException("Hangfire connection string is not configured.");
+            }
+
+            config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(conn);
+        });
+        builder.Services.AddHangfireServer();
+
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
             string? conn = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
@@ -134,6 +151,7 @@ public static class Startup
             app.UseSwaggerUI();
         }
 
+        app.UseHangfireDashboard();
         app.UseHttpsRedirection();
         app.UseDefaultFiles();
         app.UseStaticFiles();

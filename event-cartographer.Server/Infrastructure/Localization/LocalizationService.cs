@@ -1,37 +1,59 @@
 ﻿using EventCartographer.Application.Common.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace EventCartographer.Infrastructure.Localization;
 
 public class LocalizationService : ILocalizationService
 {
-    private readonly LocalizationServiceConfigurationMetadata configuration;
-    private readonly string StringsPath;
+    private readonly LocalizationServiceConfigurationMetadata _configuration;
+    private readonly string _stringsPath;
+
+    private readonly ConcurrentDictionary<string, Dictionary<string, string>> _cache = new();
 
     public LocalizationService(IOptions<LocalizationServiceConfigurationMetadata> configuration)
     {
-        this.configuration = configuration.Value;
-        string combinedPath = Path.Combine(configuration.Value.StringsPath);
-        StringsPath = Path.IsPathRooted(combinedPath)
+        _configuration = configuration.Value;
+        string combinedPath = Path.Combine(_configuration.StringsPath);
+
+        _stringsPath = Path.IsPathRooted(combinedPath)
             ? combinedPath
             : Path.Combine(Directory.GetCurrentDirectory(), combinedPath);
     }
 
     public string GetString(string key, string languageCode = "en")
     {
-        string path = Path.Combine(StringsPath, $"{languageCode}.json");
-        if (!File.Exists(path))
+        var dictionary = GetOrLoadLanguage(languageCode);
+
+        if (!dictionary.TryGetValue(key, out string? value) || value == null)
         {
-            path = Path.Combine(StringsPath, $"{configuration.DefaultLanguage}.json");
+            if (languageCode != _configuration.DefaultLanguage)
+            {
+                var defaultDictionary = GetOrLoadLanguage(_configuration.DefaultLanguage);
+                if (defaultDictionary.TryGetValue(key, out string? defaultValue) && defaultValue != null)
+                    return defaultValue;
+            }
+
+            return key;
         }
 
-        string json = File.ReadAllText(path);
-        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-        if (dict != null && dict.TryGetValue(key, out var value) && value != null)
+        return value;
+    }
+
+    private Dictionary<string, string> GetOrLoadLanguage(string languageCode)
+    {
+        return _cache.GetOrAdd(languageCode, code =>
         {
-            return value;
-        }
-        return key;
+            string path = Path.Combine(_stringsPath, $"{code}.json");
+
+            if (!File.Exists(path))
+                path = Path.Combine(_stringsPath, $"{_configuration.DefaultLanguage}.json");
+            if (!File.Exists(path))
+                return [];
+
+            string json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
+        });
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace EventCartographer.Services.Email;
+﻿namespace EventCartographer.Infrastructure.Email;
 
 public class EmailServiceConfigurationMetadata
 {

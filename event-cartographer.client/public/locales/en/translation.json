@@ -15,13 +15,13 @@
         "password_invalid": {
             "value_missing": "Password is required."
         },
-        "reset-password-modal-window": {
+        "reset-password-dialog": {
             "header": "Reset password",
             "description": "Input username or email of your account to send a mail to give you the permission to reset the password.",
             "username-or-email-input": "Username or Email",
             "cancel": "Cancel",
             "send-mail": "Send mail",
-            "email-is-sent": "Email is sent."
+            "success": "Email should have been sent."
         }
     },
     "sign-up": {
@@ -33,7 +33,7 @@
         "create-account": "Create account",
         "resend-email-link": "Resend confirmation email",
         "sign-in-link": "Sign in",
-        "email-is-sent": "Email is sent to confirm your email address.",
+        "registered": "Account has been created. Email should be sent to email address in order to activate the account.",
         "password-not-confirmed": "Password not confirmed.",
         "username_invalid": {
             "value_missing": "Username is required.",
@@ -58,7 +58,7 @@
             "username-or-email-input": "Username or Email",
             "cancel": "Cancel",
             "send-mail": "Send mail",
-            "email-is-sent": "Email is sent."
+            "success": "Email should have been sent."
         }
     },
     "reset-password": {
