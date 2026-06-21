@@ -1,6 +1,6 @@
 ﻿using EventCartographer.Application.Common.Interfaces;
-using EventCartographer.Application.Maintenance.Commands;
-using EventCartographer.Infrastructure.BackgroundServices;
+using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
+using EventCartographer.Infrastructure.BackgroundServices.CleanupService;
 using EventCartographer.Infrastructure.Database;
 using EventCartographer.Infrastructure.Email;
 using EventCartographer.Infrastructure.Localization;

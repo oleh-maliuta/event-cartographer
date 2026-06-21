@@ -37,7 +37,7 @@ const ResetPasswordLayout = () => {
         if (!isPasswordConfirmed) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.ERROR, list: [t('reset-password.password-not-confirmed')] }
+                payload: { mode: MessageStates.ERROR, list: [t('layouts.reset-password.password-not-confirmed')] }
             });
             return;
         } else {
@@ -60,7 +60,7 @@ const ResetPasswordLayout = () => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('reset-password.password-is-reset')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('layouts.reset-password.password-is-reset')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -96,7 +96,7 @@ const ResetPasswordLayout = () => {
 
     return (
         <Panel
-            title={t('reset-password.panel-header')}
+            title={t('layouts.reset-password.panel-header')}
             onSubmit={resetPasswordRequest}>
             <BlockMessage
                 style={blockMessageStyle}
@@ -104,31 +104,31 @@ const ResetPasswordLayout = () => {
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
                 name='newPassword'
-                label={t('reset-password.password-input')}
+                label={t('layouts.reset-password.password-input')}
                 type='password'
-                placeholder={t('reset-password.password-input')}
+                placeholder={t('layouts.reset-password.password-input')}
                 pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                 minLength='6'
                 maxLength='200'
                 required
                 value={passwordValue}
                 setValue={setPasswordValue}
-                valueMissingValidity={t(`reset-password.new_password_invalid.value_missing`)}
-                tooShortValidity={t(`reset-password.new_password_invalid.too_short`)}
-                patternValidity={t(`reset-password.new_password_invalid.pattern`)} />
+                valueMissingValidity={t('layouts.reset-password.new_password_invalid.value_missing')}
+                tooShortValidity={t('layouts.reset-password.new_password_invalid.too_short')}
+                patternValidity={t('layouts.reset-password.new_password_invalid.pattern')} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
-                label={t('reset-password.confirm-password-input')}
+                label={t('layouts.reset-password.confirm-password-input')}
                 type='password'
-                placeholder={t('reset-password.confirm-password-input')}
+                placeholder={t('layouts.reset-password.confirm-password-input')}
                 maxLength='200'
                 required
                 value={confirmPasswordValue}
                 setValue={setConfirmPasswordValue}
-                valueMissingValidity={t(`reset-password.confirm_password_invalid.value_missing`)} />
+                valueMissingValidity={t(`layouts.reset-password.confirm_password_invalid.value_missing`)} />
             <PanelButton
                 style={submitButtonStyle}
-                text={t('reset-password.submit')}
+                text={t('layouts.reset-password.submit')}
                 loading={submitting}
                 disabled={submitting} />
         </Panel>

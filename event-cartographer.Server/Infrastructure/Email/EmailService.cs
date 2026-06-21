@@ -1,5 +1,6 @@
 ﻿using EventCartographer.Application.Common.Helpers;
 using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Domain.Constants;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Net;
@@ -38,15 +39,16 @@ public class EmailService : IEmailService
         string email,
         string templateName,
         Dictionary<string, string>? parameters = null,
-        string language = "en",
+        string language = LocaleConstants.DefaultLocale,
         string? subject = null)
     {
-        string templatePath = Path.Combine(_emailTemplatesPath, language, templateName);
+        string fullTempleteName = templateName + ".html";
+        string templatePath = Path.Combine(_emailTemplatesPath, language, fullTempleteName);
         string template = _templateCache.GetOrAdd(templatePath, path =>
         {
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException($"Template {templateName} not found at {path}");
+                throw new FileNotFoundException($"Template {fullTempleteName} not found at {path}");
             }
             return File.ReadAllText(path);
         });

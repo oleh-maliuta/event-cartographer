@@ -109,7 +109,7 @@ const EditMarkerForm = memo(({
             onSubmit={handleSubmit}>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__latitude}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__latitude_label}`}>
-                    {t('home.marker-edit-latitude-label')}
+                    {t('components.edit-marker-form.latitude-label')}
                 </p>
                 <input
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__latitude_input}`}
@@ -120,7 +120,7 @@ const EditMarkerForm = memo(({
             </div>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__longitude}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__longitude_label}`}>
-                    {t('home.marker-edit-longitude-label')}
+                    {t('components.edit-marker-form.longitude-label')}
                 </p>
                 <input
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__longitude_input}`}
@@ -131,7 +131,7 @@ const EditMarkerForm = memo(({
             </div>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__starts_at}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__starts_at_label}`}>
-                    {t('home.marker-edit-starts-at-label')}
+                    {t('components.edit-marker-form.starts-at-label')}
                 </p>
                 <input
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__starts_at_input}`}
@@ -147,7 +147,7 @@ const EditMarkerForm = memo(({
             </div>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__importance}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__importance_label}`}>
-                    {t('home.marker-edit-importance-label')}
+                    {t('components.edit-marker-form.importance-label')}
                 </p>
                 <select
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__importance_input}`}
@@ -155,22 +155,22 @@ const EditMarkerForm = memo(({
                     required
                     onChange={(e) => setMarker(p => ({ ...p, importance: e.target.value }))}>
                     <option className={cl.edit_marker_form__importance_input__no_value} value=''>
-                        {t('home.no-importance-value')}
+                        {t('components.edit-marker-form.no-importance-value')}
                     </option>
                     <option className={cl.edit_marker_form__importance_input__high_value} value='high'>
-                        {t('home.high-importance-value')}
+                        {t('components.edit-marker-form.high-importance-value')}
                     </option>
                     <option className={cl.edit_marker_form__importance_input__medium_value} value='medium'>
-                        {t('home.medium-importance-value')}
+                        {t('components.edit-marker-form.medium-importance-value')}
                     </option>
                     <option className={cl.edit_marker_form__importance_input__low_value} value='low'>
-                        {t('home.low-importance-value')}
+                        {t('components.edit-marker-form.low-importance-value')}
                     </option>
                 </select>
             </div>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__title}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__title_label}`}>
-                    {t('home.marker-edit-title-label')}
+                    {t('components.edit-marker-form.title-label')}
                 </p>
                 <input
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__title_input}`}
@@ -182,7 +182,7 @@ const EditMarkerForm = memo(({
             </div>
             <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__description}`}>
                 <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__description_label}`}>
-                    {t('home.marker-edit-description-label')}
+                    {t('components.edit-marker-form.description-label')}
                 </p>
                 <textarea
                     className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__description_input}`}
@@ -200,7 +200,7 @@ const EditMarkerForm = memo(({
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__cancel_button}`}
                             type="button"
                             onClick={onCancel}>
-                            {t('home.cancel-marker-editing')}
+                            {t('components.edit-marker-form.cancel-marker-editing')}
                         </button>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__add_button}`}
                             type="submit"
@@ -214,7 +214,7 @@ const EditMarkerForm = memo(({
                                         curveWidth="3px" />
                                     :
                                     <span>
-                                        {t('home.add-marker')}
+                                        {t('components.edit-marker-form.add-marker')}
                                     </span>
                             }
                         </button>
@@ -224,7 +224,7 @@ const EditMarkerForm = memo(({
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__cancel_button}`}
                             type="button"
                             onClick={onCancel}>
-                            {t('home.cancel-marker-editing')}
+                            {t('components.edit-marker-form.cancel-marker-editing')}
                         </button>
                         <button className={`${cl.edit_marker_form__button} ${cl.edit_marker_form__edit_button}`}
                             type="submit"
@@ -238,7 +238,7 @@ const EditMarkerForm = memo(({
                                         curveWidth="3px" />
                                     :
                                     <span>
-                                        {t('home.edit-marker')}
+                                        {t('components.edit-marker-form.edit-marker')}
                                     </span>
                             }
                         </button>

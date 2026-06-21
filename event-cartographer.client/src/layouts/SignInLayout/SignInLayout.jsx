@@ -89,7 +89,7 @@ const SignInLayout = () => {
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
-                title={t('sign-in.panel-header')}
+                title={t('layouts.sign-in.panel-header')}
                 onSubmit={signInRequest}>
                 <BlockMessage
                     style={blockMessageStyle}
@@ -97,36 +97,36 @@ const SignInLayout = () => {
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     name='usernameOrEmail'
-                    label={t('sign-in.username-or-email-input')}
+                    label={t('layouts.sign-in.username-or-email-input')}
                     type='text'
-                    placeholder={t('sign-in.username-or-email-input')}
+                    placeholder={t('layouts.sign-in.username-or-email-input')}
                     maxLength='100'
                     required
-                    valueMissingValidity={t(`sign-in.username_or_email_invalid.value_missing`)} />
+                    valueMissingValidity={t('layouts.sign-in.username_or_email_invalid.value_missing')} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
                     name='password'
-                    label={t('sign-in.password-input')}
+                    label={t('layouts.sign-in.password-input')}
                     type='password'
-                    placeholder={t('sign-in.password-input')}
+                    placeholder={t('layouts.sign-in.password-input')}
                     maxLength='200'
                     required
-                    valueMissingValidity={t(`sign-in.password_invalid.value_missing`)} />
+                    valueMissingValidity={t('layouts.sign-in.password_invalid.value_missing')} />
                 <div className={cl.forgot_password_link_cont}>
                     <MemoLink className={cl.forgot_password_link}
                         to='#reset-password-dialog'
                         replace={true}>
-                        {t('sign-in.forgot-password')}
+                        {t('layouts.sign-in.forgot-password')}
                     </MemoLink>
                 </div>
                 <PanelButton
                     style={submitButtonStyle}
-                    text={t('sign-in.submit')}
+                    text={t('layouts.sign-in.submit')}
                     loading={submitting}
                     disabled={submitting} />
                 <div className={cl.sign_up_link_cont}>
                     <MemoLink className={cl.sign_up_link} to='/sign-up'>
-                        {t('sign-in.sign-up-link')}
+                        {t('layouts.sign-in.sign-up-link')}
                     </MemoLink>
                 </div>
             </Panel>

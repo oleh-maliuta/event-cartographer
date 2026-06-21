@@ -2,92 +2,138 @@
     "general": {
         "server-error": "Ошибка сервера."
     },
-    "sign-in": {
-        "panel-header": "Вход",
-        "username-or-email-input": "Имя пользователя или почта",
-        "password-input": "Пароль",
-        "submit": "Отправить",
-        "sign-up-link": "Зарегистрироваться",
-        "forgot-password": "Забыли пароль?",
-        "username_or_email_invalid": {
-            "value_missing": "Имя пользователя или почта обязательно."
-        },
-        "password_invalid": {
-            "value_missing": "Пароль обязателен."
-        },
-        "reset-password-dialog": {
-            "header": "Сброс пароля",
-            "description": "Введите имя пользователя или почту вашей учетной записи, чтобы отправить электронное письмо с разрешением на перезапись пароля.",
+    "layouts": {
+        "sign-in": {
+            "panel-header": "Вход",
             "username-or-email-input": "Имя пользователя или почта",
-            "cancel": "Отменить",
-            "send-mail": "Отправить письмо",
-            "success": "Письмо должно было быть отправлено."
+            "password-input": "Пароль",
+            "submit": "Отправить",
+            "sign-up-link": "Зарегистрироваться",
+            "forgot-password": "Забыли пароль?",
+            "username_or_email_invalid": {
+                "value_missing": "Имя пользователя или почта обязательно."
+            },
+            "password_invalid": {
+                "value_missing": "Пароль обязателен."
+            }
+        },
+        "sign-up": {
+            "panel-header": "Регистрация",
+            "username-input": "Имя пользователя",
+            "email-address-input": "Адрес электронной почты",
+            "password-input": "Пароль",
+            "confirm-password-input": "Подтверждение пароля",
+            "create-account": "Создать учётную запись",
+            "resend-email-link": "Повторно отправить письмо с подтверждением",
+            "sign-in-link": "Вход",
+            "registered": "Аккаунт был создан. Письмо с активацией аккаунта должно быть отправлено на указанный адрес электронной почты.",
+            "password-not-confirmed": "Пароль не подтверждён.",
+            "username_invalid": {
+                "value_missing": "Имя пользователя обязательно.",
+                "too_short": "Имя пользователя должно содержать как минимум 3 символа.",
+                "pattern": "Имя пользователя не может содержать символ '@'."
+            },
+            "email_invalid": {
+                "value_missing": "Адрес электронной почты обязателен.",
+                "type_mismatch": "Пожалуйста, введите действительный адрес электронной почты (например, user@example.com)."
+            },
+            "password_invalid": {
+                "value_missing": "Пароль обязателен.",
+                "too_short": "Пароль должен содержать как минимум 6 символов.",
+                "pattern": "Пароль должен содержать как минимум 1 строчную букву, 1 прописную букву и 1 цифру."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Подтверждение пароля обязательно."
+            }
+        },
+        "reset-password": {
+            "panel-header": "Сброс пароля",
+            "password-input": "Пароль",
+            "confirm-password-input": "Подтверждение пароля",
+            "submit": "Отправить",
+            "password-is-reset": "Пароль был перезаписан. Теперь вы можете использовать его для входа.",
+            "password-not-confirmed": "Пароль не подтверждён.",
+            "new_password_invalid": {
+                "value_missing": "Пароль обязателен.",
+                "too_short": "Пароль должен содержать как минимум 6 символов.",
+                "pattern": "Пароль должен содержать как минимум 1 строчную букву, 1 прописную букву и 1 цифру."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Подтверждение пароля обязательно."
+            }
+        },
+        "user-settings": {
+            "header": "Настройки",
+            "security": "Безопасность"
+        },
+        "home": {
+            "remove-marker-dialog-title": "Удалить маркер",
+            "remove-marker-dialog-description": "Вы уверены, что хотите удалить этот маркер?"
         }
     },
-    "sign-up": {
-        "panel-header": "Регистрация",
-        "username-input": "Имя пользователя",
-        "email-address-input": "Адрес электронной почты",
-        "password-input": "Пароль",
-        "confirm-password-input": "Подтверждение пароля",
-        "create-account": "Создать учётную запись",
-        "resend-email-link": "Повторно отправить письмо с подтверждением",
-        "sign-in-link": "Вход",
-        "registered": "Аккаунт был создан. Письмо с активацией аккаунта должно быть отправлено на указанный адрес электронной почты.",
-        "password-not-confirmed": "Пароль не подтверждён.",
-        "username_invalid": {
-            "value_missing": "Имя пользователя обязательно.",
-            "too_short": "Имя пользователя должно содержать как минимум 3 символа.",
-            "pattern": "Имя пользователя не может содержать символ '@'."
-        },
-        "email_invalid": {
-            "value_missing": "Адрес электронной почты обязателен.",
-            "type_mismatch": "Пожалуйста, введите действительный адрес электронной почты (например, user@example.com)."
-        },
-        "password_invalid": {
-            "value_missing": "Пароль обязателен.",
-            "too_short": "Пароль должен содержать как минимум 6 символов.",
-            "pattern": "Пароль должен содержать как минимум 1 строчную букву, 1 прописную букву и 1 цифру."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Подтверждение пароля обязательно."
-        },
-        "resend-email-confirmation-dialog": {
-            "header": "Повторно отправить письмо с подтверждением",
-            "description": "Введите имя пользователя или почту вашей учетной записи, чтобы повторно отправить электронное письмо для подтверждения электронной почты.",
-            "username-or-email-input": "Имя пользователя или почта",
-            "cancel": "Отменить",
-            "send-mail": "Отправить письмо",
-            "success": "Письмо должно было быть отправлено."
-        }
-    },
-    "reset-password": {
-        "panel-header": "Сброс пароля",
-        "password-input": "Пароль",
-        "confirm-password-input": "Подтверждение пароля",
-        "submit": "Отправить",
-        "password-is-reset": "Пароль был перезаписан. Теперь вы можете использовать его для входа.",
-        "password-not-confirmed": "Пароль не подтверждён.",
-        "new_password_invalid": {
-            "value_missing": "Пароль обязателен.",
-            "too_short": "Пароль должен содержать как минимум 6 символов.",
-            "pattern": "Пароль должен содержать как минимум 1 строчную букву, 1 прописную букву и 1 цифру."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Подтверждение пароля обязательно."
-        }
-    },
-    "settings": {
-        "header": "Настройки",
-        "security": "Безопасность",
-        "basic-info": {
+    "components": {
+        "basic-user-info-settings": {
             "header": "Основная информация",
             "username-input": "Имя пользователя",
             "permission-to-delete-past-events-input": "Автоматически удалять прошедшие события",
             "save-changes": "Сохранить изменения",
             "changes-are-saved": "Изменения сохранены."
         },
-        "personalization": {
+        "delete-user-account-settings": {
+            "header": "Удалить учётную запись",
+            "description": "Чтобы удалить учётную запись, введите пароль ниже. После этого на ваш адрес электронной почты будет отправлено письмо для подтверждения.",
+            "password-input": "Пароль",
+            "delete": "Удалить",
+            "success": "Письмо должно было быть отправлено для подтверждения."
+        },
+        "edit-marker-form": {
+            "latitude-label": "Широта:",
+            "longitude-label": "Долгота:",
+            "starts-at-label": "Начало в:",
+            "importance-label": "Важность:",
+            "title-label": "Заголовок:",
+            "description-label": "Описание:",
+            "no-importance-value": "...",
+            "low-importance-value": "Низкая",
+            "medium-importance-value": "Средняя",
+            "high-importance-value": "Высокая",
+            "add-marker": "Добавить",
+            "edit-marker": "Изменить",
+            "cancel-marker-editing": "Отменить"
+        },
+        "email-address-user-settings": {
+            "header": "Изменить адрес электронной почты",
+            "description": "Введите свой пароль и новый адрес электронной почты. После этого вы получите письмо на свой новый адрес электронной почты для его подтверждения.",
+            "password-input": "Пароль",
+            "new-email-address-input": "Новый адрес электронной почты",
+            "apply": "Применить",
+            "success": "Письмо должно было быть отправлено для подтверждения."
+        },
+        "map-marker-renderer": {
+            "cancel-marker-editing": "Отменить"
+        },
+        "marker-list-menu": {
+            "search-markers-input": "Поиск",
+            "sorting-label": "Сортировать по:",
+            "sort-by-importance-value": "важности",
+            "sort-by-title-value": "заголовку",
+            "sort-by-time-value": "времени начала",
+            "importance-filter-title": "Важность",
+            "time-of-the-start-filter-title": "Время начала",
+            "low-importance-value": "Низкая",
+            "medium-importance-value": "Средняя",
+            "high-importance-value": "Высокая"
+        },
+        "password-user-settings": {
+            "header": "Изменить пароль",
+            "old-password-input": "Старый пароль",
+            "new-password-input": "Новый пароль",
+            "confirm-new-password-input": "Подтверждение нового пароля",
+            "apply": "Применить",
+            "password-not-confirmed": "Новый пароль не подтверждён.",
+            "password-is-changed": "Пароль изменён."
+        },
+        "personalization-settings": {
             "header": "Персонализация",
             "time-zone-input": "Часовой пояс",
             "auto-time-zone": "Авто",
@@ -100,60 +146,26 @@
             "light-theme-value": "Светлая",
             "dark-theme-value": "Темная"
         },
-        "email-address": {
-            "header": "Изменить адрес электронной почты",
-            "description": "Введите свой пароль и новый адрес электронной почты. После этого вы получите письмо на свой новый адрес электронной почты для его подтверждения.",
-            "password-input": "Пароль",
-            "new-email-address-input": "Новый адрес электронной почты",
-            "apply": "Применить",
-            "email-is-sent": "Письмо отправлено."
+        "resend-confirmation-email-dialog": {
+            "header": "Повторно отправить письмо с подтверждением",
+            "description": "Введите имя пользователя или почту вашей учетной записи, чтобы повторно отправить электронное письмо для подтверждения электронной почты.",
+            "username-or-email-input": "Имя пользователя или почта",
+            "cancel": "Отменить",
+            "send-mail": "Отправить письмо",
+            "success": "Письмо должно было быть отправлено."
         },
-        "password": {
-            "header": "Изменить пароль",
-            "old-password-input": "Старый пароль",
-            "new-password-input": "Новый пароль",
-            "confirm-new-password-input": "Подтверждение нового пароля",
-            "apply": "Применить",
-            "password-not-confirmed": "Новый пароль не подтверждён.",
-            "password-is-changed": "Пароль изменён."
+        "reset-password-dialog": {
+            "header": "Сброс пароля",
+            "description": "Введите имя пользователя или почту вашей учетной записи, чтобы отправить электронное письмо с разрешением на перезапись пароля.",
+            "username-or-email-input": "Имя пользователя или почта",
+            "cancel": "Отменить",
+            "send-mail": "Отправить письмо",
+            "success": "Письмо должно было быть отправлено."
         },
-        "delete-account": {
-            "header": "Удалить учётную запись",
-            "description": "Чтобы удалить учётную запись, введите пароль ниже. После этого на ваш адрес электронной почты будет отправлено письмо для подтверждения.",
-            "password-input": "Пароль",
-            "delete": "Удалить",
-            "email-is-sent": "Письмо отправлено! Подтвердите удаление."
+        "yes-no-dialog": {
+            "yes-button": "Да",
+            "no-button": "Нет"
         }
-    },
-    "home": {
-        "search-markers-input": "Поиск",
-        "sorting-label": "Сортировать по:",
-        "sort-by-importance-value": "важности",
-        "sort-by-title-value": "заголовку",
-        "sort-by-time-value": "времени начала",
-        "importance-filter-title": "Важность",
-        "no-importance-value": "...",
-        "low-importance-value": "Низкая",
-        "medium-importance-value": "Средняя",
-        "high-importance-value": "Высокая",
-        "time-of-the-start-filter-title": "Время начала",
-        "marker-edit-latitude-label": "Широта:",
-        "marker-edit-longitude-label": "Долгота:",
-        "marker-edit-starts-at-label": "Начало в:",
-        "marker-edit-importance-label": "Важность:",
-        "marker-edit-title-label": "Заголовок:",
-        "marker-edit-description-label": "Описание:",
-        "add-marker": "Добавить",
-        "edit-marker": "Изменить",
-        "cancel-marker-editing": "Отменить",
-        "remove-marker": {
-            "dialog-title": "Удалить маркер",
-            "dialog-description": "Вы уверены, что хотите удалить этот маркер?"
-        }
-    },
-    "yes-no-dialog": {
-        "yes-button": "Да",
-        "no-button": "Нет"
     },
     "http": {
         "request-errors": {
@@ -273,7 +285,7 @@
                     "required": "Требуется новый адрес электронной почты.",
                     "max-length": "Адрес электронной почты слишком длинный.",
                     "min-length": "Адрес электронной почты слишком короткий.",
-                    "email-address": "Адрес электронной почты недействителен." 
+                    "email-address": "Адрес электронной почты недействителен."
                 }
             },
             "update-user-info": {

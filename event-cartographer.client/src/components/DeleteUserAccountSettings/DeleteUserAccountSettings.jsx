@@ -35,7 +35,7 @@ const DeleteUserAccountSettings = memo(() => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('settings.delete-account.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('components.delete-user-account-settings.success')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -72,15 +72,15 @@ const DeleteUserAccountSettings = memo(() => {
             onSubmit={deleteAccountRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
-                    {t('settings.delete-account.header')}
+                    {t('components.delete-user-account-settings.header')}
                 </h3>
                 <p className={`${cl.element__description}`}>
-                    {t('settings.delete-account.description')}
+                    {t('components.delete-user-account-settings.description')}
                 </p>
                 <input className={`${cl.element__input}`}
                     name='password'
                     type="password"
-                    placeholder={t('settings.delete-account.password-input')}
+                    placeholder={t('components.delete-user-account-settings.password-input')}
                     maxLength="200"
                     required />
             </div>
@@ -100,7 +100,7 @@ const DeleteUserAccountSettings = memo(() => {
                                 curveWidth="3px" />
                             :
                             <span>
-                                {t('settings.delete-account.delete')}
+                                {t('components.delete-user-account-settings.delete')}
                             </span>
                     }
                 </button>

@@ -275,8 +275,8 @@ const HomeLayout = () => {
                 removeMarkerHandler={prepareToRemoveMarkerHandler} />
             <YesNoDialog
                 dialogState={isYesNoDialogOpen}
-                title={t('home.remove-marker.dialog-title')}
-                description={t('home.remove-marker.dialog-description')}
+                title={t('layouts.home.remove-marker-dialog-title')}
+                description={t('layouts.home.remove-marker-dialog-description')}
                 onYesButtonClick={removeMarker}
                 onNoButtonClick={cancelMarkerRemoving} />
         </div>

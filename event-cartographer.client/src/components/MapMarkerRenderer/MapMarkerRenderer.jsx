@@ -86,7 +86,7 @@ const MapMarkerRenderer = memo(({
                         <div className={`${cl.marker_popup} ${cl[theme]}`}>
                             <button className={`${cl.marker_popup__cancel_button}`}
                                 onClick={cancelNewMarkerHandler}
-                            >{t('home.cancel-marker-editing')}</button>
+                            >{t('components.map-marker-renderer.cancel-marker-editing')}</button>
                         </div>
                     </Popup>
                 </Marker>

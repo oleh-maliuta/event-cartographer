@@ -1,6 +1,7 @@
 ﻿using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
+using EventCartographer.Domain.ValueClasses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,8 @@ public class EmailController(
         {
             return MessageContentResult(
                 false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("user-not-found", query.Locale ?? "en"));
+                _localizationService.GetString("fail", query.Locale!),
+                _localizationService.GetString("user-not-found", query.Locale!));
         }
 
         ActivationCode? activationCode = await DB.ActivationCodes
@@ -38,8 +39,8 @@ public class EmailController(
         {
             return MessageContentResult(
                 false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("link-issue", query.Locale ?? "en"));
+                _localizationService.GetString("fail", query.Locale!),
+                _localizationService.GetString("link-issue", query.Locale!));
         }
 
         if (DateTime.UtcNow > activationCode.ExpiresAt)
@@ -48,8 +49,8 @@ public class EmailController(
             await DB.SaveChangesAsync();
             return MessageContentResult(
                 false,
-                _localizationService.GetString("fail", query.Locale ?? "en"),
-                _localizationService.GetString("link-issue", query.Locale ?? "en"));
+                _localizationService.GetString("fail", query.Locale!),
+                _localizationService.GetString("link-issue", query.Locale!));
         }
 
         string[] actionInfo = activationCode.Action.Split(',');
@@ -57,19 +58,19 @@ public class EmailController(
 
         switch (actionInfo[0])
         {
-            case "confirm-registration":
+            case ActivationCodeActions.Register:
                 user.IsActivated = true;
                 user.LastActivityAt = DateTime.UtcNow;
                 messageCode = "registration-completed";
                 DB.ActivationCodes.Remove(activationCode);
                 break;
-            case "change-email":
+            case ActivationCodeActions.ChangeEmail:
                 user.Email = actionInfo[1];
                 user.LastActivityAt = DateTime.UtcNow;
                 messageCode = "email-confirmed";
                 DB.ActivationCodes.Remove(activationCode);
                 break;
-            case "delete-user":
+            case ActivationCodeActions.DeleteAccount:
                 messageCode = "account-deleted";
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 DB.Users.Remove(user);
@@ -77,14 +78,14 @@ public class EmailController(
             default:
                 return MessageContentResult(
                     false,
-                    _localizationService.GetString("fail", query.Locale ?? "en"),
-                    _localizationService.GetString("unknown-action", query.Locale ?? "en"));
+                    _localizationService.GetString("fail", query.Locale!),
+                    _localizationService.GetString("unknown-action", query.Locale!));
         }
 
         await DB.SaveChangesAsync();
         return MessageContentResult(
             true,
-            _localizationService.GetString("success", query.Locale ?? "en"),
-            _localizationService.GetString(messageCode, query.Locale ?? "en"));
+            _localizationService.GetString("success", query.Locale!),
+            _localizationService.GetString(messageCode, query.Locale!));
     }
 }

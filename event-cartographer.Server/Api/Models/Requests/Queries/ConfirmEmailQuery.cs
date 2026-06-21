@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using EventCartographer.Domain.Common;
+using EventCartographer.Domain.Constants;
 
 namespace EventCartographer.Api.Models.Requests.Queries;
 
@@ -24,12 +24,12 @@ public class ConfirmEmailQuery
 
             if (temp == "")
             {
-                field = Constants.DEFAULT_LOCALE;
+                field = LocaleConstants.DefaultLocale;
                 return;
             }
 
-            field = Constants.LOCALES.Contains(temp)
-                ? temp : Constants.DEFAULT_LOCALE;
+            field = LocaleConstants.Locales.Contains(temp)
+                ? temp : LocaleConstants.DefaultLocale;
         }
     }
     [FromQuery(Name = "token")]

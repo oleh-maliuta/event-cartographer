@@ -15,11 +15,11 @@ const PersonalizationSettings = memo(() => {
         <div className={`${cl.personalization} ${cl[theme]}`}>
             <div className={`${cl.personalization__header__cont}`}>
                 <h2 className={`${cl.personalization__header}`}>
-                    {t('settings.personalization.header')}
+                    {t('components.personalization-settings.header')}
                 </h2>
                 <div className={cl.data_input}>
                     <label className={cl.data_input__label}>
-                        {t('settings.personalization.time-zone-input')}
+                        {t('components.personalization-settings.time-zone-input')}
                     </label>
                     <select className={cl.data_input__input}
                         defaultValue={localStorage.getItem(LocalStorageKeys.TIME_ZONE) || undefined}
@@ -28,7 +28,7 @@ const PersonalizationSettings = memo(() => {
                         }}>
                         <option key='auto' className={cl.data_input__input__option}
                             value='auto'>
-                            {t('settings.personalization.auto-time-zone')}: (UTC {timeZone.offset}) {timeZone.name.replace(/_/g, ' ')}
+                            {t('components.personalization-settings.auto-time-zone')}: (UTC {timeZone.offset}) {timeZone.name.replace(/_/g, ' ')}
                         </option>
                         {
                             TIME_ZONES.map(tz => (
@@ -42,7 +42,7 @@ const PersonalizationSettings = memo(() => {
                 </div>
                 <div className={cl.data_input}>
                     <label className={cl.data_input__label}>
-                        {t('settings.personalization.language-input')}
+                        {t('components.personalization-settings.language-input')}
                     </label>
                     <select className={cl.data_input__input}
                         defaultValue={i18n.language}
@@ -52,21 +52,21 @@ const PersonalizationSettings = memo(() => {
                         }}>
                         <option className={cl.data_input__input__option}
                             value="en">
-                            {t('settings.personalization.en-language-value')}
+                            {t('components.personalization-settings.en-language-value')}
                         </option>
                         <option className={cl.data_input__input__option}
                             value="ru">
-                            {t('settings.personalization.ru-language-value')}
+                            {t('components.personalization-settings.ru-language-value')}
                         </option>
                         <option className={cl.data_input__input__option}
                             value="ua">
-                            {t('settings.personalization.ua-language-value')}
+                            {t('components.personalization-settings.ua-language-value')}
                         </option>
                     </select>
                 </div>
                 <div className={cl.data_input}>
                     <label className={cl.data_input__label}>
-                        {t('settings.personalization.theme-input')}
+                        {t('components.personalization-settings.theme-input')}
                     </label>
                     <select className={cl.data_input__input}
                         defaultValue={isDeviceTheme ? "device" : theme}
@@ -75,15 +75,15 @@ const PersonalizationSettings = memo(() => {
                         }}>
                         <option className={cl.data_input__input__option}
                             value="device">
-                            {t('settings.personalization.device-theme-value')}
+                            {t('components.personalization-settings.device-theme-value')}
                         </option>
                         <option className={cl.data_input__input__option}
                             value={ThemeValues.LIGHT}>
-                            {t('settings.personalization.light-theme-value')}
+                            {t('components.personalization-settings.light-theme-value')}
                         </option>
                         <option className={cl.data_input__input__option}
                             value={ThemeValues.DARK}>
-                            {t('settings.personalization.dark-theme-value')}
+                            {t('components.personalization-settings.dark-theme-value')}
                         </option>
                     </select>
                 </div>

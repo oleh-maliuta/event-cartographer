@@ -2,92 +2,138 @@
     "general": {
         "server-error": "Server error."
     },
-    "sign-in": {
-        "panel-header": "Sign in",
-        "username-or-email-input": "Username or Email",
-        "password-input": "Password",
-        "submit": "Submit",
-        "sign-up-link": "Sign up",
-        "forgot-password": "Forgot password?",
-        "username_or_email_invalid": {
-            "value_missing": "Username or Email is required."
-        },
-        "password_invalid": {
-            "value_missing": "Password is required."
-        },
-        "reset-password-dialog": {
-            "header": "Reset password",
-            "description": "Input username or email of your account to send a mail to give you the permission to reset the password.",
+    "layouts": {
+        "sign-in": {
+            "panel-header": "Sign in",
             "username-or-email-input": "Username or Email",
-            "cancel": "Cancel",
-            "send-mail": "Send mail",
-            "success": "Email should have been sent."
+            "password-input": "Password",
+            "submit": "Submit",
+            "sign-up-link": "Sign up",
+            "forgot-password": "Forgot password?",
+            "username_or_email_invalid": {
+                "value_missing": "Username or Email is required."
+            },
+            "password_invalid": {
+                "value_missing": "Password is required."
+            }
+        },
+        "sign-up": {
+            "panel-header": "Sign up",
+            "username-input": "Username",
+            "email-address-input": "Email",
+            "password-input": "Password",
+            "confirm-password-input": "Confirm password",
+            "create-account": "Create account",
+            "resend-email-link": "Resend confirmation email",
+            "sign-in-link": "Sign in",
+            "registered": "Account has been created. Email should be sent to email address in order to activate the account.",
+            "password-not-confirmed": "Password not confirmed.",
+            "username_invalid": {
+                "value_missing": "Username is required.",
+                "too_short": "Username should contain at least 3 characters.",
+                "pattern": "Username can't contain '@' character."
+            },
+            "email_invalid": {
+                "value_missing": "Email is required.",
+                "type_mismatch": "Please enter a valid email (e.g., user@example.com)."
+            },
+            "password_invalid": {
+                "value_missing": "Password is required.",
+                "too_short": "Password should contain at least 6 characters.",
+                "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Password confirmation is required."
+            }
+        },
+        "reset-password": {
+            "panel-header": "Reset password",
+            "password-input": "Password",
+            "confirm-password-input": "Confirm password",
+            "submit": "Submit",
+            "password-is-reset": "Password is reset. Now you can use it to sign in.",
+            "password-not-confirmed": "Password not confirmed.",
+            "new_password_invalid": {
+                "value_missing": "Password is required.",
+                "too_short": "Password should contain at least 6 characters.",
+                "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Password confirmation is required."
+            }
+        },
+        "user-settings": {
+            "header": "Settings",
+            "security": "Security"
+        },
+        "home": {
+            "remove-marker-dialog-title": "Remove the marker",
+            "remove-marker-dialog-description": "Are you sure you want to remove the marker?"
         }
     },
-    "sign-up": {
-        "panel-header": "Sign up",
-        "username-input": "Username",
-        "email-address-input": "Email",
-        "password-input": "Password",
-        "confirm-password-input": "Confirm password",
-        "create-account": "Create account",
-        "resend-email-link": "Resend confirmation email",
-        "sign-in-link": "Sign in",
-        "registered": "Account has been created. Email should be sent to email address in order to activate the account.",
-        "password-not-confirmed": "Password not confirmed.",
-        "username_invalid": {
-            "value_missing": "Username is required.",
-            "too_short": "Username should contain at least 3 characters.",
-            "pattern": "Username can't contain '@' character."
-        },
-        "email_invalid": {
-            "value_missing": "Email is required.",
-            "type_mismatch": "Please enter a valid email (e.g., user@example.com)."
-        },
-        "password_invalid": {
-            "value_missing": "Password is required.",
-            "too_short": "Password should contain at least 6 characters.",
-            "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required."
-        },
-        "resend-email-confirmation-dialog": {
-            "header": "Resend confirmation email",
-            "description": "Input username or email of your account to resend a mail to verify the email address.",
-            "username-or-email-input": "Username or Email",
-            "cancel": "Cancel",
-            "send-mail": "Send mail",
-            "success": "Email should have been sent."
-        }
-    },
-    "reset-password": {
-        "panel-header": "Reset password",
-        "password-input": "Password",
-        "confirm-password-input": "Confirm password",
-        "submit": "Submit",
-        "password-is-reset": "Password is reset. Now you can use it to sign in.",
-        "password-not-confirmed": "Password not confirmed.",
-        "new_password_invalid": {
-            "value_missing": "Password is required.",
-            "too_short": "Password should contain at least 6 characters.",
-            "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Password confirmation is required."
-        }
-    },
-    "settings": {
-        "header": "Settings",
-        "security": "Security",
-        "basic-info": {
+    "components": {
+        "basic-user-info-settings": {
             "header": "Basic information",
             "username-input": "Username",
             "permission-to-delete-past-events-input": "Delete past events automatically",
             "save-changes": "Save changes",
             "changes-are-saved": "Changes have been saved."
         },
-        "personalization": {
+        "delete-user-account-settings": {
+            "header": "Delete account",
+            "description": "To delete the account you need to input your password below. After that you will receive a mail in your email address to confirm the action.",
+            "password-input": "Password",
+            "delete": "Delete",
+            "success": "Email should have been sent for confirmation."
+        },
+        "edit-marker-form": {
+            "latitude-label": "Latitude:",
+            "longitude-label": "Longitude:",
+            "starts-at-label": "Starts at:",
+            "importance-label": "Importance:",
+            "title-label": "Title:",
+            "description-label": "Description:",
+            "no-importance-value": "...",
+            "low-importance-value": "Low",
+            "medium-importance-value": "Medium",
+            "high-importance-value": "High",
+            "add-marker": "Add",
+            "edit-marker": "Edit",
+            "cancel-marker-editing": "Cancel"
+        },
+        "email-address-user-settings": {
+            "header": "Change email address",
+            "description": "Input your password and a new email address. After that you will receive a mail in your new email address to confirm it.",
+            "password-input": "Password",
+            "new-email-address-input": "New email address",
+            "apply": "Apply",
+            "success": "Email should have been sent for confirmation."
+        },
+        "map-marker-renderer": {
+            "cancel-marker-editing": "Cancel"
+        },
+        "marker-list-menu": {
+            "search-markers-input": "Search",
+            "sorting-label": "Sort by:",
+            "sort-by-importance-value": "importance",
+            "sort-by-title-value": "title",
+            "sort-by-time-value": "time of start",
+            "importance-filter-title": "Importance",
+            "time-of-the-start-filter-title": "Time of the start",
+            "low-importance-value": "Low",
+            "medium-importance-value": "Medium",
+            "high-importance-value": "High"
+        },
+        "password-user-settings": {
+            "header": "Change password",
+            "old-password-input": "Old password",
+            "new-password-input": "New password",
+            "confirm-new-password-input": "Confirm new password",
+            "apply": "Apply",
+            "password-not-confirmed": "New password not confirmed.",
+            "password-is-changed": "Password is changed."
+        },
+        "personalization-settings": {
             "header": "Personalization",
             "time-zone-input": "Time zone",
             "auto-time-zone": "Auto",
@@ -100,60 +146,26 @@
             "light-theme-value": "Light",
             "dark-theme-value": "Dark"
         },
-        "email-address": {
-            "header": "Change email address",
-            "description": "Input your password and a new email address. After that you will receive a mail in your new email address to confirm it.",
-            "password-input": "Password",
-            "new-email-address-input": "New email address",
-            "apply": "Apply",
-            "email-is-sent": "Email is sent."
+        "resend-confirmation-email-dialog": {
+            "header": "Resend confirmation email",
+            "description": "Input username or email of your account to resend a mail to verify the email address.",
+            "username-or-email-input": "Username or Email",
+            "cancel": "Cancel",
+            "send-mail": "Send mail",
+            "success": "Email should have been sent."
         },
-        "password": {
-            "header": "Change password",
-            "old-password-input": "Old password",
-            "new-password-input": "New password",
-            "confirm-new-password-input": "Confirm new password",
-            "apply": "Apply",
-            "password-not-confirmed": "New password not confirmed.",
-            "password-is-changed": "Password is changed."
+        "reset-password-dialog": {
+            "header": "Reset password",
+            "description": "Input username or email of your account to send a mail to give you the permission to reset the password.",
+            "username-or-email-input": "Username or Email",
+            "cancel": "Cancel",
+            "send-mail": "Send mail",
+            "success": "Email should have been sent."
         },
-        "delete-account": {
-            "header": "Delete account",
-            "description": "To delete the account you need to input your password below. After that you will receive a mail in your email address to confirm the action.",
-            "password-input": "Password",
-            "delete": "Delete",
-            "email-is-sent": "Email is sent! Confirm the deletion."
+        "yes-no-dialog": {
+            "yes-button": "Yes",
+            "no-button": "No"
         }
-    },
-    "home": {
-        "search-markers-input": "Search",
-        "sorting-label": "Sort by:",
-        "sort-by-importance-value": "importance",
-        "sort-by-title-value": "title",
-        "sort-by-time-value": "time of start",
-        "importance-filter-title": "Importance",
-        "no-importance-value": "...",
-        "low-importance-value": "Low",
-        "medium-importance-value": "Medium",
-        "high-importance-value": "High",
-        "time-of-the-start-filter-title": "Time of the start",
-        "marker-edit-latitude-label": "Latitude:",
-        "marker-edit-longitude-label": "Longitude:",
-        "marker-edit-starts-at-label": "Starts at:",
-        "marker-edit-importance-label": "Importance:",
-        "marker-edit-title-label": "Title:",
-        "marker-edit-description-label": "Description:",
-        "add-marker": "Add",
-        "edit-marker": "Edit",
-        "cancel-marker-editing": "Cancel",
-        "remove-marker": {
-            "dialog-title": "Remove the marker",
-            "dialog-description": "Are you sure you want to remove the marker?"
-        }
-    },
-    "yes-no-dialog": {
-        "yes-button": "Yes",
-        "no-button": "No"
     },
     "http": {
         "request-errors": {

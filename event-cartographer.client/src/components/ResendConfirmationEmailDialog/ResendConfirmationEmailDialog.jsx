@@ -44,7 +44,7 @@ const ResendConfirmationEmailDialog = memo(({
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.resend-email-confirmation-dialog.success')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('components.resend-confirmation-email-dialog.success')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -95,10 +95,10 @@ const ResendConfirmationEmailDialog = memo(({
                 onSubmit={resetPasswordPermissionRequest}>
                 <div className={`${cl.modal_window__content}`}>
                     <h1 className={`${cl.modal_window__header}`}>
-                        {t('sign-up.resend-email-confirmation-dialog.header')}
+                        {t('components.resend-confirmation-email-dialog.header')}
                     </h1>
                     <p className={`${cl.modal_window__reset_password__description}`}>
-                        {t('sign-up.resend-email-confirmation-dialog.description')}
+                        {t('components.resend-confirmation-email-dialog.description')}
                     </p>
                     <BlockMessage
                         style={blockMessageStyle}
@@ -106,7 +106,7 @@ const ResendConfirmationEmailDialog = memo(({
                     <input className={`${cl.modal_window__reset_password__input}`}
                         name='usernameOrEmail'
                         type="text"
-                        placeholder={t('sign-up.resend-email-confirmation-dialog.username-or-email-input')}
+                        placeholder={t('components.resend-confirmation-email-dialog.username-or-email-input')}
                         maxLength="500"
                         required />
                 </div>
@@ -115,7 +115,7 @@ const ResendConfirmationEmailDialog = memo(({
                         <button className={`${cl.modal_window__control__buttons__cancel}`}
                             type='button'
                             onClick={cancelButtonClickEvent}>
-                            {t('sign-up.resend-email-confirmation-dialog.cancel')}
+                            {t('components.resend-confirmation-email-dialog.cancel')}
                         </button>
                         <button className={`${cl.modal_window__control__buttons__apply}`}
                             type='submit'
@@ -129,7 +129,7 @@ const ResendConfirmationEmailDialog = memo(({
                                         curveWidth="3px" />
                                     :
                                     <span>
-                                        {t('sign-up.resend-email-confirmation-dialog.send-mail')}
+                                        {t('components.resend-confirmation-email-dialog.send-mail')}
                                     </span>
                             }
                         </button>

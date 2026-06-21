@@ -4,6 +4,7 @@ using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Responses;
 using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
+using EventCartographer.Domain.ValueClasses;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -88,11 +89,6 @@ public class UserController(
     {
         User user = AuthorizedUser;
 
-        if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action.StartsWith("change-email")).AnyAsync())
-        {
-            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.already-exists"));
-        }
-
         if (user.Email == request.Email)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
@@ -108,13 +104,27 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
         }
 
-        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .FirstOrDefaultAsync(x =>
+                x.UserId == user.Id &&
+                x.Action.StartsWith(ActivationCodeActions.ChangeEmail));
+
+        if (activationCode == null)
         {
-            UserId = user.Id!,
-            User = user,
-            Action = $"change-email,{request.Email}",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        })).Entity;
+            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            {
+                UserId = user.Id!,
+                User = user,
+                Action = $"{ActivationCodeActions.ChangeEmail},{request.Email}",
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            })).Entity;
+        }
+        else
+        {
+            activationCode.ExpiresAt = DateTime.UtcNow.AddHours(12);
+        }
+
+        user.LastActivityAt = DateTime.UtcNow;
 
         await DB.SaveChangesAsync();
 
@@ -128,14 +138,14 @@ public class UserController(
 
         using (var content = new FormUrlEncodedContent([
             new("email", user.Email),
-            new("token", code.Id.ToString("N")),
+            new("token", activationCode.Id.ToString("N")),
             new("locale", query.Locale),
         ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
         _backgroundJobClient.Enqueue<IEmailService>(emailService =>
             emailService.SendEmailUseTemplateAsync(
                 email: request.Email!,
-                templateName: "change_email_confirm.html",
+                templateName: ActivationCodeActions.ChangeEmail,
                 parameters: new Dictionary<string, string>
                 {
                     { "username", user.Name },
@@ -161,18 +171,25 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.invalid-password"));
         }
 
-        if (await DB.ActivationCodes.Where(x => x.UserId == user.Id && x.Action == "delete-user").AnyAsync())
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .FirstOrDefaultAsync(x => x.UserId == user.Id && x.Action == ActivationCodeActions.DeleteAccount);
+
+        if (activationCode == null)
         {
-            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.already-exists"));
+            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            {
+                UserId = user.Id!,
+                User = user,
+                Action = ActivationCodeActions.DeleteAccount,
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            })).Entity;
+        }
+        else
+        {
+            activationCode.ExpiresAt = DateTime.UtcNow.AddHours(12);
         }
 
-        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
-        {
-            UserId = user.Id!,
-            User = user,
-            Action = "delete-user",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        })).Entity;
+        user.LastActivityAt = DateTime.UtcNow;
 
         await DB.SaveChangesAsync();
 
@@ -186,14 +203,14 @@ public class UserController(
 
         using (var content = new FormUrlEncodedContent([
             new("email", user.Email),
-            new("token", code.Id.ToString("N")),
+            new("token", activationCode.Id.ToString("N")),
             new("locale", query.Locale),
         ])) { emailURL.Query = await content.ReadAsStringAsync(); }
 
         _backgroundJobClient.Enqueue<IEmailService>(emailService =>
             emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
-                templateName: "delete_account_confirm.html",
+                templateName: ActivationCodeActions.DeleteAccount,
                 parameters: new Dictionary<string, string>
                 {
                     { "username", user.Name },
@@ -231,7 +248,7 @@ public class UserController(
         }
 
         ActivationCode? activationCode = await DB.ActivationCodes
-            .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Action == "confirm-registration");
+            .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Action == ActivationCodeActions.Register);
 
         if (activationCode == null)
         {
@@ -239,7 +256,7 @@ public class UserController(
             {
                 UserId = user.Id,
                 User = user,
-                Action = "confirm-registration",
+                Action = ActivationCodeActions.Register,
                 ExpiresAt = DateTime.UtcNow.AddHours(12)
             })).Entity;
         }
@@ -269,7 +286,7 @@ public class UserController(
         _backgroundJobClient.Enqueue<IEmailService>(emailService =>
             emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
-                templateName: "registration_confirm.html",
+                templateName: ActivationCodeActions.Register,
                 parameters: new Dictionary<string, string>
                 {
                     { "username", user.Name },
@@ -306,22 +323,26 @@ public class UserController(
             return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.user-not-found"));
         }
 
-        if (await DB.ActivationCodes
-            .AnyAsync(x =>
-                x.UserId == user.Id &&
-                x.Action.StartsWith("reset-password-permission") &&
-                x.ExpiresAt > DateTime.UtcNow))
+        ActivationCode? activationCode = await DB.ActivationCodes
+            .FirstOrDefaultAsync(x => x.UserId == user.Id && x.Action.StartsWith(ActivationCodeActions.ResetPassword));
+
+        if (activationCode == null)
         {
-            return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.have-permission"));
+            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            {
+                UserId = user.Id!,
+                User = user,
+                Action = ActivationCodeActions.ResetPassword,
+                ExpiresAt = DateTime.UtcNow.AddHours(12)
+            })).Entity;
+        }
+        else
+        {
+            activationCode.Action = ActivationCodeActions.ResetPassword;
+            activationCode.ExpiresAt = DateTime.UtcNow.AddHours(12);
         }
 
-        ActivationCode code = (await DB.ActivationCodes.AddAsync(new()
-        {
-            UserId = user.Id!,
-            User = user,
-            Action = "reset-password-permission",
-            ExpiresAt = DateTime.UtcNow.AddHours(12)
-        })).Entity;
+        user.LastActivityAt = DateTime.UtcNow;
 
         await DB.SaveChangesAsync();
 
@@ -336,11 +357,11 @@ public class UserController(
         _backgroundJobClient.Enqueue<IEmailService>(emailService =>
             emailService.SendEmailUseTemplateAsync(
                 email: user.Email,
-                templateName: "reset_password_permission.html",
+                templateName: ActivationCodeActions.ResetPassword,
                 parameters: new Dictionary<string, string>
                 {
                     { "username", user.Name },
-                    { "token", code.Id.ToString("N") },
+                    { "token", activationCode.Id.ToString("N") },
                     { "link", emailURL.ToString() }
                 },
                 query.Locale!
@@ -378,7 +399,7 @@ public class UserController(
 
         string[] actionInfo = activationCode.Action.Split(',');
 
-        if (actionInfo[0] != "reset-password-permission")
+        if (actionInfo[0] != ActivationCodeActions.ResetPassword)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
         }
@@ -443,7 +464,7 @@ public class UserController(
 
         string[] actionInfo = activationCode.Action.Split(',');
 
-        if (actionInfo[0] != "reset-password-permission")
+        if (actionInfo[0] != ActivationCodeActions.ResetPassword)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
         }

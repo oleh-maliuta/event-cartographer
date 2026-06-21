@@ -47,7 +47,7 @@ const SignUpLayout = () => {
         if (!isPasswordConfirmed) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.ERROR, list: [t('sign-up.password-not-confirmed')] }
+                payload: { mode: MessageStates.ERROR, list: [t('layouts.sign-up.password-not-confirmed')] }
             });
             return;
         } else {
@@ -66,7 +66,7 @@ const SignUpLayout = () => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('sign-up.registered')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('layouts.sign-up.registered')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -110,7 +110,7 @@ const SignUpLayout = () => {
     return (
         <div className={`${cl.main} ${cl[theme]}`}>
             <Panel
-                title={t('sign-up.panel-header')}
+                title={t('layouts.sign-up.panel-header')}
                 onSubmit={signUpRequest}>
                 <BlockMessage
                     style={blockMessageStyle}
@@ -118,65 +118,65 @@ const SignUpLayout = () => {
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
                     name='username'
-                    label={t('sign-up.username-input')}
+                    label={t('layouts.sign-up.username-input')}
                     type='text'
-                    placeholder={t('sign-up.username-input')}
+                    placeholder={t('layouts.sign-up.username-input')}
                     pattern="^[^@]*$"
                     minLength='3'
                     maxLength='100'
                     required
-                    valueMissingValidity={t(`sign-up.username_invalid.value_missing`)}
-                    tooShortValidity={t(`sign-up.username_invalid.too_short`)}
-                    patternValidity={t(`sign-up.username_invalid.pattern`)} />
+                    valueMissingValidity={t('layouts.sign-up.username_invalid.value_missing')}
+                    tooShortValidity={t('layouts.sign-up.username_invalid.too_short')}
+                    patternValidity={t('layouts.sign-up.username_invalid.pattern')} />
                 <PanelInput
                     containerStyle={emailInfoInputStyle}
                     name='email'
-                    label={t('sign-up.email-address-input')}
+                    label={t('layouts.sign-up.email-address-input')}
                     type='email'
-                    placeholder={t('sign-up.email-address-input')}
+                    placeholder={t('layouts.sign-up.email-address-input')}
                     maxLength='320'
                     required
-                    valueMissingValidity={t(`sign-up.email_invalid.value_missing`)}
-                    typeMismatchValidity={t(`sign-up.email_invalid.type_mismatch`)} />
+                    valueMissingValidity={t('layouts.sign-up.email_invalid.value_missing')}
+                    typeMismatchValidity={t('layouts.sign-up.email_invalid.type_mismatch')} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
                     name='password'
-                    label={t('sign-up.password-input')}
+                    label={t('layouts.sign-up.password-input')}
                     type='password'
-                    placeholder={t('sign-up.password-input')}
+                    placeholder={t('layouts.sign-up.password-input')}
                     pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                     minLength='6'
                     maxLength='200'
                     required
                     value={passwordValue}
                     setValue={setPasswordValue}
-                    valueMissingValidity={t(`sign-up.password_invalid.value_missing`)}
-                    tooShortValidity={t(`sign-up.password_invalid.too_short`)}
-                    patternValidity={t(`sign-up.password_invalid.pattern`)} />
+                    valueMissingValidity={t('layouts.sign-up.password_invalid.value_missing')}
+                    tooShortValidity={t('layouts.sign-up.password_invalid.too_short')}
+                    patternValidity={t('layouts.sign-up.password_invalid.pattern')} />
                 <PanelInput
                     containerStyle={confirmPasswordInfoInputStyle}
-                    label={t('sign-up.confirm-password-input')}
+                    label={t('layouts.sign-up.confirm-password-input')}
                     type='password'
-                    placeholder={t('sign-up.confirm-password-input')}
+                    placeholder={t('layouts.sign-up.confirm-password-input')}
                     maxLength='200'
                     required
                     value={confirmPasswordValue}
                     setValue={setConfirmPasswordValue}
-                    valueMissingValidity={t(`sign-up.confirm_password_invalid.value_missing`)} />
+                    valueMissingValidity={t('layouts.sign-up.confirm_password_invalid.value_missing')} />
                 <PanelButton
                     style={submitButtonStyle}
-                    text={t('sign-up.create-account')}
+                    text={t('layouts.sign-up.create-account')}
                     loading={submitting}
                     disabled={submitting} />
                 <MemoLink className={`${cl.resend_email_link}`}
                     to='#resend-email-dialog'
                     replace={true}>
-                    {t('sign-up.resend-email-link')}
+                    {t('layouts.sign-up.resend-email-link')}
                 </MemoLink>
                 <div className={cl.sign_in_link_cont}>
                     <MemoLink className={cl.sign_in_link}
                         to='/sign-in'>
-                        {t('sign-up.sign-in-link')}
+                        {t('layouts.sign-up.sign-in-link')}
                     </MemoLink>
                 </div>
             </Panel>

@@ -1,9 +1,10 @@
 ﻿using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventCartographer.Application.Maintenance.Commands;
+namespace EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
 
-public class PurgeExpiredDataCommand(
+public partial class PurgeExpiredDataCommand(
     IApplicationDbContext database,
     ILogger<PurgeExpiredDataCommand> logger)
 {
@@ -18,9 +19,10 @@ public class PurgeExpiredDataCommand(
             .Where(x => now > x.ExpiresAt)
             .ToArrayAsync(cancellationToken);
 
-        var usersToCleanup = await _database.Users
-            .Where(x => now > x.LastActivityAt.AddYears(3) || (!x.IsActivated && now > x.LastActivityAt.AddHours(12)))
-            .ToArrayAsync(cancellationToken);
+        var usersToCleanup = await _database.Users.Where(x =>
+            now > x.LastActivityAt.AddYears(5) ||
+            !x.IsActivated && now > x.LastActivityAt.AddHours(12)
+        ).ToArrayAsync(cancellationToken);
 
         if (activationCodesToCleanup.Length > 0 || usersToCleanup.Length > 0)
         {
@@ -28,8 +30,7 @@ public class PurgeExpiredDataCommand(
             _database.Users.RemoveRange(usersToCleanup);
             await _database.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation(
-                "Purged {CodesCount} expired activation codes and {UsersCount} stale users.",
+            _logger.LogPurgeResultInformation(
                 activationCodesToCleanup.Length,
                 usersToCleanup.Length);
         }

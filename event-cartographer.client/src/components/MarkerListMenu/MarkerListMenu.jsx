@@ -74,7 +74,7 @@ const MarkerListMenu = memo(({
                     <input
                         className={`${cl.marker_list_search__input}`}
                         type='text'
-                        placeholder={t('home.search-markers-input')}
+                        placeholder={t('components.marker-list-menu.search-markers-input')}
                         value={markerSearchQuery}
                         onChange={(e) => setMarkerSearchQuery(e.target.value)} />
                     <button className={`${cl.marker_list__apply_button}`}
@@ -86,7 +86,7 @@ const MarkerListMenu = memo(({
                 </div>
                 <div className={`${cl.marker_list_sort_and_filter_cont}`}>
                     <span className={`${cl.marker_list_sort_label}`}>
-                        {t('home.sorting-label')}
+                        {t('components.marker-list-menu.sorting-label')}
                     </span>
                     <select className={`${cl.marker_list_sort_input}`}
                         value={markerListSort.type}
@@ -98,13 +98,13 @@ const MarkerListMenu = memo(({
                             });
                         }}>
                         <option className={`${cl.marker_list_sort_input_option}`} value='importance'>
-                            {t('home.sort-by-importance-value')}
+                            {t('components.marker-list-menu.sort-by-importance-value')}
                         </option>
                         <option className={`${cl.marker_list_sort_input_option}`} value='title'>
-                            {t('home.sort-by-title-value')}
+                            {t('components.marker-list-menu.sort-by-title-value')}
                         </option>
                         <option className={`${cl.marker_list_sort_input_option}`} value='startsAt'>
-                            {t('home.sort-by-time-value')}
+                            {t('components.marker-list-menu.sort-by-time-value')}
                         </option>
                     </select>
                     <button className={`${cl.marker_list_sort_direction_button}`}
@@ -129,7 +129,7 @@ const MarkerListMenu = memo(({
                     <div className={`${cl.marker_list_filter_panel}`}>
                         <div className={`${cl.marker_list_filter_panel_importance_cont}`}>
                             <h3 className={cl.marker_list_filter_panel__section_header}>
-                                {t('home.importance-filter-title')}
+                                {t('components.marker-list-menu.importance-filter-title')}
                             </h3>
                             <div className={`${cl.marker_list_filter_panel_importance}`}>
                                 <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
@@ -153,7 +153,7 @@ const MarkerListMenu = memo(({
                                         }} />
                                     <span
                                         className={`${cl.marker_list_filter_panel_importance_label_low} ${cl.marker_list_filter_panel_importance_label}`}
-                                    >{t('home.low-importance-value')}</span>
+                                    >{t('components.marker-list-menu.low-importance-value')}</span>
                                 </div>
                                 <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                     <input
@@ -176,7 +176,7 @@ const MarkerListMenu = memo(({
                                         }} />
                                     <span
                                         className={`${cl.marker_list_filter_panel_importance_label_medium} ${cl.marker_list_filter_panel_importance_label}`}
-                                    >{t('home.medium-importance-value')}</span>
+                                    >{t('components.marker-list-menu.medium-importance-value')}</span>
                                 </div>
                                 <div className={`${cl.marker_list_filter_panel_importance_checkbox_cont}`}>
                                     <input
@@ -199,7 +199,7 @@ const MarkerListMenu = memo(({
                                         }} />
                                     <span
                                         className={`${cl.marker_list_filter_panel_importance_label_high} ${cl.marker_list_filter_panel_importance_label}`}
-                                    >{t('home.high-importance-value')}</span>
+                                    >{t('components.marker-list-menu.high-importance-value')}</span>
                                 </div>
                             </div>
                         </div>
@@ -208,7 +208,7 @@ const MarkerListMenu = memo(({
                         </div>
                         <div className={`${cl.marker_list_filter_panel_starts_at_cont}`}>
                             <h3 className={cl.marker_list_filter_panel__section_header}>
-                                {t('home.time-of-the-start-filter-title')}
+                                {t('components.marker-list-menu.time-of-the-start-filter-title')}
                             </h3>
                             <div className={`${cl.marker_list_filter_panel_starts_at}`}>
                                 <input

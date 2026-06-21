@@ -28,7 +28,7 @@ const PasswordUserSettings = memo(() => {
         if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.ERROR, list: [t('settings.password.password-not-confirmed')] }
+                payload: { mode: MessageStates.ERROR, list: [t('components.password-user-settings.password-not-confirmed')] }
             });
             return;
         }
@@ -45,7 +45,7 @@ const PasswordUserSettings = memo(() => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('settings.password.password-is-changed')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('components.password-user-settings.password-is-changed')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -82,25 +82,25 @@ const PasswordUserSettings = memo(() => {
             onSubmit={updateUserPasswordRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
-                    {t('settings.password.header')}
+                    {t('components.password-user-settings.header')}
                 </h3>
                 <input className={`${cl.element__input}`}
                     name='oldPassword'
                     type="password"
-                    placeholder={t('settings.password.old-password-input')}
+                    placeholder={t('components.password-user-settings.old-password-input')}
                     maxLength="200"
                     required />
                 <input className={`${cl.element__input}`}
                     name='newPassword'
                     type="password"
-                    placeholder={t('settings.password.new-password-input')}
+                    placeholder={t('components.password-user-settings.new-password-input')}
                     minLength='6'
                     maxLength="200"
                     required
                     ref={newPasswordInputRef} />
                 <input className={`${cl.element__input}`}
                     type="password"
-                    placeholder={t('settings.password.confirm-new-password-input')}
+                    placeholder={t('components.password-user-settings.confirm-new-password-input')}
                     maxLength="200"
                     required
                     ref={confirmPasswordInputRef} />
@@ -121,7 +121,7 @@ const PasswordUserSettings = memo(() => {
                                 curveWidth="3px" />
                             :
                             <span>
-                                {t('settings.password.apply')}
+                                {t('components.password-user-settings.apply')}
                             </span>
                     }
                 </button>

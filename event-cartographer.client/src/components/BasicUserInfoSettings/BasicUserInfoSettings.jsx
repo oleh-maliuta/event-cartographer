@@ -61,7 +61,7 @@ const BasicUserInfoSettings = memo(() => {
             dispatchMessageState({
                 type: 'SET_MESSAGES', payload: {
                     mode: MessageStates.SUCCESS,
-                    list: [t('settings.basic-info.changes-are-saved')]
+                    list: [t('components.basic-user-info-settings.changes-are-saved')]
                 }
             });
         } else if (!response.ok) {
@@ -119,16 +119,16 @@ const BasicUserInfoSettings = memo(() => {
             onSubmit={updateUserInfoRequest}>
             <div className={`${cl.basic_info__header__cont}`}>
                 <h2 className={`${cl.basic_info__header}`}>
-                    {t('settings.basic-info.header')}
+                    {t('components.basic-user-info-settings.header')}
                 </h2>
             </div>
             <div className={cl.data_input}>
                 <label className={cl.data_input__label}>
-                    {t('settings.basic-info.username-input')}
+                    {t('components.basic-user-info-settings.username-input')}
                 </label>
                 <input className={cl.data_input__input}
                     type="text"
-                    placeholder={t('settings.basic-info.username-input')}
+                    placeholder={t('components.basic-user-info-settings.username-input')}
                     minLength='3'
                     maxLength="100"
                     defaultValue={userData.name}
@@ -137,7 +137,7 @@ const BasicUserInfoSettings = memo(() => {
             </div>
             <div className={cl.data_input}>
                 <label className={cl.data_input__label}>
-                    {t('settings.basic-info.permission-to-delete-past-events-input')}
+                    {t('components.basic-user-info-settings.permission-to-delete-past-events-input')}
                 </label>
                 <Switch
                     value={permissionToDeletePastEventsValue}
@@ -158,7 +158,7 @@ const BasicUserInfoSettings = memo(() => {
                             curveWidth="3px" />
                         :
                         <span>
-                            {t('settings.basic-info.save-changes')}
+                            {t('components.basic-user-info-settings.save-changes')}
                         </span>
                 }
             </button>

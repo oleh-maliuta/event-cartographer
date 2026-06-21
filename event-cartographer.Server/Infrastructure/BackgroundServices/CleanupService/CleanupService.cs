@@ -1,6 +1,6 @@
-﻿using EventCartographer.Application.Maintenance.Commands;
+﻿using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
 
-namespace EventCartographer.Infrastructure.BackgroundServices;
+namespace EventCartographer.Infrastructure.BackgroundServices.CleanupService;
 
 public class CleanupService(
     ILogger<CleanupService> logger,
@@ -12,7 +12,7 @@ public class CleanupService(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Cleanup background routing service started.");
+        _logger.LogServiceStartedInformation();
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -25,7 +25,7 @@ public class CleanupService(
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while executing data cleanup rules.");
+                _logger.LogCleanupError(ex);
             }
 
             await Task.Delay(_period, stoppingToken);

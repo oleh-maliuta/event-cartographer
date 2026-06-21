@@ -43,52 +43,52 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Api\Locales\Strings\en.json">
+    <Content Update="Api\Views\Strings\en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="Api\Locales\Strings\ru.json">
+    <Content Update="Api\Views\Strings\ru.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="Api\Locales\Strings\ua.json">
+    <Content Update="Api\Views\Strings\ua.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Api\Locales\EmailTemplates\en\change_email_confirm.html">
+    <None Update="Api\Views\EmailTemplates\en\change_email.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\en\delete_account_confirm.html">
+    <None Update="Api\Views\EmailTemplates\en\delete_account.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\en\registration_confirm.html">
+    <None Update="Api\Views\EmailTemplates\en\register.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\en\reset_password_permission.html">
+    <None Update="Api\Views\EmailTemplates\en\reset_password.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ru\change_email_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ru\change_email.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ru\delete_account_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ru\delete_account.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ru\registration_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ru\register.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ru\reset_password_permission.html">
+    <None Update="Api\Views\EmailTemplates\ru\reset_password.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ua\change_email_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ua\change_email.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ua\delete_account_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ua\delete_account.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ua\registration_confirm.html">
+    <None Update="Api\Views\EmailTemplates\ua\register.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Api\Locales\EmailTemplates\ua\reset_password_permission.html">
+    <None Update="Api\Views\EmailTemplates\ua\reset_password.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

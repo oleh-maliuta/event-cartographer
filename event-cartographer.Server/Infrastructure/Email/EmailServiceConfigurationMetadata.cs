@@ -9,5 +9,5 @@ public class EmailServiceConfigurationMetadata
     public int Port { get; set; } = 587;
     public bool UseSSL { get; set; } = true;
     public bool UseDefaultCredentials { get; set; } = false;
-    public string[] EmailTemplatesPath { get; set; } = ["Api", "Locales", "EmailTemplates"];
+    public string[] EmailTemplatesPath { get; set; } = ["Api", "Views", "EmailTemplates"];
 }

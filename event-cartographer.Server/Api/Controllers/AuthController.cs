@@ -3,6 +3,7 @@ using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Responses;
 using EventCartographer.Application.Common.Interfaces;
 using EventCartographer.Domain.Entities;
+using EventCartographer.Domain.ValueClasses;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -56,7 +57,7 @@ public class AuthController(
         {
             UserId = user.Id,
             User = user,
-            Action = "confirm-registration",
+            Action = ActivationCodeActions.Register,
             ExpiresAt = DateTime.UtcNow.AddHours(12)
         })).Entity;
 
@@ -79,7 +80,7 @@ public class AuthController(
         _backgroundJobClient.Enqueue<IEmailService>(emailService =>
             emailService.SendEmailUseTemplateAsync(
                 email: request.Email!,
-                templateName: "registration_confirm.html",
+                templateName: ActivationCodeActions.Register,
                 parameters: new Dictionary<string, string>
                 {
                     { "username", request.Username! },

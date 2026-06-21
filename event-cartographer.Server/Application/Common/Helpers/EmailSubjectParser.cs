@@ -4,7 +4,10 @@ namespace EventCartographer.Application.Common.Helpers;
 
 public static partial class EmailSubjectParser
 {
-    [GeneratedRegex(@"<meta\s+name=""subject""\s+content=""(?<subject>[^""]*)""", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 500)]
+    [GeneratedRegex(
+        @"<meta\s+name=""subject""\s+content=""(?<subject>[^""]*)""",
+        RegexOptions.IgnoreCase,
+        matchTimeoutMilliseconds: 500)]
     public static partial Regex EmailSubjectRegex();
 
     public static string ExtractSubject(string template)

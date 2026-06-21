@@ -2,92 +2,138 @@
     "general": {
         "server-error": "Помилка сервера."
     },
-    "sign-in": {
-        "panel-header": "Вхід",
-        "username-or-email-input": "Ім'я користувача або пошта",
-        "password-input": "Пароль",
-        "submit": "Відправити",
-        "sign-up-link": "Зареєструватися",
-        "forgot-password": "Забули пароль?",
-        "username_or_email_invalid": {
-            "value_missing": "Ім'я користувача або пошта обов'язково."
-        },
-        "password_invalid": {
-            "value_missing": "Пароль обов'язковий."
-        },
-        "reset-password-dialog": {
-            "header": "Скидання пароля",
-            "description": "Введіть ім'я користувача або пошту вашого облікового запису, щоб надіслати електронний лист з дозволом на перезапис пароля.",
+    "layouts": {
+        "sign-in": {
+            "panel-header": "Вхід",
             "username-or-email-input": "Ім'я користувача або пошта",
-            "cancel": "Скасувати",
-            "send-mail": "Відправити лист",
-            "success": "Лист мав бути надісланий."
+            "password-input": "Пароль",
+            "submit": "Відправити",
+            "sign-up-link": "Зареєструватися",
+            "forgot-password": "Забули пароль?",
+            "username_or_email_invalid": {
+                "value_missing": "Ім'я користувача або пошта обов'язково."
+            },
+            "password_invalid": {
+                "value_missing": "Пароль обов'язковий."
+            }
+        },
+        "sign-up": {
+            "panel-header": "Реєстрація",
+            "username-input": "Ім'я користувача",
+            "email-address-input": "Адреса електронної пошти",
+            "password-input": "Пароль",
+            "confirm-password-input": "Підтвердження пароля",
+            "create-account": "Створити обліковий запис",
+            "resend-email-link": "Повторно надіслати електронний лист із підтвердженням",
+            "sign-in-link": "Вхід",
+            "registered": "Обліковий запис було створено. Лист з активацією облікового запису повинен бути надісланий на вказану адресу електронної пошти.",
+            "password-not-confirmed": "Пароль не співпадає.",
+            "username_invalid": {
+                "value_missing": "Ім'я користувача обов'язкове.",
+                "too_short": "Ім'я користувача має містити принаймні 3 символи.",
+                "pattern": "Ім'я користувача не може містити символ '@'."
+            },
+            "email_invalid": {
+                "value_missing": "Адреса електронної пошти обов'язкова.",
+                "type_mismatch": "Будь ласка, введіть дійсну адресу електронної пошти (наприклад, user@example.com)."
+            },
+            "password_invalid": {
+                "value_missing": "Пароль обов'язковий.",
+                "too_short": "Пароль має містити принаймні 6 символів.",
+                "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Підтвердження пароля обов'язкове."
+            }
+        },
+        "reset-password": {
+            "panel-header": "Скидання пароля",
+            "password-input": "Пароль",
+            "confirm-password-input": "Підтвердження пароля",
+            "submit": "Відправити",
+            "password-is-reset": "Пароль було перезаписано. Тепер ви можете використовувати його для входу.",
+            "password-not-confirmed": "Пароль не співпадає.",
+            "new_password_invalid": {
+                "value_missing": "Пароль обов'язковий.",
+                "too_short": "Пароль має містити принаймні 6 символів.",
+                "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
+            },
+            "confirm_password_invalid": {
+                "value_missing": "Підтвердження пароля обов'язкове."
+            }
+        },
+        "user-settings": {
+            "header": "Налаштування",
+            "security": "Безпека"
+        },
+        "home": {
+            "remove-marker-dialog-title": "Видалити маркер",
+            "remove-marker-dialog-description": "Ви впевнені, що хочете видалити цей маркер?"
         }
     },
-    "sign-up": {
-        "panel-header": "Реєстрація",
-        "username-input": "Ім'я користувача",
-        "email-address-input": "Адреса електронної пошти",
-        "password-input": "Пароль",
-        "confirm-password-input": "Підтвердження пароля",
-        "create-account": "Створити обліковий запис",
-        "resend-email-link": "Повторно надіслати електронний лист із підтвердженням",
-        "sign-in-link": "Вхід",
-        "registered": "Обліковий запис було створено. Лист з активацією облікового запису повинен бути надісланий на вказану адресу електронної пошти.",
-        "password-not-confirmed": "Пароль не співпадає.",
-        "username_invalid": {
-            "value_missing": "Ім'я користувача обов'язкове.",
-            "too_short": "Ім'я користувача має містити принаймні 3 символи.",
-            "pattern": "Ім'я користувача не може містити символ '@'."
-        },
-        "email_invalid": {
-            "value_missing": "Адреса електронної пошти обов'язкова.",
-            "type_mismatch": "Будь ласка, введіть дійсну адресу електронної пошти (наприклад, user@example.com)."
-        },
-        "password_invalid": {
-            "value_missing": "Пароль обов'язковий.",
-            "too_short": "Пароль має містити принаймні 6 символів.",
-            "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Підтвердження пароля обов'язкове."
-        },
-        "resend-email-confirmation-dialog": {
-            "header": "Повторно надіслати електронний лист із підтвердженням",
-            "description": "Введіть ім'я користувача або пошту вашого облікового запису, щоб надіслати електронний лист для підтвердження електронної пошти.",
-            "username-or-email-input": "Ім'я користувача або пошта",
-            "cancel": "Скасувати",
-            "send-mail": "Відправити лист",
-            "success": "Лист мав бути надісланий."
-        }
-    },
-    "reset-password": {
-        "panel-header": "Скидання пароля",
-        "password-input": "Пароль",
-        "confirm-password-input": "Підтвердження пароля",
-        "submit": "Відправити",
-        "password-is-reset": "Пароль було перезаписано. Тепер ви можете використовувати його для входу.",
-        "password-not-confirmed": "Пароль не співпадає.",
-        "new_password_invalid": {
-            "value_missing": "Пароль обов'язковий.",
-            "too_short": "Пароль має містити принаймні 6 символів.",
-            "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
-        },
-        "confirm_password_invalid": {
-            "value_missing": "Підтвердження пароля обов'язкове."
-        }
-    },
-    "settings": {
-        "header": "Налаштування",
-        "security": "Безпека",
-        "basic-info": {
+    "components": {
+        "basic-user-info-settings": {
             "header": "Основна інформація",
             "username-input": "Ім'я користувача",
             "permission-to-delete-past-events-input": "Автоматично видаляти минулі події",
             "save-changes": "Зберегти зміни",
             "changes-are-saved": "Зміни збережені."
         },
-        "personalization": {
+        "delete-user-account-settings": {
+            "header": "Видалити обліковий запис",
+            "description": "Щоб видалити обліковий запис, вам потрібно ввести свій пароль нижче. Після цього ви отримаєте лист на свою адресу електронної пошти для підтвердження дії.",
+            "password-input": "Пароль",
+            "delete": "Видалити",
+            "success": "Лист мав бути надісланий для підтвердження."
+        },
+        "edit-marker-form": {
+            "latitude-label": "Широта:",
+            "longitude-label": "Довгота:",
+            "starts-at-label": "Початок в:",
+            "importance-label": "Важливість:",
+            "title-label": "Заголовок:",
+            "description-label": "Опис:",
+            "no-importance-value": "...",
+            "low-importance-value": "Низька",
+            "medium-importance-value": "Середня",
+            "high-importance-value": "Висока",
+            "add-marker": "Додати",
+            "edit-marker": "Змінити",
+            "cancel-marker-editing": "Відмінити"
+        },
+        "email-address": {
+            "header": "Змінити адресу електронної пошти",
+            "description": "Введіть свій пароль та нову адресу електронної пошти. Після цього ви отримаєте листа на свою нову адресу електронної пошти для його підтвердження.",
+            "password-input": "Пароль",
+            "new-email-address-input": "Нова адреса електронної пошти",
+            "apply": "Застосувати",
+            "success": "Лист мав бути надісланий для підтвердження."
+        },
+        "map-marker-renderer": {
+            "cancel-marker-editing": "Відмінити"
+        },
+        "marker-list-menu": {
+            "search-markers-input": "Пошук",
+            "sorting-label": "Сортувати за:",
+            "sort-by-importance-value": "важливістю",
+            "sort-by-title-value": "заголовком",
+            "sort-by-time-value": "часом початку",
+            "importance-filter-title": "Важливість",
+            "time-of-the-start-filter-title": "Час початку",
+            "low-importance-value": "Низька",
+            "medium-importance-value": "Середня",
+            "high-importance-value": "Висока"
+        },
+        "password-user-settings": {
+            "header": "Змінити пароль",
+            "old-password-input": "Старий пароль",
+            "new-password-input": "Новий пароль",
+            "confirm-new-password-input": "Підтвердження нового пароля",
+            "apply": "Застосувати",
+            "password-not-confirmed": "Новий пароль не підтверджено.",
+            "password-is-changed": "Пароль змінений."
+        },
+        "personalization-settings": {
             "header": "Персоналізація",
             "time-zone-input": "Часовий пояс",
             "auto-time-zone": "Авто",
@@ -100,60 +146,26 @@
             "light-theme-value": "Світла",
             "dark-theme-value": "Темна"
         },
-        "email-address": {
-            "header": "Змінити адресу електронної пошти",
-            "description": "Введіть свій пароль та нову адресу електронної пошти. Після цього ви отримаєте листа на свою нову адресу електронної пошти для його підтвердження.",
-            "password-input": "Пароль",
-            "new-email-address-input": "Нова адреса електронної пошти",
-            "apply": "Застосувати",
-            "email-is-sent": "Лист відправлено."
+        "resend-confirmation-email-dialog": {
+            "header": "Повторно надіслати електронний лист із підтвердженням",
+            "description": "Введіть ім'я користувача або пошту вашого облікового запису, щоб надіслати електронний лист для підтвердження електронної пошти.",
+            "username-or-email-input": "Ім'я користувача або пошта",
+            "cancel": "Скасувати",
+            "send-mail": "Відправити лист",
+            "success": "Лист мав бути надісланий."
         },
-        "password": {
-            "header": "Змінити пароль",
-            "old-password-input": "Старий пароль",
-            "new-password-input": "Новий пароль",
-            "confirm-new-password-input": "Підтвердження нового пароля",
-            "apply": "Застосувати",
-            "password-not-confirmed": "Новий пароль не підтверджено.",
-            "password-is-changed": "Пароль змінений."
+        "reset-password-dialog": {
+            "header": "Скидання пароля",
+            "description": "Введіть ім'я користувача або пошту вашого облікового запису, щоб надіслати електронний лист з дозволом на перезапис пароля.",
+            "username-or-email-input": "Ім'я користувача або пошта",
+            "cancel": "Скасувати",
+            "send-mail": "Відправити лист",
+            "success": "Лист мав бути надісланий."
         },
-        "delete-account": {
-            "header": "Видалити обліковий запис",
-            "description": "Щоб видалити обліковий запис, вам потрібно ввести свій пароль нижче. Після цього ви отримаєте лист на свою адресу електронної пошти для підтвердження дії.",
-            "password-input": "Пароль",
-            "delete": "Видалити",
-            "email-is-sent": "Лист надіслано! Підтвердіть видалення."
+        "yes-no-dialog": {
+            "yes-button": "Так",
+            "no-button": "Ні"
         }
-    },
-    "home": {
-        "search-markers-input": "Пошук",
-        "sorting-label": "Сортувати за:",
-        "sort-by-importance-value": "важливістю",
-        "sort-by-title-value": "заголовком",
-        "sort-by-time-value": "часом початку",
-        "importance-filter-title": "Важливість",
-        "no-importance-value": "...",
-        "low-importance-value": "Низька",
-        "medium-importance-value": "Середня",
-        "high-importance-value": "Висока",
-        "time-of-the-start-filter-title": "Час початку",
-        "marker-edit-latitude-label": "Широта:",
-        "marker-edit-longitude-label": "Довгота:",
-        "marker-edit-starts-at-label": "Початок в:",
-        "marker-edit-importance-label": "Важливість:",
-        "marker-edit-title-label": "Заголовок:",
-        "marker-edit-description-label": "Опис:",
-        "add-marker": "Додати",
-        "edit-marker": "Змінити",
-        "cancel-marker-editing": "Відмінити",
-        "remove-marker": {
-            "dialog-title": "Видалити маркер",
-            "dialog-description": "Ви впевнені, що хочете видалити цей маркер?"
-        }
-    },
-    "yes-no-dialog": {
-        "yes-button": "Так",
-        "no-button": "Ні"
     },
     "http": {
         "request-errors": {
@@ -273,7 +285,7 @@
                     "required": "Потрібна нова електронна адреса.",
                     "max-length": "Адреса електронної пошти занадто довга.",
                     "min-length": "Адреса електронної пошти занадто коротка.",
-                    "email-address": "Адреса електронної пошти недійсна." 
+                    "email-address": "Адреса електронної пошти недійсна."
                 }
             },
             "update-user-info": {

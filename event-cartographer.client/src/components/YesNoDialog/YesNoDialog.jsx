@@ -56,13 +56,13 @@ const YesNoDialog = memo(({
                         type="button"
                         disabled={processing}
                         onClick={noButtonClick}>
-                        {t('yes-no-dialog.no-button')}
+                        {t('components.yes-no-dialog.no-button')}
                     </button>
                     <button className={`${cl.yes_no_dialog__control__buttons__yes}`}
                         type="button"
                         disabled={processing}
                         onClick={yesButtonClick}>
-                        {t('yes-no-dialog.yes-button')}
+                        {t('components.yes-no-dialog.yes-button')}
                     </button>
                 </div>
             </div>

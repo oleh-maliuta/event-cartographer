@@ -35,7 +35,7 @@ const EmailAddressUserSettings = memo(() => {
         if (response.ok) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
-                payload: { mode: MessageStates.SUCCESS, list: [t('settings.email-address.email-is-sent')] }
+                payload: { mode: MessageStates.SUCCESS, list: [t('components.email-address-user-settings.success')] }
             });
         } else if (!response.ok) {
             if (json.message) {
@@ -72,21 +72,21 @@ const EmailAddressUserSettings = memo(() => {
             onSubmit={updateUserEmailRequest}>
             <div className={`${cl.element__content}`}>
                 <h3 className={`${cl.element__header}`}>
-                    {t('settings.email-address.header')}
+                    {t('components.email-address-user-settings.header')}
                 </h3>
                 <p className={`${cl.element__description}`}>
-                    {t('settings.email-address.description')}
+                    {t('components.email-address-user-settings.description')}
                 </p>
                 <input className={`${cl.element__input}`}
                     name='password'
                     type="password"
-                    placeholder={t('settings.email-address.password-input')}
+                    placeholder={t('components.email-address-user-settings.password-input')}
                     maxLength="200"
                     required />
                 <input className={`${cl.element__input}`}
                     name='email'
                     type="email"
-                    placeholder={t('settings.email-address.new-email-address-input')}
+                    placeholder={t('components.email-address-user-settings.new-email-address-input')}
                     maxLength="320"
                     required />
             </div>
@@ -106,7 +106,7 @@ const EmailAddressUserSettings = memo(() => {
                                 curveWidth="3px" />
                             :
                             <span>
-                                {t('settings.email-address.apply')}
+                                {t('components.email-address-user-settings.apply')}
                             </span>
                     }
                 </button>

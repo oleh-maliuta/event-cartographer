@@ -19,7 +19,7 @@ const UserSettingsLayout = () => {
             <div className={cl.panel}>
                 <div className={`${cl.panel__page_header}`}>
                     <h1 className={`${cl.panel__page_header__text}`}>
-                        {t('settings.header')}
+                        {t('layouts.user-settings.header')}
                     </h1>
                     <div className={cl.panel__page_header__control}>
                         <MemoLink className={cl.panel__page_header__map_button} to={PageRoutes.HOME}>
@@ -36,7 +36,7 @@ const UserSettingsLayout = () => {
                 <div className={`${cl.panel__security_settings}`}>
                     <div className={`${cl.panel__security_settings__header}`}>
                         <h2 className={`${cl.panel__security_settings__header__text}`}>
-                            {t('settings.security')}
+                            {t('layouts.user-settings.security')}
                         </h2>
                     </div>
                     <EmailAddressUserSettings />

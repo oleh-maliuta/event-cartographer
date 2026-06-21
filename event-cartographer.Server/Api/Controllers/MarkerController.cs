@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using EventCartographer.Api.Attributes;
 using Microsoft.EntityFrameworkCore;
-using EventCartographer.Domain.Common;
 using EventCartographer.Api.Models.Responses;
 using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Domain.Constants;
 
 namespace EventCartographer.Api.Controllers;
 
@@ -22,7 +22,7 @@ public class MarkerController(
     {
         User user = AuthorizedUser;
 
-        if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= Constants.MAX_MARKER_COUNT_FOR_USER)
+        if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= MarkerConstants.MarkerLimit)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
         }
