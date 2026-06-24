@@ -7,9 +7,12 @@ const PanelInput = memo(({
     containerStyle,
     labelStyle,
     inputStyle,
+    appearanceMode,
+    id,
     name,
     label,
     type,
+    autoComplete,
     placeholder,
     pattern,
     minLength,
@@ -48,12 +51,15 @@ const PanelInput = memo(({
         <div className={`${cl.panel_input} ${cl[theme]}`}
             style={containerStyle}>
             <label className={cl.panel_input__label}
-                style={labelStyle}>
+                style={labelStyle}
+                htmlFor={id}>
                 {label}
             </label>
-            <input className={cl.panel_input__input}
+            <input className={`${cl.panel_input__input} ${cl[appearanceMode]}`}
                 style={inputStyle}
                 type={type}
+                autoComplete={autoComplete}
+                id={id}
                 name={name}
                 placeholder={placeholder}
                 pattern={pattern}
@@ -72,7 +78,10 @@ PanelInput.propTypes = {
     containerStyle: PropTypes.object,
     labelStyle: PropTypes.object,
     inputStyle: PropTypes.object,
+    appearanceMode: PropTypes.string,
+    id: PropTypes.string,
     name: PropTypes.string,
+    autoComplete: PropTypes.string,
     label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     type: PropTypes.string.isRequired,
     placeholder: PropTypes.string,

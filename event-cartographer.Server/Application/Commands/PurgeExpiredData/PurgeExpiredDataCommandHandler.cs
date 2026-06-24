@@ -1,17 +1,20 @@
-﻿using EventCartographer.Application.Common.Interfaces;
+﻿using EventCartographer.Application.Interfaces;
 using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
+namespace EventCartographer.Application.Commands.PurgeExpiredData;
 
-public partial class PurgeExpiredDataCommand(
+public partial class PurgeExpiredDataCommandHandler(
     IApplicationDbContext database,
-    ILogger<PurgeExpiredDataCommand> logger)
+    ILogger<PurgeExpiredDataCommandHandler> logger) : IRequestHandler<PurgeExpiredDataCommand>
 {
     private readonly IApplicationDbContext _database = database;
-    private readonly ILogger<PurgeExpiredDataCommand> _logger = logger;
+    private readonly ILogger<PurgeExpiredDataCommandHandler> _logger = logger;
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    public async Task Handle(
+        PurgeExpiredDataCommand request,
+        CancellationToken cancellationToken)
     {
         DateTime now = DateTime.UtcNow;
 

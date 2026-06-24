@@ -1,4 +1,4 @@
-﻿using EventCartographer.Application.Common.Interfaces;
+﻿using EventCartographer.Application.Interfaces;
 
 namespace EventCartographer.Infrastructure.Localization;
 

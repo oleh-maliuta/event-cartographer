@@ -1,5 +1,5 @@
 ﻿using EventCartographer.Application.Common.Helpers;
-using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Application.Interfaces;
 using EventCartographer.Domain.Constants;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;

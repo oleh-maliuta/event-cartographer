@@ -1,5 +1,11 @@
 import { getTimeZones } from "./time";
 
+export const PanelInputAppearanceModes = Object.freeze({
+    CREDENTIALS: 'credentials',
+    SIMPLE: 'simple',
+    SETTINGS: 'settings',
+});
+
 export const SidebarMenuModes = Object.freeze({
     ADD: 'add',
     EDIT: 'edit',

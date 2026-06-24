@@ -1,5 +1,4 @@
-﻿using EventCartographer.Application.Common.Interfaces;
-using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
+﻿using EventCartographer.Application.Interfaces;
 using EventCartographer.Infrastructure.BackgroundServices.CleanupService;
 using EventCartographer.Infrastructure.Database;
 using EventCartographer.Infrastructure.Email;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -60,7 +60,6 @@ public static class Startup
 
     public static void ConfigureServices(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<PurgeExpiredDataCommand>();
         builder.Services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
 
@@ -82,13 +81,14 @@ public static class Startup
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
+        builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
         builder.Services.AddHangfire(config =>
         {
             string? conn = Environment.GetEnvironmentVariable("HANGFIRE_CONNECTION_STRING");
             if (string.IsNullOrWhiteSpace(conn))
-            {
                 throw new InvalidOperationException("Hangfire connection string is not configured.");
-            }
 
             config
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

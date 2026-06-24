@@ -103,9 +103,11 @@ const ResetPasswordLayout = () => {
                 state={messageState} />
             <PanelInput
                 containerStyle={passwordInfoInputStyle}
+                id='resetPassword-newPassword-input'
                 name='newPassword'
                 label={t('layouts.reset-password.password-input')}
                 type='password'
+                autoComplete='new-password'
                 placeholder={t('layouts.reset-password.password-input')}
                 pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                 minLength='6'
@@ -118,8 +120,10 @@ const ResetPasswordLayout = () => {
                 patternValidity={t('layouts.reset-password.new_password_invalid.pattern')} />
             <PanelInput
                 containerStyle={confirmPasswordInfoInputStyle}
+                id='resetPassword-confirmPassword-input'
                 label={t('layouts.reset-password.confirm-password-input')}
                 type='password'
+                autoComplete='off'
                 placeholder={t('layouts.reset-password.confirm-password-input')}
                 maxLength='200'
                 required

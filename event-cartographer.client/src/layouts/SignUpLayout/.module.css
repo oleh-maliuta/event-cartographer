@@ -16,11 +16,16 @@
     right: 0px;
 }
 
+.resend_email_link_cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+}
+
 .resend_email_link {
     display: block;
-    width: 100%;
     text-align: center;
-    margin-top: 15px;
     text-decoration: none;
 
     &:hover {

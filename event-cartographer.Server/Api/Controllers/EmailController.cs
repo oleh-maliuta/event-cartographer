@@ -1,5 +1,5 @@
 ﻿using EventCartographer.Api.Models.Requests.Queries;
-using EventCartographer.Application.Common.Interfaces;
+using EventCartographer.Application.Interfaces;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Domain.ValueClasses;
 using Microsoft.AspNetCore.Authentication;

@@ -8,7 +8,7 @@ import BlockMessage from "../../components/BlockMessage/BlockMessage";
 import { useTheme } from '../../hooks/useTheme';
 import MemoLink from "../../components/MemoLink/MemoLink";
 import { messageListReducer, messageListState } from "../../utils/reducers/messageListReducer";
-import { MessageStates } from "../../utils/constants";
+import { MessageStates, PanelInputAppearanceModes } from "../../utils/constants";
 import ResendConfirmationEmailDialog from "../../components/ResendConfirmationEmailDialog/ResendConfirmationEmailDialog";
 import { useLocation } from "react-router-dom";
 
@@ -117,9 +117,12 @@ const SignUpLayout = () => {
                     state={messageState} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signUp-username-input'
                     name='username'
                     label={t('layouts.sign-up.username-input')}
                     type='text'
+                    autoComplete='off'
                     placeholder={t('layouts.sign-up.username-input')}
                     pattern="^[^@]*$"
                     minLength='3'
@@ -130,9 +133,12 @@ const SignUpLayout = () => {
                     patternValidity={t('layouts.sign-up.username_invalid.pattern')} />
                 <PanelInput
                     containerStyle={emailInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signUp-email-input'
                     name='email'
                     label={t('layouts.sign-up.email-address-input')}
                     type='email'
+                    autoComplete='username'
                     placeholder={t('layouts.sign-up.email-address-input')}
                     maxLength='320'
                     required
@@ -140,9 +146,12 @@ const SignUpLayout = () => {
                     typeMismatchValidity={t('layouts.sign-up.email_invalid.type_mismatch')} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signUp-password-input'
                     name='password'
                     label={t('layouts.sign-up.password-input')}
                     type='password'
+                    autoComplete='new-password'
                     placeholder={t('layouts.sign-up.password-input')}
                     pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
                     minLength='6'
@@ -155,8 +164,11 @@ const SignUpLayout = () => {
                     patternValidity={t('layouts.sign-up.password_invalid.pattern')} />
                 <PanelInput
                     containerStyle={confirmPasswordInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signUp-confirmPassword-Input'
                     label={t('layouts.sign-up.confirm-password-input')}
                     type='password'
+                    autoComplete='off'
                     placeholder={t('layouts.sign-up.confirm-password-input')}
                     maxLength='200'
                     required
@@ -168,11 +180,13 @@ const SignUpLayout = () => {
                     text={t('layouts.sign-up.create-account')}
                     loading={submitting}
                     disabled={submitting} />
-                <MemoLink className={`${cl.resend_email_link}`}
-                    to='#resend-email-dialog'
-                    replace={true}>
-                    {t('layouts.sign-up.resend-email-link')}
-                </MemoLink>
+                <div className={cl.resend_email_link_cont}>
+                    <MemoLink className={`${cl.resend_email_link}`}
+                        to='#resend-email-dialog'
+                        replace={true}>
+                        {t('layouts.sign-up.resend-email-link')}
+                    </MemoLink>
+                </div>
                 <div className={cl.sign_in_link_cont}>
                     <MemoLink className={cl.sign_in_link}
                         to='/sign-in'>

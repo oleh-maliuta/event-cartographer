@@ -1,4 +1,5 @@
-﻿using EventCartographer.Application.Maintenance.Commands.PurgeExpiredData;
+﻿using EventCartographer.Application.Commands.PurgeExpiredData;
+using MediatR;
 
 namespace EventCartographer.Infrastructure.BackgroundServices.CleanupService;
 
@@ -14,14 +15,16 @@ public class CleanupService(
     {
         _logger.LogServiceStartedInformation();
 
+        await using var scope = _factory.CreateAsyncScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                await using var scope = _factory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<PurgeExpiredDataCommand>();
-
-                await handler.ExecuteAsync(stoppingToken);
+                await mediator.Send(
+                    new PurgeExpiredDataCommand(),
+                    stoppingToken);
             }
             catch (Exception ex)
             {

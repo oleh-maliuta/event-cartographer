@@ -26,7 +26,7 @@
             "create-account": "Create account",
             "resend-email-link": "Resend confirmation email",
             "sign-in-link": "Sign in",
-            "registered": "Account has been created. Email should be sent to email address in order to activate the account.",
+            "registered": "Account has been created. You will receive an email in order to activate the account.",
             "password-not-confirmed": "Password not confirmed.",
             "username_invalid": {
                 "value_missing": "Username is required.",
@@ -152,7 +152,10 @@
             "username-or-email-input": "Username or Email",
             "cancel": "Cancel",
             "send-mail": "Send mail",
-            "success": "Email should have been sent."
+            "success": "Email should have been sent.",
+            "username_or_email_invalid": {
+                "value_missing": "Username or Email is required."
+            }
         },
         "reset-password-dialog": {
             "header": "Reset password",
@@ -160,7 +163,10 @@
             "username-or-email-input": "Username or Email",
             "cancel": "Cancel",
             "send-mail": "Send mail",
-            "success": "Email should have been sent."
+            "success": "Email should have been sent.",
+            "username_or_email_invalid": {
+                "value_missing": "Username or Email is required."
+            }
         },
         "yes-no-dialog": {
             "yes-button": "Yes",

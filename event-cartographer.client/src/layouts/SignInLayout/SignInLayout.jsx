@@ -10,7 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { MessageStates, PanelInputAppearanceModes } from '../../utils/constants';
 
 const blockMessageStyle = { marginTop: '15px', width: 'calc(100% - 6px)' };
 const usernameInfoInputStyle = { marginTop: '15px' };
@@ -96,18 +96,24 @@ const SignInLayout = () => {
                     state={messageState} />
                 <PanelInput
                     containerStyle={usernameInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signIn-usernameOrEmail-input'
                     name='usernameOrEmail'
                     label={t('layouts.sign-in.username-or-email-input')}
                     type='text'
+                    autoComplete='username webauthn'
                     placeholder={t('layouts.sign-in.username-or-email-input')}
                     maxLength='100'
                     required
                     valueMissingValidity={t('layouts.sign-in.username_or_email_invalid.value_missing')} />
                 <PanelInput
                     containerStyle={passwordInfoInputStyle}
+                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    id='signIn-password-input'
                     name='password'
                     label={t('layouts.sign-in.password-input')}
                     type='password'
+                    autoComplete='current-password'
                     placeholder={t('layouts.sign-in.password-input')}
                     maxLength='200'
                     required
@@ -125,7 +131,8 @@ const SignInLayout = () => {
                     loading={submitting}
                     disabled={submitting} />
                 <div className={cl.sign_up_link_cont}>
-                    <MemoLink className={cl.sign_up_link} to='/sign-up'>
+                    <MemoLink className={cl.sign_up_link}
+                        to='/sign-up'>
                         {t('layouts.sign-in.sign-up-link')}
                     </MemoLink>
                 </div>

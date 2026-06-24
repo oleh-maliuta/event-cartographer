@@ -6,8 +6,9 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { MessageStates, PanelInputAppearanceModes } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
+import PanelInput from '../PanelInput/PanelInput';
 
 const blockMessageStyle = { marginTop: '10px' };
 
@@ -103,12 +104,16 @@ const ResendConfirmationEmailDialog = memo(({
                     <BlockMessage
                         style={blockMessageStyle}
                         state={messageState} />
-                    <input className={`${cl.modal_window__reset_password__input}`}
+                    <PanelInput
+                        appearanceMode={PanelInputAppearanceModes.SIMPLE}
+                        id='resendConfirmation-emailUsernameOrEmail-input'
                         name='usernameOrEmail'
-                        type="text"
+                        type='text'
+                        autoComplete='username webauthn'
                         placeholder={t('components.resend-confirmation-email-dialog.username-or-email-input')}
-                        maxLength="500"
-                        required />
+                        maxLength='500'
+                        required
+                        valueMissingValidity={t('components.resend-confirmation-email-dialog.username_or_email_invalid.value_missing')} />
                 </div>
                 <div className={`${cl.modal_window__control}`}>
                     <div className={`${cl.modal_window__control__buttons}`}>

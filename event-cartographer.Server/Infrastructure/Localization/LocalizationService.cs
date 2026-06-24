@@ -1,4 +1,4 @@
-﻿using EventCartographer.Application.Common.Interfaces;
+﻿using EventCartographer.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Text.Json;

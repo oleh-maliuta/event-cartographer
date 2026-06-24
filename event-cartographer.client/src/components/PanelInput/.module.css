@@ -12,15 +12,13 @@
     --ms-reveal-filter: invert(100%);
 }
 
-.panel_input {
-    margin-top: 35px;
-}
-
 .panel_input__label {
+    display: block;
     color: var(--label-color);
     font-size: 0.938rem;
     font-weight: bold;
     letter-spacing: 0.5px;
+    margin-bottom: 7px;
 }
 
 .panel_input__input {
@@ -31,14 +29,44 @@
     color: var(--input-text-color);
     font-size: 1.063rem;
     letter-spacing: 0.5px;
-    margin-top: 7px;
     padding-block: 10px;
     padding-left: 10px;
+
     &:focus {
         border: 2px solid var(--input-focus-border-color);
     }
 
     &::-ms-reveal {
         filter: var(--ms-reveal-filter);
+    }
+
+    &.simple {
+        width: calc(100% - 7px);
+        background-color: transparent;
+        color: var(--input-text-color);
+        font-size: 1.25rem;
+        border: 2px solid var(--input-focus-border-color);
+        border-radius: 5px;
+        padding-block: 3px;
+
+        &:not(select) {
+            padding-left: 3px;
+        }
+    }
+
+    &.settings {
+        display: block;
+        width: calc(100% - 6px);
+        background-color: transparent;
+        border: 2px solid gray;
+        border-radius: 10px;
+        color: var(--input-text-color);
+        font-size: 1.125rem;
+        padding-block: 3px;
+        padding-left: 3px;
+
+        &:focus {
+            border: 2px solid var(--input-focus-border-color);
+        }
     }
 }

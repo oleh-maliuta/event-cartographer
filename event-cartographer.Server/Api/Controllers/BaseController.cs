@@ -1,4 +1,4 @@
-﻿using EventCartographer.Application.Common.Interfaces;
+﻿using EventCartographer.Application.Interfaces;
 using EventCartographer.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

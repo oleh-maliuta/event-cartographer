@@ -77,19 +77,6 @@
     margin-top: 20px;
 }
 
-.modal_window__reset_password__input {
-    display: block;
-    width: calc(100% - 4px);
-    background-color: transparent;
-    color: var(--username-input-text-color);
-    font-size: 1.25rem;
-    border: 2px solid var(--username-input-border-color);
-    border-radius: 5px;
-    padding-block: 1px;
-    padding-left: 4px;
-    margin-top: 6px;
-}
-
 .modal_window__control {
     padding-block: 10px;
     padding-inline: 15px;
