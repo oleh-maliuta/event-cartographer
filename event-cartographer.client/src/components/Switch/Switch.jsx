@@ -3,17 +3,23 @@ import cl from "./.module.css";
 import PropTypes from "prop-types";
 
 const Switch = memo(({
-    value,
-    setValue
+    id,
+    name,
+    checked,
+    defaultChecked,
+    onChange,
 }) => {
     return (
         <div className={cl.switch}>
             <input className={cl.switch__input}
                 type='checkbox'
-                checked={value}
-                readOnly={true} />
+                id={id}
+                name={name}
+                checked={checked}
+                defaultChecked={defaultChecked}
+                onClick={onChange} />
             <label className={cl.switch__label}
-                onClick={() => setValue(x => !x)}></label>
+                htmlFor={id}></label>
         </div>
     );
 });
@@ -21,8 +27,11 @@ const Switch = memo(({
 Switch.displayName = 'Switch';
 
 Switch.propTypes = {
-    value: PropTypes.bool.isRequired,
-    setValue: PropTypes.func.isRequired
+    id: PropTypes.string,
+    name: PropTypes.string,
+    checked: PropTypes.bool,
+    defaultChecked: PropTypes.bool,
+    onChange: PropTypes.func,
 };
 
 export default Switch;

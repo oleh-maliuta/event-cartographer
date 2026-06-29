@@ -1,9 +1,9 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import cl from './.module.css';
 import PropTypes from "prop-types";
 import { useTheme } from '../../hooks/useTheme';
 
-const PanelInput = memo(({
+const CustomInput = memo(({
     containerStyle,
     labelStyle,
     inputStyle,
@@ -17,15 +17,31 @@ const PanelInput = memo(({
     pattern,
     minLength,
     maxLength,
+    max,
+    min,
+    step,
     required,
     value,
-    setValue,
+    defaultValue,
     valueMissingValidity,
     tooShortValidity,
     typeMismatchValidity,
     patternValidity,
+    rangeUnderflowValidity,
+    rangeOverflowValidity,
+    onChange,
 }) => {
     const { theme } = useTheme();
+
+    const renderLabel = useMemo(() => {
+        return label ? (
+            <label className={`${cl.custom_input__label} ${cl[appearanceMode]}`}
+                style={labelStyle}
+                htmlFor={id}>
+                {label}
+            </label>
+        ) : null;
+    }, [appearanceMode, id, label, labelStyle]);
 
     const customValidity = useCallback((e) => {
         const obj = e.currentTarget;
@@ -39,23 +55,21 @@ const PanelInput = memo(({
             obj.setCustomValidity(typeMismatchValidity);
         } else if (obj.validity.patternMismatch && patternValidity) {
             obj.setCustomValidity(patternValidity);
+        } else if (obj.validity.rangeUnderflow) {
+            obj.setCustomValidity(rangeUnderflowValidity);
+        } else if (obj.validity.rangeOverflow) {
+            obj.setCustomValidity(rangeOverflowValidity);
         }
-    }, [valueMissingValidity, tooShortValidity, typeMismatchValidity, patternValidity]);
-
-    const onChangeEvent = useCallback((e) => {
-        if (value !== undefined)
-            setValue(e.target.value);
-    }, [value, setValue]);
+    }, [
+        valueMissingValidity, tooShortValidity, typeMismatchValidity,
+        patternValidity, rangeUnderflowValidity, rangeOverflowValidity
+    ]);
 
     return (
-        <div className={`${cl.panel_input} ${cl[theme]}`}
+        <div className={`${cl.custom_input} ${cl[theme]}`}
             style={containerStyle}>
-            <label className={cl.panel_input__label}
-                style={labelStyle}
-                htmlFor={id}>
-                {label}
-            </label>
-            <input className={`${cl.panel_input__input} ${cl[appearanceMode]}`}
+            {renderLabel}
+            <input className={`${cl.custom_input__input} ${cl[appearanceMode]}`}
                 style={inputStyle}
                 type={type}
                 autoComplete={autoComplete}
@@ -65,16 +79,22 @@ const PanelInput = memo(({
                 pattern={pattern}
                 minLength={minLength}
                 maxLength={maxLength}
+                max={max}
+                min={min}
+                step={step}
                 required={required}
                 value={value}
-                onChange={onChangeEvent}
+                defaultValue={defaultValue}
+                onChange={onChange}
                 onInput={customValidity}
                 onInvalid={customValidity} />
         </div>
     );
 });
 
-PanelInput.propTypes = {
+CustomInput.displayName = 'CustomInput';
+
+CustomInput.propTypes = {
     containerStyle: PropTypes.object,
     labelStyle: PropTypes.object,
     inputStyle: PropTypes.object,
@@ -88,14 +108,19 @@ PanelInput.propTypes = {
     pattern: PropTypes.string,
     minLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     maxLength: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    max: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    min: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    step: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     required: PropTypes.bool,
-    value: PropTypes.string,
-    setValue: PropTypes.func,
+    value: PropTypes.object,
+    defaultValue: PropTypes.object,
     valueMissingValidity: PropTypes.string,
     tooShortValidity: PropTypes.string,
     typeMismatchValidity: PropTypes.string,
     patternValidity: PropTypes.string,
-    ref: PropTypes.object,
+    rangeUnderflowValidity: PropTypes.string,
+    rangeOverflowValidity: PropTypes.string,
+    onChange: PropTypes.func,
 };
 
-export default PanelInput;
+export default CustomInput;

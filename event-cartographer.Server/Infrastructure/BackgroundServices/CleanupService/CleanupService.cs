@@ -16,7 +16,7 @@ public class CleanupService(
         _logger.LogServiceStartedInformation();
 
         await using var scope = _factory.CreateAsyncScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
 
         while (!stoppingToken.IsCancellationRequested)
         {

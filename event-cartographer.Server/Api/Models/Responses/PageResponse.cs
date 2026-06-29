@@ -1,4 +1,5 @@
-﻿using EventCartographer.Api.Models.Requests.Queries;
+﻿using EventCartographer.Api.Common;
+using EventCartographer.Api.Models.Requests.Queries;
 
 namespace EventCartographer.Api.Models.Responses;
 

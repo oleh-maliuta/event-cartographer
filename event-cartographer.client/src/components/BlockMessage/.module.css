@@ -17,7 +17,7 @@
 }
 
 .block_message {
-    width: calc(100% - 3px);
+    width: calc(100% - 6px);
     background-color: var(--default-message-mode-background-color);
     color: var(--default-message-mode-text-color);
     border-radius: 5px;

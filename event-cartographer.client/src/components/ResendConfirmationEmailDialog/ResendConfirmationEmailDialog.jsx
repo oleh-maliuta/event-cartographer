@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates, PanelInputAppearanceModes } from '../../utils/constants';
+import { MessageStates, CustomElementAppearanceModes } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
-import PanelInput from '../PanelInput/PanelInput';
+import CustomInput from '../CustomInput/CustomInput';
 
-const blockMessageStyle = { marginTop: '10px' };
+const blockMessageStyle = { marginBlock: '10px' };
 
 const ResendConfirmationEmailDialog = memo(({
     dialogState,
@@ -104,8 +104,8 @@ const ResendConfirmationEmailDialog = memo(({
                     <BlockMessage
                         style={blockMessageStyle}
                         state={messageState} />
-                    <PanelInput
-                        appearanceMode={PanelInputAppearanceModes.SIMPLE}
+                    <CustomInput
+                        appearanceMode={CustomElementAppearanceModes.SIMPLE}
                         id='resendConfirmation-emailUsernameOrEmail-input'
                         name='usernameOrEmail'
                         type='text'

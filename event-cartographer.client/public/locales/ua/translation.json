@@ -77,14 +77,22 @@
             "username-input": "Ім'я користувача",
             "permission-to-delete-past-events-input": "Автоматично видаляти минулі події",
             "save-changes": "Зберегти зміни",
-            "changes-are-saved": "Зміни збережені."
+            "changes-are-saved": "Зміни збережені.",
+            "username_invalid": {
+                "value_missing": "Ім'я користувача обов'язкове.",
+                "too_short": "Ім'я користувача має містити принаймні 3 символи.",
+                "pattern": "Ім'я користувача не може містити символ '@'."
+            }
         },
         "delete-user-account-settings": {
             "header": "Видалити обліковий запис",
             "description": "Щоб видалити обліковий запис, вам потрібно ввести свій пароль нижче. Після цього ви отримаєте лист на свою адресу електронної пошти для підтвердження дії.",
             "password-input": "Пароль",
             "delete": "Видалити",
-            "success": "Лист мав бути надісланий для підтвердження."
+            "success": "Лист мав бути надісланий для підтвердження.",
+            "password_invalid": {
+                "value_missing": "Пароль обов'язковий."
+            }
         },
         "edit-marker-form": {
             "latitude-label": "Широта:",
@@ -99,15 +107,38 @@
             "high-importance-value": "Висока",
             "add-marker": "Додати",
             "edit-marker": "Змінити",
-            "cancel-marker-editing": "Відмінити"
+            "cancel-marker-editing": "Відмінити",
+            "latitude_invalid": {
+                "value_missing": "Значення широти обов'язкове.",
+                "range_underflow": "Значення має бути в діапазоні від -90 до 90.",
+                "range_overflow": "Значення має бути в діапазоні від -90 до 90."
+            },
+            "longitude_invalid": {
+                "value_missing": "Значення довготи обов'язкове.",
+                "range_underflow": "Значення має бути в діапазоні від -180 до 180.",
+                "range_overflow": "Значення має бути в діапазоні від -180 до 180."
+            },
+            "starts_at_invalid": {
+                "value_missing": "Час початку обов'язковий."
+            },
+            "importance_invalid": {
+                "value_missing": "Значення важливості обов'язкове."
+            }
         },
-        "email-address": {
+        "email-address-user-settings": {
             "header": "Змінити адресу електронної пошти",
             "description": "Введіть свій пароль та нову адресу електронної пошти. Після цього ви отримаєте листа на свою нову адресу електронної пошти для його підтвердження.",
             "password-input": "Пароль",
             "new-email-address-input": "Нова адреса електронної пошти",
             "apply": "Застосувати",
-            "success": "Лист мав бути надісланий для підтвердження."
+            "success": "Лист мав бути надісланий для підтвердження.",
+            "password_invalid": {
+                "value_missing": "Пароль обов'язковий."
+            },
+            "email_invalid": {
+                "value_missing": "Адреса електронної пошти обов'язкова.",
+                "type_mismatch": "Будь ласка, введіть дійсну адресу електронної пошти (наприклад, user@example.com)."
+            }
         },
         "map-marker-renderer": {
             "cancel-marker-editing": "Відмінити"
@@ -131,7 +162,18 @@
             "confirm-new-password-input": "Підтвердження нового пароля",
             "apply": "Застосувати",
             "password-not-confirmed": "Новий пароль не підтверджено.",
-            "password-is-changed": "Пароль змінений."
+            "password-is-changed": "Пароль змінений.",
+            "old_password_invalid": {
+                "value_missing": "Старий пароль обов'язковий."
+            },
+            "new_password_invalid": {
+                "value_missing": "Новий пароль обов'язковий.",
+                "too_short": "Пароль має містити принаймні 6 символів.",
+                "pattern": "Пароль має містити принаймні 1 малу літеру, 1 велику літеру та 1 цифру."
+            },
+            "confirm_new_password_invalid": {
+                "value_missing": "Підтвердження пароля обов'язкове."
+            }
         },
         "personalization-settings": {
             "header": "Персоналізація",
@@ -142,7 +184,7 @@
             "ru-language-value": "Русский",
             "ua-language-value": "Українська",
             "theme-input": "Тема",
-            "device-theme-value": "Тема пристрою",
+            "default-theme-value": "Тема в браузері",
             "light-theme-value": "Світла",
             "dark-theme-value": "Темна"
         },

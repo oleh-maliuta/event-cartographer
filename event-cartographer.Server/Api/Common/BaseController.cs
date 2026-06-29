@@ -1,13 +1,14 @@
-﻿using EventCartographer.Application.Interfaces;
+﻿using EventCartographer.Application.Commands.GetUserById;
 using EventCartographer.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace EventCartographer.Api.Controllers;
+namespace EventCartographer.Api.Common;
 
-public abstract class BaseController(IApplicationDbContext db) : ControllerBase
+public abstract class BaseController(ISender mediator) : ControllerBase
 {
-    protected IApplicationDbContext DB { get; } = db;
+    protected ISender Mediator { get; } = mediator;
     protected Guid AuthorizedUserId
     {
         get
@@ -16,23 +17,16 @@ public abstract class BaseController(IApplicationDbContext db) : ControllerBase
                 .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
             if (!Guid.TryParse(strId, out Guid id))
-            {
                 throw new InvalidOperationException("This property accessible only for authorized users.");
-            }
 
             return id;
         }
     }
-    protected User AuthorizedUser
-    {
-        get
-        {
-            User? user = DB.Users.FirstOrDefault(x => x.Id == AuthorizedUserId);
 
-            return user is null
-                ? throw new InvalidOperationException("This property accessible only for authorized users.")
-                : user;
-        }
+    protected async Task<User> GetAuthUser()
+    {
+        return (await Mediator.Send(new GetUserByIdCommand(AuthorizedUserId))).Data ??
+            throw new Exception("This method accessible only for authorized users.");
     }
 
     protected ContentResult MessageContentResult(

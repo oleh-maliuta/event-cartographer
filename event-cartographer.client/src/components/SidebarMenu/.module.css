@@ -27,7 +27,7 @@
 .sidebar_menu {
     background-color: var(--marker-panel-background-color);
     overflow-y: scroll;
-    padding-left: 10px;
+    padding-inline: 10px;
     padding-bottom: 10px;
 
     &::-webkit-scrollbar {

@@ -37,12 +37,12 @@ const MapMarkerRenderer = memo(({
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
 
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const markerElements = useMemo(() => {
         const result = markers?.map(el => {
             const dateTimeLocal = convertUtcToLocalTime(el.startsAt, timeZone.name)
-                .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT);
+                .toLocaleString(i18n.language, DEFAULT_DATE_TIME_FORMAT);
 
             return (
                 <Marker
@@ -102,7 +102,8 @@ const MapMarkerRenderer = memo(({
         newMarker,
         t,
         theme,
-        timeZone.name
+        timeZone.name,
+        i18n.language,
     ]);
 
     return markerElements;

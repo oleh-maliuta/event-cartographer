@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, memo, useReducer, useCallback } from 'react';
+import { useState, useEffect, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
@@ -6,23 +6,22 @@ import Switch from '../Switch/Switch';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { CustomElementAppearanceModes, MessageStates } from '../../utils/constants';
+import CustomInput from '../CustomInput/CustomInput';
 
 const blockMessageStyle = { marginTop: '10px', width: 'calc(100% - 6px)' };
+const formFieldStyle = { marginTop: '15px' };
 
 const BasicUserInfoSettings = memo(() => {
     const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
     const [userData, setUserData] = useState(null);
-    const [permissionToDeletePastEventsValue, setPermissionToDeletePastEventsValue] = useState(null);
 
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
         messageListState(),
     );
-
-    const usernameInputRef = useRef(null);
 
     const { theme } = useTheme();
 
@@ -34,25 +33,22 @@ const BasicUserInfoSettings = memo(() => {
         const json = await response.json();
 
         setUserData(json.data || undefined);
-
-        if (json.data) {
-            setPermissionToDeletePastEventsValue(json.data.permissionToDeletePastEvents);
-        }
     }, []);
 
     const updateUserInfoRequest = useCallback(async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        const response = await fetch(`/api/users/info`, {
+        const formData = new FormData(e.target);
+        const response = await fetch('/api/users/info', {
             method: "PUT",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: usernameInputRef.current.value || null,
-                permissionToDeletePastEvents: permissionToDeletePastEventsValue
+                username: formData.get('username'),
+                permissionToDeletePastEvents: formData.has('permissionToDeletePastEvents'),
             })
         });
         const json = await response.json();
@@ -98,7 +94,7 @@ const BasicUserInfoSettings = memo(() => {
         }
 
         setLoading(false);
-    }, [permissionToDeletePastEventsValue, t]);
+    }, [t]);
 
     useEffect(() => {
         loadUserInfo();
@@ -122,26 +118,30 @@ const BasicUserInfoSettings = memo(() => {
                     {t('components.basic-user-info-settings.header')}
                 </h2>
             </div>
+            <CustomInput
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                id='basicInfoForm-username-input'
+                name='username'
+                label={t('components.basic-user-info-settings.username-input')}
+                type='text'
+                autoComplete='off'
+                minLength='3'
+                maxLength='100'
+                pattern='^[^@]*$'
+                required
+                defaultValue={userData.name}
+                valueMissingValidity={t('components.basic-user-info-settings.username_invalid.value_missing')}
+                tooShortValidity={t('components.basic-user-info-settings.username_invalid.too_short')}
+                patternValidity={t('components.basic-user-info-settings.username_invalid.pattern')} />
             <div className={cl.data_input}>
-                <label className={cl.data_input__label}>
-                    {t('components.basic-user-info-settings.username-input')}
-                </label>
-                <input className={cl.data_input__input}
-                    type="text"
-                    placeholder={t('components.basic-user-info-settings.username-input')}
-                    minLength='3'
-                    maxLength="100"
-                    defaultValue={userData.name}
-                    required
-                    ref={usernameInputRef} />
-            </div>
-            <div className={cl.data_input}>
-                <label className={cl.data_input__label}>
+                <span className={cl.data_input__label}>
                     {t('components.basic-user-info-settings.permission-to-delete-past-events-input')}
-                </label>
+                </span>
                 <Switch
-                    value={permissionToDeletePastEventsValue}
-                    setValue={setPermissionToDeletePastEventsValue} />
+                    id='basicInfoForm-permissionToDeletePastEvents-input'
+                    name='permissionToDeletePastEvents'
+                    defaultChecked={userData.permissionToDeletePastEvents} />
             </div>
             <BlockMessage
                 style={blockMessageStyle}
@@ -156,10 +156,7 @@ const BasicUserInfoSettings = memo(() => {
                             curveColor2="#00000000"
                             size="15px"
                             curveWidth="3px" />
-                        :
-                        <span>
-                            {t('components.basic-user-info-settings.save-changes')}
-                        </span>
+                        : t('components.basic-user-info-settings.save-changes')
                 }
             </button>
             <div className={`${cl.normal_sep_line__cont}`}>

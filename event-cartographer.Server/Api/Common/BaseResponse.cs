@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace EventCartographer.Api.Models.Responses;
+namespace EventCartographer.Api.Common;
 
 public abstract class BaseResponse(bool success, string? message, object? data)
 {

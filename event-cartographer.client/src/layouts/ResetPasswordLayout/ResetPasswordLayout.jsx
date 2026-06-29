@@ -1,12 +1,12 @@
-import { useState, useCallback, useReducer, useMemo } from 'react';
+import { useState, useCallback, useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import PanelInput from '../../components/PanelInput/PanelInput';
+import CustomInput from '../../components/CustomInput/CustomInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
 import Panel from '../../components/Panel/Panel';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../../components/BlockMessage/BlockMessage';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { CustomElementAppearanceModes, MessageStates } from '../../utils/constants';
 
 const blockMessageStyle = { marginTop: '15px', width: 'calc(100% - 6px)' };
 const passwordInfoInputStyle = { marginTop: '15px' };
@@ -19,34 +19,29 @@ const ResetPasswordLayout = () => {
 
     const [submitting, setSubmitting] = useState(false);
 
-    const [passwordValue, setPasswordValue] = useState('');
-    const [confirmPasswordValue, setConfirmPasswordValue] = useState('');
-
     const [messageState, dispatchMessageState] = useReducer(
         messageListReducer,
         messageListState()
     );
 
-    const isPasswordConfirmed = useMemo(() => {
-        confirmPasswordValue === passwordValue
-    }, [confirmPasswordValue, passwordValue]);
-
     const resetPasswordRequest = useCallback(async (e) => {
         e.preventDefault();
 
-        if (!isPasswordConfirmed) {
+        const formData = new FormData(e.target);
+
+        if (formData.get('newPassword') !== formData.get('confirmPassword')) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
                 payload: { mode: MessageStates.ERROR, list: [t('layouts.reset-password.password-not-confirmed')] }
             });
             return;
         } else {
+            formData.delete('confirmPassword');
             dispatchMessageState({ type: 'CLEAR_MESSAGES' });
         }
 
         setSubmitting(true);
 
-        const formData = new FormData(e.target);
         formData.append('username', searchParams.get('user') || null);
         formData.append('token', searchParams.get('token') || null);
 
@@ -92,7 +87,7 @@ const ResetPasswordLayout = () => {
         }
 
         setSubmitting(false);
-    }, [isPasswordConfirmed, searchParams, t]);
+    }, [searchParams, t]);
 
     return (
         <Panel
@@ -101,34 +96,32 @@ const ResetPasswordLayout = () => {
             <BlockMessage
                 style={blockMessageStyle}
                 state={messageState} />
-            <PanelInput
+            <CustomInput
                 containerStyle={passwordInfoInputStyle}
+                appearanceMode={CustomElementAppearanceModes.CREDENTIALS}
                 id='resetPassword-newPassword-input'
                 name='newPassword'
                 label={t('layouts.reset-password.password-input')}
                 type='password'
                 autoComplete='new-password'
                 placeholder={t('layouts.reset-password.password-input')}
-                pattern="^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$"
+                pattern='^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$'
                 minLength='6'
                 maxLength='200'
                 required
-                value={passwordValue}
-                setValue={setPasswordValue}
                 valueMissingValidity={t('layouts.reset-password.new_password_invalid.value_missing')}
                 tooShortValidity={t('layouts.reset-password.new_password_invalid.too_short')}
                 patternValidity={t('layouts.reset-password.new_password_invalid.pattern')} />
-            <PanelInput
+            <CustomInput
                 containerStyle={confirmPasswordInfoInputStyle}
                 id='resetPassword-confirmPassword-input'
+                name='confirmPassword'
                 label={t('layouts.reset-password.confirm-password-input')}
                 type='password'
                 autoComplete='off'
                 placeholder={t('layouts.reset-password.confirm-password-input')}
                 maxLength='200'
                 required
-                value={confirmPasswordValue}
-                setValue={setConfirmPasswordValue}
                 valueMissingValidity={t(`layouts.reset-password.confirm_password_invalid.value_missing`)} />
             <PanelButton
                 style={submitButtonStyle}

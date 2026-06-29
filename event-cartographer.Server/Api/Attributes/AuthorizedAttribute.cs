@@ -1,4 +1,4 @@
-﻿using EventCartographer.Api.Models.Responses;
+﻿using EventCartographer.Api.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

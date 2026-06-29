@@ -1,4 +1,5 @@
-﻿using EventCartographer.Domain.Entities;
+﻿using EventCartographer.Api.Common;
+using EventCartographer.Domain.Entities;
 using System.Text.Json.Serialization;
 
 namespace EventCartographer.Api.Models.Responses;

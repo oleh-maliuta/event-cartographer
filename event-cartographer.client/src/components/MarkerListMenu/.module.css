@@ -44,14 +44,13 @@
 
 .marker_list_panel {
     position: relative;
-    width: calc(100% - 12px);
     margin-top: 15px;
 }
 
 .marker_list_panel__search {
     display: grid;
     grid-template-columns: 1fr 35px;
-    width: calc(100% + 5px);
+    width: 100%;
     grid-column-gap: 2px;
 }
 

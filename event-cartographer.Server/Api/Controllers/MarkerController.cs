@@ -7,22 +7,27 @@ using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Domain.Constants;
 using EventCartographer.Application.Interfaces;
+using EventCartographer.Api.Common;
+using MediatR;
 
 namespace EventCartographer.Api.Controllers;
 
 [ApiController]
 [Route("api/markers")]
 public class MarkerController(
-    IApplicationDbContext db) : BaseController(db)
+    ISender mediator,
+    IApplicationDbContext db) : BaseController(mediator)
 {
+    private readonly IApplicationDbContext _db = db;
+
     [Authorized]
     [HttpPost]
     public async Task<IActionResult> AddMarker(
         [FromBody] AddMarkerRequest request)
     {
-        User user = AuthorizedUser;
+        User user = await GetAuthUser();
 
-        if ((await DB.Markers.CountAsync(x => x.UserId == user.Id)) >= MarkerConstants.MarkerLimit)
+        if ((await _db.Markers.CountAsync(x => x.UserId == user.Id)) >= MarkerConstants.MarkerLimit)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.max-markers"));
         }
@@ -36,14 +41,14 @@ public class MarkerController(
                 return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.marker.add-marker.past-event-time"));
             }
 
-            Marker[] passedEvents = await DB.Markers
+            Marker[] passedEvents = await _db.Markers
                 .Where(x => x.UserId == user.Id && x.StartsAt < now)
                 .ToArrayAsync();
 
-            DB.Markers.RemoveRange(passedEvents);
+            _db.Markers.RemoveRange(passedEvents);
         }
 
-        Marker marker = (await DB.Markers.AddAsync(new()
+        Marker marker = (await _db.Markers.AddAsync(new()
         {
             UserId = user.Id,
             User = user,
@@ -57,7 +62,7 @@ public class MarkerController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return StatusCode(201, new MarkerResponse(marker));
     }
 
@@ -67,8 +72,8 @@ public class MarkerController(
         [FromRoute] Guid markerId,
         [FromBody] UpdateMarkerRequest request)
     {
-        User user = AuthorizedUser;
-        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
+        User user = await GetAuthUser();
+        Marker? marker = await _db.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {
@@ -99,7 +104,7 @@ public class MarkerController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new MarkerResponse(marker));
     }
 
@@ -108,8 +113,8 @@ public class MarkerController(
     public async Task<IActionResult> DeleteMarker(
         [FromRoute] Guid markerId)
     {
-        User user = AuthorizedUser;
-        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
+        User user = await GetAuthUser();
+        Marker? marker = await _db.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {
@@ -125,18 +130,18 @@ public class MarkerController(
         {
             DateTime now = DateTime.UtcNow;
 
-            Marker[] passedEvents = await DB.Markers
+            Marker[] passedEvents = await _db.Markers
                 .Where(x => x.UserId == user.Id && x.StartsAt < now)
                 .ToArrayAsync();
 
-            DB.Markers.RemoveRange(passedEvents);
+            _db.Markers.RemoveRange(passedEvents);
         }
 
-        DB.Markers.Remove(marker);
+        _db.Markers.Remove(marker);
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new MarkerResponse(marker));
     }
 
@@ -145,7 +150,7 @@ public class MarkerController(
     public async Task<IActionResult> GetMarker(
         [FromRoute] Guid markerId)
     {
-        Marker? marker = await DB.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
+        Marker? marker = await _db.Markers.FirstOrDefaultAsync(x => x.Id == markerId);
 
         if (marker == null)
         {
@@ -165,9 +170,9 @@ public class MarkerController(
     public async Task<IActionResult> GetMarkersByBounds(
         [FromQuery] MarkerBoundQuery query)
     {
-        User user = AuthorizedUser;
+        User user = await GetAuthUser();
 
-        Marker[] markers = await DB.Markers
+        Marker[] markers = await _db.Markers
             .Where(x =>
                 x.UserId == user.Id &&
                 (!user.PermissionToDeletePastEvents || x.StartsAt >= DateTime.UtcNow) &&
@@ -179,7 +184,7 @@ public class MarkerController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new MarkerResponse(markers));
     }
 
@@ -189,9 +194,9 @@ public class MarkerController(
         [FromQuery] PageQuery pageQuery,
         [FromQuery] MarkerSearchQuery query)
     {
-        User user = AuthorizedUser;
+        User user = await GetAuthUser();
 
-        List<Marker> markers = await DB.Markers
+        List<Marker> markers = await _db.Markers
             .Where(x =>
                 x.UserId == user.Id &&
                 (!user.PermissionToDeletePastEvents || x.StartsAt >= DateTime.UtcNow) &&
@@ -241,7 +246,7 @@ public class MarkerController(
             pageQuery.PageSize,
             totalPagesCount);
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(response);
     }
 }

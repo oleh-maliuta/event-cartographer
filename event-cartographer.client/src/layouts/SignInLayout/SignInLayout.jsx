@@ -1,7 +1,7 @@
 import { useState, useCallback, useReducer, useEffect } from 'react';
 import cl from './.module.css';
 import Panel from '../../components/Panel/Panel';
-import PanelInput from '../../components/PanelInput/PanelInput';
+import CustomInput from '../../components/CustomInput/CustomInput';
 import PanelButton from '../../components/PanelButton/PanelButton';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordDialog from '../../components/ResetPasswordDialog/ResetPasswordDialog';
@@ -10,7 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import MemoLink from '../../components/MemoLink/MemoLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates, PanelInputAppearanceModes } from '../../utils/constants';
+import { MessageStates, CustomElementAppearanceModes } from '../../utils/constants';
 
 const blockMessageStyle = { marginTop: '15px', width: 'calc(100% - 6px)' };
 const usernameInfoInputStyle = { marginTop: '15px' };
@@ -94,9 +94,9 @@ const SignInLayout = () => {
                 <BlockMessage
                     style={blockMessageStyle}
                     state={messageState} />
-                <PanelInput
+                <CustomInput
                     containerStyle={usernameInfoInputStyle}
-                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    appearanceMode={CustomElementAppearanceModes.CREDENTIALS}
                     id='signIn-usernameOrEmail-input'
                     name='usernameOrEmail'
                     label={t('layouts.sign-in.username-or-email-input')}
@@ -106,9 +106,9 @@ const SignInLayout = () => {
                     maxLength='100'
                     required
                     valueMissingValidity={t('layouts.sign-in.username_or_email_invalid.value_missing')} />
-                <PanelInput
+                <CustomInput
                     containerStyle={passwordInfoInputStyle}
-                    appearanceMode={PanelInputAppearanceModes.CREDENTIALS}
+                    appearanceMode={CustomElementAppearanceModes.CREDENTIALS}
                     id='signIn-password-input'
                     name='password'
                     label={t('layouts.sign-in.password-input')}

@@ -7,9 +7,14 @@ import { useTheme } from '../../hooks/useTheme';
 import PropTypes from 'prop-types';
 import { useTimeZone } from '../../hooks/useTimeZone';
 import { convertLocalTimeToUtc, convertUtcToLocalTime } from '../../utils/time';
-import { MessageStates } from '../../utils/constants';
+import { MessageStates, CustomElementAppearanceModes } from '../../utils/constants';
+import CustomInput from '../CustomInput/CustomInput';
+import CustomSelect from '../CustomSelect/CustomSelect';
+import CustomTextarea from '../CustomTextarea/CustomTextarea';
 
 const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 22px)' };
+const formFieldStyle = { marginTop: '15px' };
+const textareaStyle = { height: '150px' };
 
 const EditMarkerForm = memo(({
     mode,
@@ -36,10 +41,38 @@ const EditMarkerForm = memo(({
         dispatchMessageState({ type: 'CLEAR_MESSAGES' });
     }, [dispatchMessageState, setMarker, setMode]);
 
-    const apply = useCallback(async () => {
+    const onChangeLatitudeEvent = useCallback(
+        (e) => setMarker(p => ({ ...p, latitude: e.target.value })),
+        [setMarker]);
+
+    const onChangeLongitudeEvent = useCallback(
+        (e) => setMarker(p => ({ ...p, longitude: e.target.value })),
+        [setMarker]);
+
+    const onChangeStartsAtEvent = useCallback((e) => {
+        const utcValue = e.target.value ?
+            convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
+        setMarker(p => ({ ...p, startsAt: utcValue?.toString() }));
+    }, [setMarker, timeZone.name]);
+
+    const onChangeImportanceEvent = useCallback(
+        (e) => setMarker(p => ({ ...p, importance: e.target.value })),
+        [setMarker]);
+
+    const onChangeTitleEvent = useCallback(
+        (e) => setMarker(p => ({ ...p, title: e.target.value })),
+        [setMarker]);
+
+    const onChangeDescriptionEvent = useCallback(
+        (e) => setMarker(p => ({ ...p, description: e.target.value })),
+        [setMarker]);
+
+    const apply = useCallback(async (e) => {
+        e.preventDefault();
         setLoading(true);
 
-        const url = mode === 'add' ? '/api/markers' : `/api/markers/${marker.id}`;
+        const formData = new FormData(e.target);
+        const url = mode === 'add' ? '/api/markers' : `/api/markers/${formData.get('id')}`;
         const method = mode === 'add' ? 'POST' : 'PUT';
 
         const response = await fetch(url, {
@@ -49,12 +82,12 @@ const EditMarkerForm = memo(({
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                latitude: Number(marker.latitude) || null,
-                longitude: Number(marker.longitude) || null,
-                startsAt: marker.startsAt || null,
-                importance: marker.importance || null,
-                title: marker.title || null,
-                description: marker.description || null
+                latitude: Number(formData.get('latitude')),
+                longitude: Number(formData.get('longitude')),
+                startsAt: formData.get('startsAt'),
+                importance: formData.get('importance'),
+                title: formData.get('title'),
+                description: formData.get('description')
             })
         });
 
@@ -93,104 +126,113 @@ const EditMarkerForm = memo(({
         }
 
         setLoading(false);
-    }, [dispatchMessageState, marker, mode, onSuccess, setMarker, setMode, t]);
+    }, [dispatchMessageState, mode, onSuccess, setMarker, setMode, t]);
 
-    const handleSubmit = useCallback(async (e) => {
-        e.preventDefault();
-        await apply();
-    }, [apply]);
-
-    if (!mode) {
+    if (!mode)
         return null;
-    }
 
     return (
         <form className={`${cl.edit_marker_form} ${cl[theme]}`}
-            onSubmit={handleSubmit}>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__latitude}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__latitude_label}`}>
-                    {t('components.edit-marker-form.latitude-label')}
-                </p>
-                <input
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__latitude_input}`}
-                    type='number'
-                    value={marker?.latitude ?? ''}
-                    required
-                    onChange={(e) => setMarker(p => ({ ...p, latitude: e.target.value }))} />
-            </div>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__longitude}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__longitude_label}`}>
-                    {t('components.edit-marker-form.longitude-label')}
-                </p>
-                <input
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__longitude_input}`}
-                    type='number'
-                    value={marker?.longitude ?? ''}
-                    required
-                    onChange={(e) => setMarker(p => ({ ...p, longitude: e.target.value }))} />
-            </div>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__starts_at}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__starts_at_label}`}>
-                    {t('components.edit-marker-form.starts-at-label')}
-                </p>
-                <input
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__starts_at_input}`}
-                    type='datetime-local'
-                    value={dateTimeLocalValue}
-                    step="60"
-                    required
-                    onChange={(e) => {
-                        const utcValue = e.target.value ?
-                            convertLocalTimeToUtc(e.target.value, timeZone.name) : null;
-                        setMarker(p => ({ ...p, startsAt: utcValue?.toString() }));
-                    }} />
-            </div>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__importance}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__importance_label}`}>
-                    {t('components.edit-marker-form.importance-label')}
-                </p>
-                <select
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__importance_input}`}
-                    value={marker?.importance ?? ''}
-                    required
-                    onChange={(e) => setMarker(p => ({ ...p, importance: e.target.value }))}>
-                    <option className={cl.edit_marker_form__importance_input__no_value} value=''>
-                        {t('components.edit-marker-form.no-importance-value')}
-                    </option>
-                    <option className={cl.edit_marker_form__importance_input__high_value} value='high'>
-                        {t('components.edit-marker-form.high-importance-value')}
-                    </option>
-                    <option className={cl.edit_marker_form__importance_input__medium_value} value='medium'>
-                        {t('components.edit-marker-form.medium-importance-value')}
-                    </option>
-                    <option className={cl.edit_marker_form__importance_input__low_value} value='low'>
-                        {t('components.edit-marker-form.low-importance-value')}
-                    </option>
-                </select>
-            </div>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__title}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__title_label}`}>
-                    {t('components.edit-marker-form.title-label')}
-                </p>
-                <input
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__title_input}`}
-                    type='text'
-                    maxLength='100'
-                    value={marker?.title ?? ''}
-                    required
-                    onChange={(e) => setMarker(p => ({ ...p, title: e.target.value }))} />
-            </div>
-            <div className={`${cl.edit_marker_form__field} ${cl.edit_marker_form__description}`}>
-                <p className={`${cl.edit_marker_form__field_label} ${cl.edit_marker_form__description_label}`}>
-                    {t('components.edit-marker-form.description-label')}
-                </p>
-                <textarea
-                    className={`${cl.edit_marker_form__field_input} ${cl.edit_marker_form__description_input}`}
-                    maxLength='5000'
-                    value={marker?.description ?? ''}
-                    onChange={(e) => setMarker(p => ({ ...p, description: e.target.value }))}
-                ></textarea>
-            </div>
+            onSubmit={apply}>
+            <CustomInput
+                id='editMarkerForm-id-input'
+                name='id'
+                type='hidden'
+                value={marker?.id ?? ''} />
+            <CustomInput
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                id='editMarkerForm-latitude-input'
+                name='latitude'
+                label={t('components.edit-marker-form.latitude-label')}
+                type='number'
+                autoComplete='off'
+                max='90'
+                min='-90'
+                step='any'
+                required
+                value={marker?.latitude ?? ''}
+                valueMissingValidity={t('components.edit-marker-form.latitude_invalid.value_missing')}
+                rangeUnderflowValidity={t('components.edit-marker-form.latitude_invalid.range_underflow')}
+                rangeOverflowValidity={t('components.edit-marker-form.latitude_invalid.range_overflow')}
+                onChange={onChangeLatitudeEvent} />
+            <CustomInput
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                id='editMarkerForm-longitude-input'
+                name='longitude'
+                label={t('components.edit-marker-form.longitude-label')}
+                type='number'
+                autoComplete='off'
+                max='180'
+                min='-180'
+                step='any'
+                required
+                value={marker?.longitude ?? ''}
+                valueMissingValidity={t('components.edit-marker-form.longitude_invalid.value_missing')}
+                rangeUnderflowValidity={t('components.edit-marker-form.longitude_invalid.range_underflow')}
+                rangeOverflowValidity={t('components.edit-marker-form.longitude_invalid.range_overflow')}
+                onChange={onChangeLongitudeEvent} />
+            <CustomInput
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                id='editMarkerForm-startsAt-input'
+                name='startsAt'
+                label={t('components.edit-marker-form.starts-at-label')}
+                type='datetime-local'
+                autoComplete='off'
+                step='60'
+                required
+                value={dateTimeLocalValue}
+                valueMissingValidity={t('components.edit-marker-form.starts_at_invalid.value_missing')}
+                onChange={onChangeStartsAtEvent} />
+            <CustomSelect
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                id='editMarkerForm-importance-select'
+                name='importance'
+                value={marker?.importance ?? ''}
+                label={t('components.edit-marker-form.importance-label')}
+                required
+                valueMissingValidity={t('components.edit-marker-form.importance_invalid.value_missing')}
+                onChange={onChangeImportanceEvent}>
+                <option className={cl.edit_marker_form__importance_input__no_value} value=''>
+                    {t('components.edit-marker-form.no-importance-value')}
+                </option>
+                <option className={cl.edit_marker_form__importance_input__high_value} value='high'>
+                    {t('components.edit-marker-form.high-importance-value')}
+                </option>
+                <option className={cl.edit_marker_form__importance_input__medium_value} value='medium'>
+                    {t('components.edit-marker-form.medium-importance-value')}
+                </option>
+                <option className={cl.edit_marker_form__importance_input__low_value} value='low'>
+                    {t('components.edit-marker-form.low-importance-value')}
+                </option>
+            </CustomSelect>
+            <CustomInput
+                containerStyle={formFieldStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                id='editMarkerForm-title-input'
+                name='title'
+                label={t('components.edit-marker-form.title-label')}
+                type='text'
+                autoComplete='off'
+                maxLength='100'
+                required
+                value={marker?.title ?? ''}
+                valueMissingValidity={t('components.edit-marker-form.title_invalid.value_missing')}
+                onChange={onChangeTitleEvent} />
+            <CustomTextarea
+                containerStyle={formFieldStyle}
+                textareaStyle={textareaStyle}
+                appearanceMode={CustomElementAppearanceModes.SIMPLE}
+                autoComplete='off'
+                id='editMarkerForm-description-textarea'
+                name='description'
+                label={t('components.edit-marker-form.description-label')}
+                maxLength='5000'
+                value={marker?.description ?? ''}
+                onChange={onChangeDescriptionEvent} />
             <BlockMessage
                 style={blockMessageStyle}
                 state={messageState} />
@@ -244,7 +286,7 @@ const EditMarkerForm = memo(({
                         </button>
                     </div>
             }
-        </form>
+        </form >
     );
 });
 

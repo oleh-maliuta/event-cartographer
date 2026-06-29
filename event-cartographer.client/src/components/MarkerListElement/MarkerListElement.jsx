@@ -5,6 +5,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { convertUtcToLocalTime, isInPast } from "../../utils/time";
 import { useTimeZone } from "../../hooks/useTimeZone";
 import { DEFAULT_DATE_TIME_FORMAT } from "../../utils/constants";
+import { useTranslation } from "react-i18next";
 
 const MarkerListElement = memo(({
     marker,
@@ -12,11 +13,13 @@ const MarkerListElement = memo(({
     edit,
     remove
 }) => {
+    const { i18n } = useTranslation();
     const { theme } = useTheme();
     const { timeZone } = useTimeZone();
 
     const startsAtText = useMemo(() => convertUtcToLocalTime(marker.startsAt, timeZone.name)
-        .toLocaleString('en-US', DEFAULT_DATE_TIME_FORMAT), [marker.startsAt, timeZone.name]);
+        .toLocaleString(i18n.language, DEFAULT_DATE_TIME_FORMAT),
+        [i18n.language, marker.startsAt, timeZone.name]);
 
     const startsAtClass = useMemo(
         () => isInPast(marker.startsAt) ? cl.past : '',

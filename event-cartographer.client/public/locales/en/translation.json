@@ -40,7 +40,7 @@
             "password_invalid": {
                 "value_missing": "Password is required.",
                 "too_short": "Password should contain at least 6 characters.",
-                "pattern": "The password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+                "pattern": "Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
             },
             "confirm_password_invalid": {
                 "value_missing": "Password confirmation is required."
@@ -77,14 +77,22 @@
             "username-input": "Username",
             "permission-to-delete-past-events-input": "Delete past events automatically",
             "save-changes": "Save changes",
-            "changes-are-saved": "Changes have been saved."
+            "changes-are-saved": "Changes have been saved.",
+            "username_invalid": {
+                "value_missing": "Username is required.",
+                "too_short": "Username should contain at least 3 characters.",
+                "pattern": "Username can't contain '@' character."
+            }
         },
         "delete-user-account-settings": {
             "header": "Delete account",
             "description": "To delete the account you need to input your password below. After that you will receive a mail in your email address to confirm the action.",
             "password-input": "Password",
             "delete": "Delete",
-            "success": "Email should have been sent for confirmation."
+            "success": "Email should have been sent for confirmation.",
+            "password_invalid": {
+                "value_missing": "Password is required."
+            }
         },
         "edit-marker-form": {
             "latitude-label": "Latitude:",
@@ -99,7 +107,23 @@
             "high-importance-value": "High",
             "add-marker": "Add",
             "edit-marker": "Edit",
-            "cancel-marker-editing": "Cancel"
+            "cancel-marker-editing": "Cancel",
+            "latitude_invalid": {
+                "value_missing": "Latitude is required.",
+                "range_underflow": "Value must be in the range from -90 to 90.",
+                "range_overflow": "Value must be in the range from -90 to 90."
+            },
+            "longitude_invalid": {
+                "value_missing": "Longitude is required.",
+                "range_underflow": "Value must be in the range from -180 to 180.",
+                "range_overflow": "Value must be in the range from -180 to 180."
+            },
+            "starts_at_invalid": {
+                "value_missing": "Time of the start is required."
+            },
+            "importance_invalid": {
+                "value_missing": "Importance value is required."
+            }
         },
         "email-address-user-settings": {
             "header": "Change email address",
@@ -107,7 +131,14 @@
             "password-input": "Password",
             "new-email-address-input": "New email address",
             "apply": "Apply",
-            "success": "Email should have been sent for confirmation."
+            "success": "Email should have been sent for confirmation.",
+            "password_invalid": {
+                "value_missing": "Password is required."
+            },
+            "email_invalid": {
+                "value_missing": "Email is required.",
+                "type_mismatch": "Please enter a valid email (e.g., user@example.com)."
+            }
         },
         "map-marker-renderer": {
             "cancel-marker-editing": "Cancel"
@@ -131,7 +162,18 @@
             "confirm-new-password-input": "Confirm new password",
             "apply": "Apply",
             "password-not-confirmed": "New password not confirmed.",
-            "password-is-changed": "Password is changed."
+            "password-is-changed": "Password is changed.",
+            "old_password_invalid": {
+                "value_missing": "Old password is required."
+            },
+            "new_password_invalid": {
+                "value_missing": "New password is required.",
+                "too_short": "Password should contain at least 6 characters.",
+                "pattern": "Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit."
+            },
+            "confirm_new_password_invalid": {
+                "value_missing": "Password confirmation is required."
+            }
         },
         "personalization-settings": {
             "header": "Personalization",
@@ -142,7 +184,7 @@
             "ru-language-value": "Русский",
             "ua-language-value": "Українська",
             "theme-input": "Theme",
-            "device-theme-value": "Device theme",
+            "default-theme-value": "Browser theme",
             "light-theme-value": "Light",
             "dark-theme-value": "Dark"
         },

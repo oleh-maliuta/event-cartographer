@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { CustomElementAppearanceModes, MessageStates } from '../../utils/constants';
+import CustomInput from '../CustomInput/CustomInput';
 
 const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
+const formFieldStyle = { marginTop: '12px' };
 
 const DeleteUserAccountSettings = memo(() => {
     const { t, i18n } = useTranslation();
@@ -77,12 +79,17 @@ const DeleteUserAccountSettings = memo(() => {
                 <p className={`${cl.element__description}`}>
                     {t('components.delete-user-account-settings.description')}
                 </p>
-                <input className={`${cl.element__input}`}
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='deleteAccount-password-input'
                     name='password'
-                    type="password"
+                    type='password'
+                    autoComplete='current-password'
                     placeholder={t('components.delete-user-account-settings.password-input')}
-                    maxLength="200"
-                    required />
+                    maxLength='200'
+                    required
+                    valueMissingValidity={t('components.delete-user-account-settings.password_invalid.value_missing')} />
             </div>
             <BlockMessage
                 style={blockMessageStyle}
@@ -98,10 +105,7 @@ const DeleteUserAccountSettings = memo(() => {
                                 curveColor2="#00000000"
                                 size="15px"
                                 curveWidth="3px" />
-                            :
-                            <span>
-                                {t('components.delete-user-account-settings.delete')}
-                            </span>
+                            : t('components.delete-user-account-settings.delete')
                     }
                 </button>
             </div>

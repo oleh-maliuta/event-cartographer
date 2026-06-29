@@ -77,14 +77,22 @@
             "username-input": "Имя пользователя",
             "permission-to-delete-past-events-input": "Автоматически удалять прошедшие события",
             "save-changes": "Сохранить изменения",
-            "changes-are-saved": "Изменения сохранены."
+            "changes-are-saved": "Изменения сохранены.",
+            "username_invalid": {
+                "value_missing": "Имя пользователя обязательно.",
+                "too_short": "Имя пользователя должно содержать как минимум 3 символа.",
+                "pattern": "Имя пользователя не может содержать символ '@'."
+            }
         },
         "delete-user-account-settings": {
             "header": "Удалить учётную запись",
             "description": "Чтобы удалить учётную запись, введите пароль ниже. После этого на ваш адрес электронной почты будет отправлено письмо для подтверждения.",
             "password-input": "Пароль",
             "delete": "Удалить",
-            "success": "Письмо должно было быть отправлено для подтверждения."
+            "success": "Письмо должно было быть отправлено для подтверждения.",
+            "password_invalid": {
+                "value_missing": "Пароль обязателен."
+            }
         },
         "edit-marker-form": {
             "latitude-label": "Широта:",
@@ -99,7 +107,23 @@
             "high-importance-value": "Высокая",
             "add-marker": "Добавить",
             "edit-marker": "Изменить",
-            "cancel-marker-editing": "Отменить"
+            "cancel-marker-editing": "Отменить",
+            "latitude_invalid": {
+                "value_missing": "Значение широты обязательно.",
+                "range_underflow": "Значение должно быть в диапазоне от -90 до 90.",
+                "range_overflow": "Значение должно быть в диапазоне от -90 до 90."
+            },
+            "longitude_invalid": {
+                "value_missing": "Значение долготы обязательно.",
+                "range_underflow": "Значение должно быть в диапазоне от -180 до 180.",
+                "range_overflow": "Значение должно быть в диапазоне от -180 до 180."
+            },
+            "starts_at_invalid": {
+                "value_missing": "Время начала обязательно."
+            },
+            "importance_invalid": {
+                "value_missing": "Значение важности обязательно."
+            }
         },
         "email-address-user-settings": {
             "header": "Изменить адрес электронной почты",
@@ -107,7 +131,14 @@
             "password-input": "Пароль",
             "new-email-address-input": "Новый адрес электронной почты",
             "apply": "Применить",
-            "success": "Письмо должно было быть отправлено для подтверждения."
+            "success": "Письмо должно было быть отправлено для подтверждения.",
+            "password_invalid": {
+                "value_missing": "Пароль обязателен."
+            },
+            "email_invalid": {
+                "value_missing": "Адрес электронной почты обязателен.",
+                "type_mismatch": "Пожалуйста, введите действительный адрес электронной почты (например, user@example.com)."
+            }
         },
         "map-marker-renderer": {
             "cancel-marker-editing": "Отменить"
@@ -131,7 +162,18 @@
             "confirm-new-password-input": "Подтверждение нового пароля",
             "apply": "Применить",
             "password-not-confirmed": "Новый пароль не подтверждён.",
-            "password-is-changed": "Пароль изменён."
+            "password-is-changed": "Пароль изменён.",
+            "old_password_invalid": {
+                "value_missing": "Старый пароль обязателен."
+            },
+            "new_password_invalid": {
+                "value_missing": "Новый пароль обязателен.",
+                "too_short": "Пароль должен содержать как минимум 6 символов.",
+                "pattern": "Пароль должен содержать как минимум 1 строчную букву, 1 прописную букву и 1 цифру."
+            },
+            "confirm_new_password_invalid": {
+                "value_missing": "Подтверждение пароля обязательно."
+            }
         },
         "personalization-settings": {
             "header": "Персонализация",
@@ -142,7 +184,7 @@
             "ru-language-value": "Русский",
             "ua-language-value": "Українська",
             "theme-input": "Тема",
-            "device-theme-value": "Как на устройстве",
+            "default-theme-value": "Как в браузере",
             "light-theme-value": "Светлая",
             "dark-theme-value": "Темная"
         },

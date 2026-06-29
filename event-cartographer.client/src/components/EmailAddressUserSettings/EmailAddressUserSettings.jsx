@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { CustomElementAppearanceModes, MessageStates } from '../../utils/constants';
+import CustomInput from '../CustomInput/CustomInput';
 
 const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
+const formFieldStyle = { marginTop: '12px' };
 
 const EmailAddressUserSettings = memo(() => {
     const { t, i18n } = useTranslation();
@@ -77,18 +79,29 @@ const EmailAddressUserSettings = memo(() => {
                 <p className={`${cl.element__description}`}>
                     {t('components.email-address-user-settings.description')}
                 </p>
-                <input className={`${cl.element__input}`}
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='changeEmail-password-input'
                     name='password'
-                    type="password"
+                    type='password'
+                    autoComplete='current-password'
                     placeholder={t('components.email-address-user-settings.password-input')}
-                    maxLength="200"
-                    required />
-                <input className={`${cl.element__input}`}
+                    maxLength='200'
+                    required
+                    valueMissingValidity={t('layouts.sign-in.password_invalid.value_missing')} />
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='changeEmail-email-input'
                     name='email'
-                    type="email"
+                    type='email'
+                    autoComplete='username'
                     placeholder={t('components.email-address-user-settings.new-email-address-input')}
-                    maxLength="320"
-                    required />
+                    maxLength='320'
+                    required
+                    valueMissingValidity={t('layouts.sign-up.email_invalid.value_missing')}
+                    typeMismatchValidity={t('layouts.sign-up.email_invalid.type_mismatch')} />
             </div>
             <BlockMessage
                 style={blockMessageStyle}
@@ -104,10 +117,7 @@ const EmailAddressUserSettings = memo(() => {
                                 curveColor2="#00000000"
                                 size="15px"
                                 curveWidth="3px" />
-                            :
-                            <span>
-                                {t('components.email-address-user-settings.apply')}
-                            </span>
+                            : t('components.email-address-user-settings.apply')
                     }
                 </button>
             </div>

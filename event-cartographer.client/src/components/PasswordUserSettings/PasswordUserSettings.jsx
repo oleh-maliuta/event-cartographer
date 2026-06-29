@@ -1,13 +1,15 @@
-import { useState, useRef, memo, useReducer, useCallback } from 'react';
+import { useState, memo, useReducer, useCallback } from 'react';
 import cl from './.module.css';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import { useTranslation } from 'react-i18next';
 import BlockMessage from '../BlockMessage/BlockMessage';
 import { useTheme } from '../../hooks/useTheme';
 import { messageListReducer, messageListState } from '../../utils/reducers/messageListReducer';
-import { MessageStates } from '../../utils/constants';
+import { CustomElementAppearanceModes, MessageStates } from '../../utils/constants';
+import CustomInput from '../CustomInput/CustomInput';
 
 const blockMessageStyle = { marginTop: '8px', width: 'calc(100% - 6px)' };
+const formFieldStyle = { marginTop: '12px' };
 
 const PasswordUserSettings = memo(() => {
     const { t } = useTranslation();
@@ -19,13 +21,13 @@ const PasswordUserSettings = memo(() => {
         messageListState(),
     );
 
-    const newPasswordInputRef = useRef(null);
-    const confirmPasswordInputRef = useRef(null);
-
     const { theme } = useTheme();
 
     const updateUserPasswordRequest = useCallback(async (e) => {
-        if (confirmPasswordInputRef.current.value !== newPasswordInputRef.current.value) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        if (formData.get('confirmNewPassword') !== formData.get('newPassword')) {
             dispatchMessageState({
                 type: 'SET_MESSAGES',
                 payload: { mode: MessageStates.ERROR, list: [t('components.password-user-settings.password-not-confirmed')] }
@@ -33,12 +35,14 @@ const PasswordUserSettings = memo(() => {
             return;
         }
 
+        formData.delete('confirmNewPassword')
+
         setLoading(true);
 
         const response = await fetch(`/api/users/password`, {
             method: "PUT",
             credentials: "include",
-            body: new FormData(e.target)
+            body: formData,
         });
         const json = await response.json();
 
@@ -84,26 +88,43 @@ const PasswordUserSettings = memo(() => {
                 <h3 className={`${cl.element__header}`}>
                     {t('components.password-user-settings.header')}
                 </h3>
-                <input className={`${cl.element__input}`}
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='changePassword-currentPassword-input'
                     name='oldPassword'
-                    type="password"
+                    type='password'
+                    autoComplete='current-password'
                     placeholder={t('components.password-user-settings.old-password-input')}
-                    maxLength="200"
-                    required />
-                <input className={`${cl.element__input}`}
+                    maxLength='200'
+                    required
+                    valueMissingValidity={t('components.password-user-settings.old_password_invalid.value_missing')} />
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='changePassword-newPassword-input'
                     name='newPassword'
-                    type="password"
+                    type='password'
+                    autoComplete='new-password'
                     placeholder={t('components.password-user-settings.new-password-input')}
+                    pattern='^(?=.*\p{Nd})(?=.*\p{Lu})(?=.*\p{Ll}).+$'
                     minLength='6'
-                    maxLength="200"
+                    maxLength='200'
                     required
-                    ref={newPasswordInputRef} />
-                <input className={`${cl.element__input}`}
-                    type="password"
+                    valueMissingValidity={t('components.password-user-settings.new_password_invalid.value_missing')}
+                    tooShortValidity={t('components.password-user-settings.new_password_invalid.too_short')}
+                    patternValidity={t('components.password-user-settings.new_password_invalid.pattern')} />
+                <CustomInput
+                    containerStyle={formFieldStyle}
+                    appearanceMode={CustomElementAppearanceModes.SETTINGS}
+                    id='changePassword-confirmNewPassword-input'
+                    name='confirmNewPassword'
+                    type='password'
+                    autoComplete='off'
                     placeholder={t('components.password-user-settings.confirm-new-password-input')}
-                    maxLength="200"
+                    maxLength='200'
                     required
-                    ref={confirmPasswordInputRef} />
+                    valueMissingValidity={t('components.password-user-settings.confirm_new_password_invalid.value_missing')} />
             </div>
             <BlockMessage
                 style={blockMessageStyle}

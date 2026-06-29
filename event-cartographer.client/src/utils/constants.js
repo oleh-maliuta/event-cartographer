@@ -1,6 +1,6 @@
 import { getTimeZones } from "./time";
 
-export const PanelInputAppearanceModes = Object.freeze({
+export const CustomElementAppearanceModes = Object.freeze({
     CREDENTIALS: 'credentials',
     SIMPLE: 'simple',
     SETTINGS: 'settings',

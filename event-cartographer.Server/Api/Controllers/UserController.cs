@@ -1,4 +1,5 @@
 ﻿using EventCartographer.Api.Attributes;
+using EventCartographer.Api.Common;
 using EventCartographer.Api.Models.Requests.Bodies;
 using EventCartographer.Api.Models.Requests.Queries;
 using EventCartographer.Api.Models.Responses;
@@ -6,6 +7,7 @@ using EventCartographer.Application.Interfaces;
 using EventCartographer.Domain.Entities;
 using EventCartographer.Domain.ValueClasses;
 using Hangfire;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +16,20 @@ namespace EventCartographer.Api.Controllers;
 [ApiController]
 [Route("api/users")]
 public class UserController(
-        IApplicationDbContext db,
-        IBackgroundJobClient backgroundJobClient,
-        IPasswordHandler passwordHandler) : BaseController(db)
+    ISender mediator,
+    IApplicationDbContext db,
+    IBackgroundJobClient backgroundJobClient,
+    IPasswordHandler passwordHandler) : BaseController(mediator)
 {
+    private readonly IApplicationDbContext _db = db;
     private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient;
     private readonly IPasswordHandler _passwordHandler = passwordHandler;
 
     [Authorized]
     [HttpGet("self")]
-    public IActionResult SelfInfo()
+    public async Task<IActionResult> SelfInfo()
     {
-        return Ok(new UserResponse(AuthorizedUser));
+        return Ok(new UserResponse(await GetAuthUser()));
     }
 
     [Authorized]
@@ -33,27 +37,27 @@ public class UserController(
     public async Task<IActionResult> UpdateUserInfo(
         [FromBody] UpdateUserInfoRequest request)
     {
-        User user = AuthorizedUser;
+        User user = await GetAuthUser();
 
-        if (await DB.Users.AnyAsync(x => x.Name == request.Username && x.Id != user.Id))
+        if (await _db.Users.AnyAsync(x => x.Name == request.Username && x.Id != user.Id))
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-info.same-username"));
         }
 
         if (user.PermissionToDeletePastEvents != request.PermissionToDeletePastEvents)
         {
-            Marker[] passedEvents = await DB.Markers
+            Marker[] passedEvents = await _db.Markers
                 .Where(x => x.UserId == user.Id && x.StartsAt < DateTime.UtcNow)
                 .ToArrayAsync();
 
-            DB.Markers.RemoveRange(passedEvents);
+            _db.Markers.RemoveRange(passedEvents);
         }
 
         user.Name = request.Username!;
         user.PermissionToDeletePastEvents = request.PermissionToDeletePastEvents!.Value;
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new UserResponse(user));
     }
 
@@ -62,7 +66,7 @@ public class UserController(
     public async Task<IActionResult> UpdateUserPassword(
         [FromForm] UpdateUserPasswordRequest request)
     {
-        User? user = AuthorizedUser;
+        User? user = await GetAuthUser();
 
         if (!_passwordHandler.Validate(request.OldPassword!, user.PasswordHash))
         {
@@ -77,7 +81,7 @@ public class UserController(
         user.PasswordHash = _passwordHandler.Hash(request.NewPassword!);
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new UserResponse(user));
     }
 
@@ -87,14 +91,14 @@ public class UserController(
         [FromQuery] LocaleQuery query,
         [FromForm] UpdateUserEmailRequest request)
     {
-        User user = AuthorizedUser;
+        User user = await GetAuthUser();
 
         if (user.Email == request.Email)
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.current-address"));
         }
 
-        if (await DB.Users.AnyAsync(x => x.Email == request.Email))
+        if (await _db.Users.AnyAsync(x => x.Email == request.Email))
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.same-email"));
         }
@@ -104,14 +108,14 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.update-user-email.invalid-password"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x =>
                 x.UserId == user.Id &&
                 x.Action.StartsWith(ActivationCodeActions.ChangeEmail));
 
         if (activationCode == null)
         {
-            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            activationCode = (await _db.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id!,
                 User = user,
@@ -126,7 +130,7 @@ public class UserController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
 
         var emailURL = new UriBuilder
         {
@@ -164,19 +168,19 @@ public class UserController(
         [FromQuery] LocaleQuery query,
         [FromForm] DeleteUserRequest request)
     {
-        User? user = AuthorizedUser;
+        User? user = await GetAuthUser();
 
         if (!_passwordHandler.Validate(request.Password!, user.PasswordHash))
         {
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.delete-user.invalid-password"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x => x.UserId == user.Id && x.Action == ActivationCodeActions.DeleteAccount);
 
         if (activationCode == null)
         {
-            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            activationCode = (await _db.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id!,
                 User = user,
@@ -191,7 +195,7 @@ public class UserController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
 
         var emailURL = new UriBuilder
         {
@@ -233,12 +237,12 @@ public class UserController(
         if (request.UsernameOrEmail?.Contains('@') == true)
         {
             request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-            user = await DB.Users.FirstOrDefaultAsync(
+            user = await _db.Users.FirstOrDefaultAsync(
                 x => x.Email == request.UsernameOrEmail && !x.IsActivated);
         }
         else
         {
-            user = await DB.Users.FirstOrDefaultAsync(
+            user = await _db.Users.FirstOrDefaultAsync(
                 x => x.Name == request.UsernameOrEmail && !x.IsActivated);
         }
 
@@ -247,12 +251,12 @@ public class UserController(
             return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.resend-email-confirmation.user-not-found-or-activated"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Action == ActivationCodeActions.Register);
 
         if (activationCode == null)
         {
-            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            activationCode = (await _db.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id,
                 User = user,
@@ -267,7 +271,7 @@ public class UserController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
 
         var emailURL = new UriBuilder
         {
@@ -309,12 +313,12 @@ public class UserController(
         if (request.UsernameOrEmail?.Contains('@') == true)
         {
             request.UsernameOrEmail = request.UsernameOrEmail.ToLower();
-            user = await DB.Users.FirstOrDefaultAsync(
+            user = await _db.Users.FirstOrDefaultAsync(
                 x => x.Email == request.UsernameOrEmail);
         }
         else
         {
-            user = await DB.Users.FirstOrDefaultAsync(
+            user = await _db.Users.FirstOrDefaultAsync(
                 x => x.Name == request.UsernameOrEmail);
         }
 
@@ -323,12 +327,12 @@ public class UserController(
             return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.send-reset-password-permission.user-not-found"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x => x.UserId == user.Id && x.Action.StartsWith(ActivationCodeActions.ResetPassword));
 
         if (activationCode == null)
         {
-            activationCode = (await DB.ActivationCodes.AddAsync(new()
+            activationCode = (await _db.ActivationCodes.AddAsync(new()
             {
                 UserId = user.Id!,
                 User = user,
@@ -344,7 +348,7 @@ public class UserController(
 
         user.LastActivityAt = DateTime.UtcNow;
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
 
         var emailURL = new UriBuilder
         {
@@ -375,14 +379,14 @@ public class UserController(
     public async Task<IActionResult> AcceptPasswordResetting(
         [FromForm] AcceptPasswordResettingRequest request)
     {
-        User? user = await DB.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
+        User? user = await _db.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
 
         if (user == null)
         {
             return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.user-not-found"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Id == request.Token);
 
         if (activationCode == null)
@@ -392,8 +396,8 @@ public class UserController(
 
         if (DateTime.UtcNow > activationCode.ExpiresAt)
         {
-            DB.ActivationCodes.Remove(activationCode);
-            await DB.SaveChangesAsync();
+            _db.ActivationCodes.Remove(activationCode);
+            await _db.SaveChangesAsync();
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.accept-reset-password.link"));
         }
 
@@ -423,11 +427,11 @@ public class UserController(
         }
         else
         {
-            await DB.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             return Redirect(linkToResetPassword.ToString());
         }
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Redirect(linkToResetPassword.ToString());
     }
 
@@ -440,14 +444,14 @@ public class UserController(
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.incorrect-password"));
         }
 
-        User? user = await DB.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
+        User? user = await _db.Users.FirstOrDefaultAsync(x => x.Name == request.Username);
 
         if (user == null)
         {
             return NotFound(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.user-not-found"));
         }
 
-        ActivationCode? activationCode = await DB.ActivationCodes
+        ActivationCode? activationCode = await _db.ActivationCodes
             .FirstOrDefaultAsync(x => user.Id == x.UserId && x.Id == request.Token);
 
         if (activationCode == null)
@@ -457,8 +461,8 @@ public class UserController(
 
         if (DateTime.UtcNow > activationCode.ExpiresAt)
         {
-            DB.ActivationCodes.Remove(activationCode);
-            await DB.SaveChangesAsync();
+            _db.ActivationCodes.Remove(activationCode);
+            await _db.SaveChangesAsync();
             return BadRequest(new BaseResponse.ErrorResponse("http.controller-errors.user.reset-password.link"));
         }
 
@@ -477,9 +481,9 @@ public class UserController(
         user.PasswordHash = _passwordHandler.Hash(request.NewPassword!);
         user.LastActivityAt = DateTime.UtcNow;
 
-        DB.ActivationCodes.Remove(activationCode);
+        _db.ActivationCodes.Remove(activationCode);
 
-        await DB.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return Ok(new BaseResponse.SuccessResponse(null));
     }
 }
